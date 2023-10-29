@@ -1,3 +1,5 @@
+const express = require('express');
+const app = express();
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcryptjs');
 
@@ -12,7 +14,7 @@ const pool = mysql.createPool({
 });
 
 const findByEmail = async (email) => {
-    const [rows] = await pool.query('SELECT * FROM Usuarios WHERE CorreoElectronico = ?', [email]);
+    const [rows] = await pool.query('SELECT * FROM Usuarios WHERE EMAIL = ?', [email]);
     return rows[0];
 }
 
@@ -20,7 +22,20 @@ const verifyPassword = async (inputPassword, hash) => {
     return await bcrypt.compare(inputPassword, hash);
 }
 
+// Middleware para manejo de errores
+function errorHandler(err, req, res, next) {
+    console.error(err.stack);
+    res.status(500).send('Algo salió mal');
+}
+
+const createUser = async (nombre, apellido, email, password) => {
+    const hashedPassword = await bcrypt.hash(password, 10); // Hashing the password
+    await pool.query('INSERT INTO Usuarios (NOMBRE, APELLIDO, EMAIL, PASSWORD, FOTO_PERFIL) VALUES (?, ?, ?, ?, "")', [nombre, apellido, email, hashedPassword]);
+}
+app.use(errorHandler);
+
 module.exports = {
     findByEmail,
-    verifyPassword
+    verifyPassword,
+    createUser
 };
