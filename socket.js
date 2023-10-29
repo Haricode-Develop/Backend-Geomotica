@@ -2,7 +2,22 @@ let io;
 
 module.exports = {
     init: (server) => {
-        io = require('socket.io')(server);
+        const ioOptions = {
+            cors: {
+                origin: "http://localhost:3000",
+                methods: ["GET", "POST"],
+                credentials: true
+            }
+        };
+        io = require('socket.io')(server, ioOptions);
+
+        io.on('connection', (socket) => {
+            console.log('Un cliente se ha conectado');
+            socket.on('disconnect', () => {
+                console.log('Un cliente se ha desconectado');
+            });
+        });
+
         return io;
     },
     getIo: () => {

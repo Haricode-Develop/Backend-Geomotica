@@ -28,6 +28,7 @@ const promedioFertilizacionDosisQuery = async (idAnalisis) => {
             ROUND(AVG(DOSIS_REAL_Kg_ha), 2) AS Promedio_Dosis_Real_Kg_Ha 
         FROM fertilizacion WHERE ID_ANALISIS = ${idAnalisis}
     `;
+    console.log(query);
     const [rows] = await pool.query(query);
     return rows[0];
 }
@@ -55,7 +56,7 @@ const tiempoTotalActividadQuery = async (nombreTabla, idAnalisis) => {
 const eficienciaQuery = async (nombreTabla, idAnalisis) => {
     const query = `
         SELECT 
-            ROUND((SUM(TIMESTAMPDIFF(HOUR, CONCAT(FECHA_INICIO, ' ', HORA_INICIO), CONCAT(FECHA_FINAL, ' ', HORA_FINAL))) / SUM(AREA_NETA_Ha)), 2) AS Eficiencia 
+            ROUND((SUM(TIMESTAMPDIFF(HOUR, CONCAT(FECHA_INICIO, ' ', HORA_INICIO), CONCAT(FECHA_FINAL, ' ', HORA_FINAL))) / SUM(AREA_NETA)), 2) AS Eficiencia 
         FROM ${nombreTabla} WHERE ID_ANALISIS = ${idAnalisis}
     `;
     const [rows] = await pool.query(query);
@@ -75,7 +76,7 @@ const presionContadorBaseQuery = async (idAnalisis) => {
 const promedioTchQuery = async (nombreTabla, idAnalisis) => {
     const query = `
         SELECT 
-            ROUND(AVG(TCH), 2) AS 'Promedio_TCH_herbicidas' 
+            ROUND(AVG(TCH), 2) AS Promedio_TCH_herbicidas 
         FROM ${nombreTabla} WHERE ID_ANALISIS = ${idAnalisis}
     `;
     const [rows] = await pool.query(query);
@@ -85,33 +86,37 @@ const promedioTchQuery = async (nombreTabla, idAnalisis) => {
 const operadorQuery = async (nombreTabla, idAnalisis) => {
     const query = `
         SELECT DISTINCT 
-            OPERADOR AS 'Operadores_${nombreTabla}' 
+            OPERADOR AS 'Operadores' 
         FROM ${nombreTabla} WHERE ID_ANALISIS = ${idAnalisis}
     `;
+    console.log(operadorQuery);
     const [rows] = await pool.query(query);
     return rows[0];
 }
 const obtenerUltimoAnalisisQuery = async (tipoAnalisis, usuario) =>{
     const query = `
         SELECT 
-            ID_ANALISIS 
+            MAX(ID_ANALISIS) AS ID_ANALISIS
         FROM analisis 
-        WHERE TIPO_ANALISIS = ${tipoAnalisis}
+        WHERE TIPO_ANALISIS = '${tipoAnalisis}'
         AND ID_USUARIO = ${usuario}; 
     `;
+    console.log(query);
     const [rows] = await pool.query(query);
+    console.log(rows[0]);
     return rows[0];
 }
 const fechaActividadQuery = async (nombreTabla, idAnalisis) => {
     const query = `
         SELECT 
-            DATE_FORMAT(FECHA_INICIO, '%Y-%m-%d') AS 'Fecha_Inicio_${nombreTabla}',
-            DATE_FORMAT(FECHA_FINAL, '%Y-%m-%d') AS 'Fecha_Final_${nombreTabla}' 
+            DATE_FORMAT(FECHA_INICIO, '%Y-%m-%d') AS 'Fecha_Inicio',
+            DATE_FORMAT(FECHA_FINAL, '%Y-%m-%d') AS 'Fecha_Final' 
         FROM (
             SELECT DISTINCT FECHA_INICIO, FECHA_FINAL 
             FROM ${nombreTabla} WHERE ID_ANALISIS = ${idAnalisis}
         ) AS subquery;
     `;
+    console.log(query);
     const [rows] = await pool.query(query);
     return rows[0];
 }
