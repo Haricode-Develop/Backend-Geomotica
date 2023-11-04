@@ -8,10 +8,6 @@ exports.seInsertaronDatosAnalisis = (req, res) => {
 
 exports.recibirMapeoHtml = (req, res) => {
     const htmlContent = req.body.htmlContent;
-    io.on('connection', (socket) => {
-        socket.on('requestMap', () => {
-            socket.emit('sendMap', htmlContent);
-        });
-    });
+    io.getIo.emit('sendMap', htmlContent);
     res.send('Mapeo Recibido');
 };

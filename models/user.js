@@ -14,7 +14,7 @@ const pool = mysql.createPool({
 });
 
 const findByEmail = async (email) => {
-    const [rows] = await pool.query('SELECT * FROM Usuarios WHERE EMAIL = ?', [email]);
+    const [rows] = await pool.query('SELECT * FROM usuarios WHERE EMAIL = ?', [email]);
     return rows[0];
 }
 
@@ -30,7 +30,7 @@ function errorHandler(err, req, res, next) {
 
 const createUser = async (nombre, apellido, email, password) => {
     const hashedPassword = await bcrypt.hash(password, 10); // Hashing the password
-    await pool.query('INSERT INTO Usuarios (NOMBRE, APELLIDO, EMAIL, PASSWORD, FOTO_PERFIL) VALUES (?, ?, ?, ?, "")', [nombre, apellido, email, hashedPassword]);
+    await pool.query('INSERT INTO usuarios (NOMBRE, APELLIDO, EMAIL, PASSWORD, FOTO_PERFIL) VALUES (?, ?, ?, ?, "")', [nombre, apellido, email, hashedPassword]);
 }
 app.use(errorHandler);
 
