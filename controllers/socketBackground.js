@@ -8,6 +8,8 @@ exports.seInsertaronDatosAnalisis = (req, res) => {
 
 exports.recibirMapeoHtml = (req, res) => {
     const htmlContent = req.body.htmlContent;
-    io.getIo.emit('sendMap', htmlContent);
+    console.log("CONTENIDO DEL MAPA=====");
+    console.log(req.body.htmlContent);
+    io.getIo().emit('sendMap', htmlContent);
     res.send('Mapeo Recibido');
 };
