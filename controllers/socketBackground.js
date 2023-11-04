@@ -9,7 +9,7 @@ exports.seInsertaronDatosAnalisis = (req, res) => {
 exports.recibirMapeoHtml = (req, res) => {
     const htmlContent = req.body.htmlContent;
     console.log("CONTENIDO DEL MAPA=====");
-    console.log(req.body);
+    console.log(req.body); 
     io.getIo().emit('sendMap', htmlContent);
     res.send('Mapeo Recibido');
 };

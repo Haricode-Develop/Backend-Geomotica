@@ -14,6 +14,8 @@ app.use(cors({
     methods: ["GET", "POST"],
     credentials: true
 }));
+app.use(express.urlencoded({ extended: true })); // Para parsear application/x-www-form-urlencoded
+
 
 app.use(express.json());
 
