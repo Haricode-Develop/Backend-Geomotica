@@ -16,7 +16,7 @@ const promedioVelocidadQuery = async (nombreTabla, idAnalisis) => {
         SELECT 
             ROUND(AVG(VELOCIDAD_Km_H), 2) AS Promedio_Velocidad_Km_H,
             ROUND(AVG(VELOCIDAD_Km_H / 3.6), 2) AS Promedio_Velocidad_m_s 
-        FROM ${nombreTabla} WHERE ID_ANALISIS = ${idAnalisis}
+        FROM ${nombreTabla.toLowerCase()} WHERE ID_ANALISIS = ${idAnalisis}
     `;
     const [rows] = await pool.query(query);
     return rows[0];
@@ -47,7 +47,7 @@ const tiempoTotalActividadQuery = async (nombreTabla, idAnalisis) => {
     const query = `
         SELECT 
             SUM(TIMESTAMPDIFF(HOUR, CONCAT(FECHA_INICIO, ' ', HORA_INICIO), CONCAT(FECHA_FINAL, ' ', HORA_FINAL))) AS Tiempo_Total_Horas 
-        FROM ${nombreTabla} WHERE ID_ANALISIS = ${idAnalisis}
+        FROM ${nombreTabla.toLowerCase()} WHERE ID_ANALISIS = ${idAnalisis}
     `;
     const [rows] = await pool.query(query);
     return rows[0];
@@ -57,7 +57,7 @@ const eficienciaQuery = async (nombreTabla, idAnalisis) => {
     const query = `
         SELECT 
             ROUND((SUM(TIMESTAMPDIFF(HOUR, CONCAT(FECHA_INICIO, ' ', HORA_INICIO), CONCAT(FECHA_FINAL, ' ', HORA_FINAL))) / SUM(AREA_NETA)), 2) AS Eficiencia 
-        FROM ${nombreTabla} WHERE ID_ANALISIS = ${idAnalisis}
+        FROM ${nombreTabla.toLowerCase()} WHERE ID_ANALISIS = ${idAnalisis}
     `;
     const [rows] = await pool.query(query);
     return rows[0];
@@ -77,7 +77,7 @@ const promedioTchQuery = async (nombreTabla, idAnalisis) => {
     const query = `
         SELECT 
             ROUND(AVG(TCH), 2) AS Promedio_TCH_herbicidas 
-        FROM ${nombreTabla} WHERE ID_ANALISIS = ${idAnalisis}
+        FROM ${nombreTabla.toLowerCase()} WHERE ID_ANALISIS = ${idAnalisis}
     `;
     const [rows] = await pool.query(query);
     return rows[0];
@@ -87,7 +87,7 @@ const operadorQuery = async (nombreTabla, idAnalisis) => {
     const query = `
         SELECT DISTINCT 
             OPERADOR AS 'Operadores' 
-        FROM ${nombreTabla} WHERE ID_ANALISIS = ${idAnalisis}
+        FROM ${nombreTabla.toLowerCase()} WHERE ID_ANALISIS = ${idAnalisis}
     `;
     console.log(operadorQuery);
     const [rows] = await pool.query(query);
@@ -113,7 +113,7 @@ const fechaActividadQuery = async (nombreTabla, idAnalisis) => {
             DATE_FORMAT(FECHA_FINAL, '%Y-%m-%d') AS 'Fecha_Final' 
         FROM (
             SELECT DISTINCT FECHA_INICIO, FECHA_FINAL 
-            FROM ${nombreTabla} WHERE ID_ANALISIS = ${idAnalisis}
+            FROM ${nombreTabla.toLowerCase()} WHERE ID_ANALISIS = ${idAnalisis}
         ) AS subquery;
     `;
     console.log(query);
