@@ -15,7 +15,8 @@ const login = async (req, res) => {
     if (!isValidPassword) {
         return res.status(403).json({ message: 'Contraseña incorrecta' });
     }
-
+    console.log("ESTE ES EL USUARIO ======");
+    console.log(user);
     return res.json({user});
 };
 const register = async (req, res) => {
