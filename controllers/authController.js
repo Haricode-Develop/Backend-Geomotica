@@ -19,6 +19,7 @@ const login = async (req, res) => {
   console.log(user);
   return res.json({ user });
 };
+
 const register = async (req, res) => {
   const { nombre, apellido, email, password } = req.body;
   console.log("Entre al registro");
@@ -45,14 +46,17 @@ const register = async (req, res) => {
 };
 
 const passwordRecuperation = async (req, res) => {
-    const email = req.body;
-    console.log("Estos son los parametros========");
-    console.log(email);
-    const user = await UserModel.findByEmail(email);
-    if (!user) {
-      return res.status(404).json({ message: "Usuario no encontrado" });
-    }
-    
+  const email = req.body;
+  console.log("Estos son los parametros========");
+  console.log(email);
+  const user = await UserModel.findByEmail(email);
+  if (!user) {
+    return res.status(404).json({ message: "Usuario no encontrado" });
+  }
+  else {
+
+  }
+
 }
 
 
@@ -60,5 +64,5 @@ module.exports = {
   login,
   register,
   passwordRecuperation,
-  
+
 };
