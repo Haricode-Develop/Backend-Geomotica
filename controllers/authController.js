@@ -1,5 +1,7 @@
 const UserModel = require("../models/user");
 const jwt = require("jsonwebtoken");
+const passwordRecuperation =require("../utils/passwordRecuperation.js");
+const pRClass = new passwordRecuperation();
 
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -54,7 +56,9 @@ const passwordRecuperation = async (req, res) => {
     return res.status(404).json({ message: "Usuario no encontrado" });
   }
   else {
-
+    
+    pRClass.verication(user);
+    return res.status(200).json({ message: "Usuario encontrado" });
   }
 
 }

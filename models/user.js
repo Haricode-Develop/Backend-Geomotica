@@ -32,6 +32,11 @@ const createUser = async (nombre, apellido, email, password) => {
     const hashedPassword = await bcrypt.hash(password, 10); // Hashing the password
     await pool.query('INSERT INTO usuarios (NOMBRE, APELLIDO, EMAIL, PASSWORD, FOTO_PERFIL) VALUES (?, ?, ?, ?, "")', [nombre, apellido, email, hashedPassword]);
 }
+
+const createTemporalPassword = async()=>{
+    
+}
+
 app.use(errorHandler);
 
 module.exports = {
