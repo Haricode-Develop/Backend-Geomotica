@@ -58,7 +58,7 @@ const fechaActividad = async(req,res)=>{
     const fechaActividadResult = await DashboardModel.fechaActividadQuery(nombreTabla, idAnalisis);
     return res.json(fechaActividadResult);
 }
-exports.execBash = (req, res) => {
+const execBash = async (req, res) => {
     console.log("EJECUTANDO EL BASH =======");
     const idUsuario = req.params.idUsuario;
     const idAnalisis = req.params.idAnalisis;
