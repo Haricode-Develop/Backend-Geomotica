@@ -1,7 +1,7 @@
 const UserModel = require("../models/user");
 const jwt = require("jsonwebtoken");
-const passwordRecuperation =require("../utils/passwordRecuperation.js");
-const pRClass = new passwordRecuperation();
+//const passwordRecuperation =require("../utils/passwordRecuperation.js");
+//const pRClass = new passwordRecuperation();
 
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -47,6 +47,7 @@ const register = async (req, res) => {
   }
 };
 
+/*
 const passwordRecuperation = async (req, res) => {
   const email = req.body;
   console.log("Estos son los parametros========");
@@ -63,10 +64,10 @@ const passwordRecuperation = async (req, res) => {
 
 }
 
-
+*/
 module.exports = {
   login,
   register,
-  passwordRecuperation,
+  //passwordRecuperation,
 
 };
