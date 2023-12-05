@@ -28,7 +28,6 @@ const promedioFertilizacionDosisQuery = async (idAnalisis) => {
             ROUND(AVG(DOSIS_REAL_Kg_ha), 2) AS Promedio_Dosis_Real_Kg_Ha 
         FROM fertilizacion WHERE ID_ANALISIS = ${idAnalisis}
     `;
-    console.log(query);
     const [rows] = await pool.query(query);
     return rows[0];
 }
@@ -101,9 +100,7 @@ const obtenerUltimoAnalisisQuery = async (tipoAnalisis, usuario) =>{
         WHERE TIPO_ANALISIS = '${tipoAnalisis}'
         AND ID_USUARIO = ${usuario}; 
     `;
-    console.log(query);
     const [rows] = await pool.query(query);
-    console.log(rows[0]);
     return rows[0];
 }
 const fechaActividadQuery = async (nombreTabla, idAnalisis) => {
@@ -116,7 +113,6 @@ const fechaActividadQuery = async (nombreTabla, idAnalisis) => {
             FROM ${nombreTabla.toLowerCase()} WHERE ID_ANALISIS = ${idAnalisis}
         ) AS subquery;
     `;
-    console.log(query);
     const [rows] = await pool.query(query);
     return rows[0];
 }

@@ -1,5 +1,9 @@
 const DashboardModel = require('../models/dashboard');
+const multer = require('multer');
+const path = require('path');
+
 const {exec} = require('child_process');
+
 const promedioVelocidad = async (req, res) => {
     const nombreTabla = req.params.nombreTabla;
     const idAnalisis = req.params.idAnalisis;
@@ -54,10 +58,29 @@ const fechaActividad = async(req,res)=>{
     const fechaActividadResult = await DashboardModel.fechaActividadQuery(nombreTabla, idAnalisis);
     return res.json(fechaActividadResult);
 }
-const execBash = (req, res) => {
+exports.execBash = (req, res) => {
+    console.log("EJECUTANDO EL BASH =======");
     const idUsuario = req.params.idUsuario;
     const idAnalisis = req.params.idAnalisis;
-    exec(`bash /geomotica/init_analisis.sh ${idUsuario} ${idAnalisis}`, (error, stdout, stderr) => {
+
+    // Verificar si los archivos están presentes
+    if (!req.files['csv'] || !req.files['polygon']) {
+        return res.status(400).send('Archivos CSV o polígono no proporcionados');
+    }
+
+    const csvPath = req.files['csv'][0].path;
+    const polygonPath = req.files['polygon'][0].path;
+    console.log("======= PARAMETROS QUE SE LE PASAN AL BASH =========");
+    console.log("ID USUARIO:");
+    console.log(idUsuario);
+    console.log("ID ANALISIS:");
+    console.log(idAnalisis);
+    console.log("CSV PATH:");
+    console.log(csvPath);
+    console.log("POLYGONO PATH:");
+    console.log(polygonPath);
+
+    exec(`bash /geomotica/init_analisis.sh ${idUsuario} ${idAnalisis} ${csvPath} ${polygonPath}`, (error, stdout, stderr) => {
         if (error) {
             console.error(`exec error: ${error}`);
             return res.status(500).send(`Error executing script: ${error.message}`);
@@ -66,13 +89,14 @@ const execBash = (req, res) => {
         console.error(`stderr: ${stderr}`);
         res.send('Script executed successfully');
     });
-}
+};
 const obtenerUltimoAnalisis = async (req, res) => {
     const tipoAnalisis = req.params.tipoAnalisis;
     const idUsuario = req.params.idUsuario;
     const obtenerUltimoAnalisisResult = await DashboardModel.obtenerUltimoAnalisisQuery(tipoAnalisis, idUsuario);
     return res.json(obtenerUltimoAnalisisResult);
 }
+
 const execPython = (req, res) => {
     const idUsuario = req.params.idUsuario;
     const idAnalisis = req.params.idAnalisis;

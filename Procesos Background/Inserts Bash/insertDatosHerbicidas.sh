@@ -22,6 +22,8 @@ fi
 
 ID_USUARIO=$1
 TIPO_ANALISIS="HERBICIDAS"
+ARCHIVO_CSV=$2
+
 echo "El ID de usuario es: $ID_USUARIO"
 
 function insert_to_analisis {
@@ -90,7 +92,7 @@ if [[ -z $ID_ANALISIS_TIPO_RESULT ]]; then
     exit 1
 fi
 
-CSV_FILE="${PARENT_DIR}/HERBICIDAS.csv"
+CSV_FILE="$ARCHIVO_CSV"
 dos2unix $CSV_FILE
 
 # Pasar el ID_ANALISIS_TIPO_RESULT como segundo argumento a insert_aps_data

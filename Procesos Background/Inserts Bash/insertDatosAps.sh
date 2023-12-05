@@ -24,6 +24,7 @@ fi
 
 ID_USUARIO=$1
 TIPO_ANALISIS="APS"
+ARCHIVO_CSV=$2
 echo "El ID de usuario es: $ID_USUARIO"
 
 function insert_to_analisis {
@@ -84,7 +85,8 @@ function insert_aps_data {
 }
 
 # Llamar a insert_to_analisis y guardar el resultado en una variable
-ID_ANALISIS_TIPO_RESULT=$(insert_to_analisis $ID_USUARIO $TIPO_ANALISIS)
+ID_ANALISIS_TIPO_RESULT=$(insert_to_analisis $ID_USUARIO $TIPO_A
+NALISIS)
 echo $ID_ANALISIS_TIPO_RESULT > "${PARENT_DIR}/tempIdAnalisis.txt"
 # Verificar que ID_ANALISIS_TIPO_RESULT tiene valor, si no, terminar el script con un error
 if [[ -z $ID_ANALISIS_TIPO_RESULT ]]; then
@@ -92,7 +94,7 @@ if [[ -z $ID_ANALISIS_TIPO_RESULT ]]; then
     exit 1
 fi
 
-CSV_FILE="${PARENT_DIR}/APS.csv"
+CSV_FILE="$ARCHIVO_CSV"
 dos2unix $CSV_FILE
 
 # Pasar el ID_ANALISIS_TIPO_RESULT como segundo argumento a insert_aps_data

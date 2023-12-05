@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 const DashbBoard = require('../controllers/dashboardController');
 router.get('/promedio_velocidad/:nombreTabla/:idAnalisis', DashbBoard.promedioVelocidad);
 router.get('/promedio_fertilizacion_dosis_real/:idAnalisis', DashbBoard.promedioFertilizacionDosisReal);
@@ -12,5 +14,5 @@ router.get('/operador/:nombreTabla/:idAnalisis',DashbBoard.operador);
 router.get('/fecha_actividad/:nombreTabla/:idAnalisis',DashbBoard.fechaActividad);
 router.get('/ultimo_analisis/:tipoAnalisis/:idUsuario', DashbBoard.obtenerUltimoAnalisis);
 router.get('/execPython/:idUsuario/:idAnalisis', DashbBoard.execPython);
-router.get('/execBash/:idUsuario/:idAnalisis', DashbBoard.execBash);
+router.post('/execBash/:idUsuario/:idAnalisis', upload.fields([{ name: 'csv' }, { name: 'polygon' }]), DashbBoard.execBash);
 module.exports = router;
