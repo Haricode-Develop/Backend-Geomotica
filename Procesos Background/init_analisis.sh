@@ -46,7 +46,8 @@ if [[ -f "$SCRIPT_DIR/tempIdAnalisis.tx"t ]]; then
 ID_ANALISIS=$(cat "$SCRIPT_DIR/tempIdAnalisis.txt")
 echo "Este es el ID del analisis: $ID_ANALISIS"
 echo "Esta es la tabla que se quiere hacer el análisis: $TABLA_ACTUAL"
-python3 "$SCRIPT_DIR"/procesos/mapeo.py "$ID_ANALISIS" "$TABLA_ACTUAL" "$ARCHIVO_POLIGONO"
+unzip -o $ARCHIVO_POLIGONO -d "poligonoTemp"
+python3 "$SCRIPT_DIR"/procesos/mapeo.py "$ID_ANALISIS" "$TABLA_ACTUAL" "poligonoTemp"
 else
 echo "Error: No se pudo obtener el ID del Analisis para el mapeo"
 fi

@@ -1,14 +1,13 @@
 import sys
+import os
 import folium
 import requests
 import pandas as pd
 import geopandas as gpd
-from shapely.geometry import Point, Polygon
+from shapely.geometry import Point
 from sqlalchemy import create_engine
 from folium.plugins import MiniMap
-
 from google.cloud import storage
-import os
 
 def upload_to_bucket(bucket_name, source_file_name, destination_blob_name):
     """Sube un archivo al bucket de Google Cloud Storage."""
@@ -20,41 +19,52 @@ def upload_to_bucket(bucket_name, source_file_name, destination_blob_name):
 
     return blob.public_url
 
+def find_shp_file(directory):
+    """Encuentra el primer archivo .shp en el directorio dado."""
+    for file in os.listdir(directory):
+        if file.endswith(".shp"):
+            return os.path.join(directory, file)
+    return None
+
 # Conectarse a la base de datos usando SQLAlchemy
 engine = create_engine("mysql+mysqlconnector://root:wtRykrEX9As8wN@localhost/geomotica")
 id_analisis = sys.argv[1]
 tabla = sys.argv[2]
-polygon_path = sys.argv[3]  # Ruta al archivo del polígono
 
-# Consulta SQL para obtener datos
+# Ruta de la carpeta pasada como argumento (puede ser None)
+folder_path = sys.argv[3]
+
+# Intenta encontrar el archivo .shp si se proporcionó una carpeta
+shp_file_path = find_shp_file(folder_path) if folder_path else None
+
+# Crear GeoDataFrame a partir de los datos de la base de datos
 query = f"""SELECT LONGITUD, LATITUD, CULTIVO, NOMBRE_FINCA, ACTIVIDAD,
             FECHA_INICIO, HORA_INICIO, HORA_FINAL
             FROM {tabla} WHERE ID_ANALISIS = {id_analisis};"""
-
 df = pd.read_sql(query, engine)
-
-# Cargar archivo de polígono
-polygon = gpd.read_file(polygon_path)
-
-# Convertir puntos a geometrías y crear GeoDataFrame
 df['geometry'] = df.apply(lambda row: Point(row['LONGITUD'], row['LATITUD']), axis=1)
 gdf = gpd.GeoDataFrame(df, geometry='geometry')
 
-# Filtrar puntos que están dentro del polígono
-inside_polygon = gdf[gdf.geometry.within(polygon.geometry[0])]
+# Filtrar puntos dentro del polígono si se proporciona uno, sino usar todos los puntos
+if shp_file_path:
+    polygon = gpd.read_file(shp_file_path)
+    points_to_use = gdf[gdf.geometry.within(polygon.geometry[0])]
+else:
+    points_to_use = gdf
 
-# Crear mapa centrado en la primera coordenada con opción de satélite
+# Verificar si hay puntos a usar
+if points_to_use.empty:
+    print("No se encontraron puntos para mostrar en el mapa.")
+    sys.exit(1)
+
+# Crear mapa
 tiles_option = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
 attribution = "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
+first_location = points_to_use.iloc[0]
+m = folium.Map(location=[first_location['LATITUD'], first_location['LONGITUD']], zoom_start=15, tiles=tiles_option, attr=attribution)
 
-m = folium.Map(location=[inside_polygon['LATITUD'].iloc[0], inside_polygon['LONGITUD'].iloc[0]], zoom_start=15, tiles=tiles_option, attr=attribution)
-
-# Añadir trazado de puntos dentro del polígono
-locations = inside_polygon[['LATITUD', 'LONGITUD']].values
-folium.PolyLine(locations, color="blue", weight=2.5).add_to(m)
-
-# Añadir popup a cada punto con información relevante
-for _, row in inside_polygon.iterrows():
+# Añadir trazado de puntos y popups
+for _, row in points_to_use.iterrows():
     popup_content = f"""
     <strong>Cultivo:</strong> {row['CULTIVO']}<br>
     <strong>Finca:</strong> {row['NOMBRE_FINCA']}<br>
@@ -69,11 +79,9 @@ folium.LayerControl().add_to(m)
 minimap = MiniMap()
 m.add_child(minimap)
 
-# Guardar el mapa como archivo HTML temporal
+# Guardar y subir el mapa
 nombre_archivo_temp = f"/tmp/mapa_{id_analisis}.html"
 m.save(nombre_archivo_temp)
-
-# Subir el archivo al bucket de Google Cloud Storage y enviar al servidor
 nombre_bucket = "geomotica_mapeo"
 nombre_archivo_bucket = f"mapas/mapa_{id_analisis}.html"
 url_archivo = upload_to_bucket(nombre_bucket, nombre_archivo_temp, nombre_archivo_bucket)
@@ -82,6 +90,5 @@ data = {'htmlContent': url_archivo}
 response = requests.post(api_url, json=data)
 print(f"Mapa subido con éxito a {url_archivo}")
 
-# Eliminar el archivo temporal
 os.remove(nombre_archivo_temp)
 print(f"Archivo temporal eliminado: {nombre_archivo_temp}")
