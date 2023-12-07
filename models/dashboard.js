@@ -39,14 +39,11 @@ const obtenerNombreResponsableAps = async (idAnalisis) =>{
 
 };
 const obtenerFechaInicioCosechaAps = async (idAnalisis) =>{
-    console.log("ESTO ES FECHA INICIO DE COSECHA APS ========");
-    console.log(`SELECT DISTINCT FECHA_INICIO FROM aps WHERE ID_ANALISIS = ?;`);
+
     const query =  `SELECT DISTINCT FECHA_INICIO FROM aps WHERE ID_ANALISIS = ?;`;
     const [rows] = await pool.query(query,[idAnalisis] );
-    console.log("CON EL ID 0 DEL ARRAY ======");
-    console.log(rows[0]);
-    console.log("SIN EL ID 0 DEL ARRAY ======");
-    return rows.map(row => console.log(row.FECHA_INICIO));
+
+    return rows.map(row => row.FECHA_INICIO);
 
 }
 const obtenerFechaFinalCosechaAps = async (idAnalisis) => {
