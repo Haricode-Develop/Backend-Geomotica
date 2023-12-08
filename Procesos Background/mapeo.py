@@ -1,7 +1,7 @@
 import sys
 import os
-import folium
 import requests
+import folium
 import pandas as pd
 import geopandas as gpd
 from shapely.geometry import Point
@@ -32,7 +32,7 @@ id_analisis = sys.argv[1]
 tabla = sys.argv[2]
 
 # Ruta de la carpeta pasada como argumento (puede ser None)
-folder_path = sys.argv[3]
+folder_path = sys.argv[3] if len(sys.argv) > 3 else None
 
 # Intenta encontrar el archivo .shp si se proporcionó una carpeta
 shp_file_path = find_shp_file(folder_path) if folder_path else None
@@ -52,16 +52,21 @@ if shp_file_path:
 else:
     points_to_use = gdf
 
-# Verificar si hay puntos a usar
-if points_to_use.empty:
-    print("No se encontraron puntos para mostrar en el mapa.")
-    sys.exit(1)
-
-# Crear mapa
+# Crear mapa con una ubicación predeterminada si no hay puntos
 tiles_option = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
 attribution = "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
-first_location = points_to_use.iloc[0]
-m = folium.Map(location=[first_location['LATITUD'], first_location['LONGITUD']], zoom_start=15, tiles=tiles_option, attr=attribution)
+default_location = [0, 0]  # Puedes cambiar esto por una ubicación central o significativa
+
+if not points_to_use.empty:
+    first_location = points_to_use.iloc[0]
+    map_location = [first_location['LATITUD'], first_location['LONGITUD']]
+    zoom_start = 15
+else:
+    print("No se encontraron puntos para mostrar en el mapa. Usando ubicación predeterminada.")
+    map_location = default_location
+    zoom_start = 2
+
+m = folium.Map(location=map_location, zoom_start=zoom_start, tiles=tiles_option, attr=attribution)
 
 # Añadir trazado de puntos y popups
 for _, row in points_to_use.iterrows():
@@ -85,10 +90,11 @@ m.save(nombre_archivo_temp)
 nombre_bucket = "geomotica_mapeo"
 nombre_archivo_bucket = f"mapas/mapa_{id_analisis}.html"
 url_archivo = upload_to_bucket(nombre_bucket, nombre_archivo_temp, nombre_archivo_bucket)
+
 api_url = "http://localhost:3001/socket/reciveMap"
 data = {'htmlContent': url_archivo}
 response = requests.post(api_url, json=data)
-print(f"Mapa subido con éxito a {url_archivo}")
 
+print(f"Mapa subido con éxito a {url_archivo}")
 os.remove(nombre_archivo_temp)
 print(f"Archivo temporal eliminado: {nombre_archivo_temp}")

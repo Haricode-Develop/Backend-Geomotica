@@ -42,7 +42,7 @@ fi
 
 curl -X POST $API_URL
 
-if [[ -f "$SCRIPT_DIR/tempIdAnalisis.tx"t ]]; then
+if [[ -f "$SCRIPT_DIR/tempIdAnalisis.txt" ]]; then
 ID_ANALISIS=$(cat "$SCRIPT_DIR/tempIdAnalisis.txt")
 echo "Este es el ID del analisis: $ID_ANALISIS"
 echo "Esta es la tabla que se quiere hacer el análisis: $TABLA_ACTUAL"

@@ -1,6 +1,7 @@
 const DashboardModel = require('../models/dashboard');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 
 const {exec} = require('child_process');
 
@@ -16,6 +17,10 @@ const execBash = async (req, res) => {
 
     const csvPath = req.files['csv'][0].path;
     const polygonPath = req.files['polygon'][0].path;
+
+
+    console.log("ARCHIVO =========");
+    console.log(req.files['csv'][0]);
     console.log("======= PARAMETROS QUE SE LE PASAN AL BASH =========");
     console.log("ID USUARIO:");
     console.log(idUsuario);

@@ -2,7 +2,6 @@
 
 set -e # Hace que el script termine si cualquier comando devuelve un error
 
-
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 PARENT_DIR="$( dirname "$SCRIPT_DIR" )"
 
@@ -15,7 +14,6 @@ if [[ ! -f "$DATABASE_CONF" ]]; then
 fi
 
 source "$DATABASE_CONF"
-
 
 if [[ -z $1 ]]; then
     echo "Error: No se proporcionó ID_USUARIO"
@@ -31,7 +29,6 @@ function insert_to_analisis {
     local id_usuario=$1
     local tipo_analisis=$2
 
-    # Crear una consulta temporal para insertar en la tabla análisis
     echo "INSERT INTO analisis (id_usuario, tipo_analisis) VALUES ($id_usuario, '$tipo_analisis');" > "${PARENT_DIR}/insert_analisis.sql"
 
     if ! mysql -u $DB_USER -p$DB_PASS $DB_NAME < "${PARENT_DIR}/insert_analisis.sql"; then
@@ -75,6 +72,8 @@ function insert_aps_data {
         }
     ' $csv_file | sed '$ s/,$/;/' >> temp.sql
 
+
+
     if ! mysql -u $DB_USER -p$DB_PASS $DB_NAME < temp.sql; then
         echo "Error al insertar en la tabla aps"
         rm temp.sql
@@ -85,8 +84,7 @@ function insert_aps_data {
 }
 
 # Llamar a insert_to_analisis y guardar el resultado en una variable
-ID_ANALISIS_TIPO_RESULT=$(insert_to_analisis $ID_USUARIO $TIPO_A
-NALISIS)
+ID_ANALISIS_TIPO_RESULT=$(insert_to_analisis $ID_USUARIO $TIPO_ANALISIS)
 echo $ID_ANALISIS_TIPO_RESULT > "${PARENT_DIR}/tempIdAnalisis.txt"
 # Verificar que ID_ANALISIS_TIPO_RESULT tiene valor, si no, terminar el script con un error
 if [[ -z $ID_ANALISIS_TIPO_RESULT ]]; then
