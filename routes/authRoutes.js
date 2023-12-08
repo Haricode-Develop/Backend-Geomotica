@@ -4,6 +4,7 @@ const AuthController = require('../controllers/authController');
 
 router.post('/login', AuthController.login);
 router.post('/register', AuthController.register);
-//router.post('/passwordRecuperation', AuthController.passwordRecuperation)
+router.post('/passwordRecuperation', AuthController.passwordRecuperation)
+router.post('/registryConfirmation', AuthController.registerConfirmation)
 
 module.exports = router;

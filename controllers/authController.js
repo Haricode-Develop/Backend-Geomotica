@@ -1,7 +1,8 @@
 const UserModel = require("../models/user");
 const jwt = require("jsonwebtoken");
+const emailSender = require("../utils/emailSender.js");
 //const passwordRecuperation =require("../utils/passwordRecuperation.js");
-//const pRClass = new passwordRecuperation();
+const eSender = new emailSender();
 
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -47,27 +48,45 @@ const register = async (req, res) => {
   }
 };
 
-/*
+
 const passwordRecuperation = async (req, res) => {
-  const email = req.body;
+  const {email} = req.body;
   console.log("Estos son los parametros========");
   console.log(email);
   const user = await UserModel.findByEmail(email);
   if (!user) {
+    console.log(user + "no encontrado");
     return res.status(404).json({ message: "Usuario no encontrado" });
   }
   else {
-    
-    pRClass.verication(user);
+    console.log(user.EMAIL);
+    eSender.sendEmail("recovery", user.EMAIL);
     return res.status(200).json({ message: "Usuario encontrado" });
   }
+};
 
-}
+const registerConfirmation = async (req, res) => {
+  const {email} = req.body;
+  console.log("Estos son los parametros========");
+  console.log(email);
+  const user = await UserModel.findByEmail(email);
+  if (!user) {
+    console.log(user + "no encontrado");
+    return res.status(404).json({ message: "Usuario no encontrado" });
+  }
+  else {
+    console.log(user.EMAIL);
+    eSender.sendEmail("registry", user.EMAIL);
+    return res.status(200).json({ message: "Usuario encontrado" });
+  }
+};
 
-*/
+
+
 module.exports = {
   login,
   register,
-  //passwordRecuperation,
+  passwordRecuperation,
+  registerConfirmation,
 
 };

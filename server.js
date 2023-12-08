@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const http = require('http');
+const morgan = require('morgan');
 const app = express();
 const PORT = 3001;
 require('dotenv').config();
@@ -15,7 +16,7 @@ app.use(cors({
     credentials: true
 }));
 app.use(express.urlencoded({ extended: true })); // Para parsear application/x-www-form-urlencoded
-
+app.use(morgan('combined')); 
 
 app.use(express.json());
 
