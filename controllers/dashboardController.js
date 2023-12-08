@@ -16,6 +16,7 @@ const execBash = async (req, res) => {
 
     const csvPath = req.files['csv'][0].path;
     const polygonPath = req.files['polygon'][0].path;
+    
     console.log("======= PARAMETROS QUE SE LE PASAN AL BASH =========");
     console.log("ID USUARIO:");
     console.log(idUsuario);

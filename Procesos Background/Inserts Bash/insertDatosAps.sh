@@ -2,7 +2,6 @@
 
 set -e # Hace que el script termine si cualquier comando devuelve un error
 
-
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 PARENT_DIR="$( dirname "$SCRIPT_DIR" )"
 
@@ -15,7 +14,6 @@ if [[ ! -f "$DATABASE_CONF" ]]; then
 fi
 
 source "$DATABASE_CONF"
-
 
 if [[ -z $1 ]]; then
     echo "Error: No se proporcionó ID_USUARIO"
@@ -31,7 +29,6 @@ function insert_to_analisis {
     local id_usuario=$1
     local tipo_analisis=$2
 
-    # Crear una consulta temporal para insertar en la tabla análisis
     echo "INSERT INTO analisis (id_usuario, tipo_analisis) VALUES ($id_usuario, '$tipo_analisis');" > "${PARENT_DIR}/insert_analisis.sql"
 
     if ! mysql -u $DB_USER -p$DB_PASS $DB_NAME < "${PARENT_DIR}/insert_analisis.sql"; then
@@ -69,11 +66,16 @@ function insert_aps_data {
             fecha_inicio = (length($15) != 0) ? sprintf("\x27%s-%s-%s\x27", date[3], date[2], date[1]) : "NULL";
             split($16, date, "/");
             fecha_final = (length($16) != 0) ? sprintf("\x27%s-%s-%s\x27", date[3], date[2], date[1]) : "NULL";
+        print "Datos a insertar: LONGITUD = " $1 ", LATITUD = " $2 ", CULTIVO = " $3 ", PARCELA = " $4 ", NOMBRE_FINCA = " $5 ", CODIGO_FINCA = " $6 ", AREA_BRUTA = " $7 ", AREA_NETA = " $8 ", DIFERENCIA_DE_AREA = " $9 ", CODIGO_DE_MAQUINA = " $10 ", RESPONSABLE = " $11 ", ACTIVIDAD = " $12 ", EQUIPO = " $13 ", OPERADOR = " $14 ", FECHA_INICIO = " fecha_inicio ", FECHA_FINAL = " fecha_final ", HORA_INICIO = " $17 ", HORA_FINAL = " $18 ", TIEMPO_TOTAL = " $19 ", EFICIENCIA = " $20 ", VELOCIDAD_Km_H = " $21 ", TCH = " $22 ", TAH = " $23 ", ID_ANALISIS = " id_tipo > "/dev/stderr"
 
             printf "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s),\n",
             format_value($1), format_value($2), format_value($3), format_value($4), format_value($5), format_value($6), format_value($7), format_value($8), format_value($9), format_value($10), format_value($11), format_value($12), format_value($13), format_value($14), fecha_inicio, fecha_final, format_value($17), format_value($18), format_value($19), format_value($20), format_value($21), format_value($22), format_value($23), id_tipo;
         }
     ' $csv_file | sed '$ s/,$/;/' >> temp.sql
+
+    # Log de la consulta SQL antes de la ejecución
+    echo "Consulta SQL a ejecutar:"
+    cat temp.sql
 
     if ! mysql -u $DB_USER -p$DB_PASS $DB_NAME < temp.sql; then
         echo "Error al insertar en la tabla aps"
@@ -85,8 +87,7 @@ function insert_aps_data {
 }
 
 # Llamar a insert_to_analisis y guardar el resultado en una variable
-ID_ANALISIS_TIPO_RESULT=$(insert_to_analisis $ID_USUARIO $TIPO_A
-NALISIS)
+ID_ANALISIS_TIPO_RESULT=$(insert_to_analisis $ID_USUARIO $TIPO_ANALISIS)
 echo $ID_ANALISIS_TIPO_RESULT > "${PARENT_DIR}/tempIdAnalisis.txt"
 # Verificar que ID_ANALISIS_TIPO_RESULT tiene valor, si no, terminar el script con un error
 if [[ -z $ID_ANALISIS_TIPO_RESULT ]]; then
