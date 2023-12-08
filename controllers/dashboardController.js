@@ -17,20 +17,7 @@ const execBash = async (req, res) => {
 
     const csvPath = req.files['csv'][0].path;
     const polygonPath = req.files['polygon'][0].path;
-    console.log("CSV PATH:");
-    console.log(csvPath);
 
-    // Leer y mostrar el contenido del archivo CSV
-    fs.readFile(csvPath, 'utf8', (err, data) => {
-        if (err) {
-            console.error("Error al leer el archivo:", err);
-            return res.status(500).send("Error al leer el archivo CSV");
-        }
-        console.log("Contenido del archivo CSV:");
-        console.log(data);
-
-        // Ejecutar el script de Bash aquí o después de esta lectura, dependiendo de tus necesidades
-    });
 
     console.log("ARCHIVO =========");
     console.log(req.files['csv'][0]);

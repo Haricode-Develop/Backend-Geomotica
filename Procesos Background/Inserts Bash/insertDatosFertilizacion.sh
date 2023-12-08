@@ -70,7 +70,6 @@ function insert_fertilizacion_data {
             fecha_inicio = (length($16) != 0) ? sprintf("\x27%s-%s-%s\x27", date[3], date[2], date[1]) : "NULL";
             split($17, date, "/");
             fecha_final = (length($17) != 0) ? sprintf("\x27%s-%s-%s\x27", date[3], date[2], date[1]) : "NULL";
-            echo "Datos a insertar: ${$1}, ${$2}, ${$3}, ${$4}, ${$5}, ${$6}, ${$7}, ${$8}, ${$9}, ${$10}, ${$11}, ${$12}, ${$13}, ${$14}, ${$15}, ${fecha_inicio}, ${fecha_final}, ${$18}, ${$19}, ${$20}, ${$21}, ${$22}, ${$23}, ${$24}, ${$25}, ${$26}, ${$27}, ${$28}, ID_ANALISIS = ${id_tipo}" > "/dev/stderr"
 
             printf "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s),\n",
             format_value($1), format_value($2), format_value($3), format_value($4), format_value($5), format_value($6), format_value($7), format_value($8), format_value($9), format_value($10), format_value($11), format_value($12), format_value($13), format_value($14), format_value($15), fecha_inicio, fecha_final, format_value($18), format_value($19), format_value($20), format_value($21), format_value($22), format_value($23), format_value($24), format_value($25), format_value($26), format_value($27), format_value($28), id_tipo;
