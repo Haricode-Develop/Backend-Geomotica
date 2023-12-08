@@ -40,7 +40,6 @@ echo "======== Se ejecuta analisis FERTILIZACION  ======="
 TABLA_ACTUAL="usuarios"
 fi
 
-curl -X POST $API_URL
 
 if [[ -f "$SCRIPT_DIR/tempIdAnalisis.txt" ]]; then
 ID_ANALISIS=$(cat "$SCRIPT_DIR/tempIdAnalisis.txt")
@@ -51,4 +50,6 @@ python3 "$SCRIPT_DIR"/procesos/mapeo.py "$ID_ANALISIS" "$TABLA_ACTUAL" "poligono
 else
 echo "Error: No se pudo obtener el ID del Analisis para el mapeo"
 fi
+curl -X POST $API_URL
+
 rm -f tempIdAnalisis.txt

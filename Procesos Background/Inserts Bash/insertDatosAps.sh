@@ -2,6 +2,7 @@
 
 set -e # Hace que el script termine si cualquier comando devuelve un error
 
+
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 PARENT_DIR="$( dirname "$SCRIPT_DIR" )"
 
@@ -14,6 +15,7 @@ if [[ ! -f "$DATABASE_CONF" ]]; then
 fi
 
 source "$DATABASE_CONF"
+
 
 if [[ -z $1 ]]; then
     echo "Error: No se proporcionó ID_USUARIO"
@@ -29,6 +31,7 @@ function insert_to_analisis {
     local id_usuario=$1
     local tipo_analisis=$2
 
+    # Crear una consulta temporal para insertar en la tabla análisis
     echo "INSERT INTO analisis (id_usuario, tipo_analisis) VALUES ($id_usuario, '$tipo_analisis');" > "${PARENT_DIR}/insert_analisis.sql"
 
     if ! mysql -u $DB_USER -p$DB_PASS $DB_NAME < "${PARENT_DIR}/insert_analisis.sql"; then
@@ -56,23 +59,24 @@ function insert_aps_data {
 
     awk -F',' -v id_tipo=$id_analisis_tipo '
         BEGIN { print "ID_ANALISIS_TIPO:", id_tipo > "/dev/stderr"; }
-        function format_value(value) {
-            gsub("\x27", "\x27\x27", value);
-            return (value != "") ? sprintf("\x27%s\x27", value) : "NULL";
-        }
+       function format_value(value) {
+                   gsub("\x27", "\x27\x27", value);  # Escapar comillas simples
+                   return (value != "") ? sprintf("\x27%s\x27", value) : "NULL";
+               }
+               function format_date(date) {
+                   split(date, parts, "/");
+                   return sprintf("\x27%s-%s-%s\x27", parts[3], parts[2], parts[1]);
+               }
 
         NR > 1 {
             split($15, date, "/");
-            fecha_inicio = (length($15) != 0) ? sprintf("\x27%s-%s-%s\x27", date[3], date[2], date[1]) : "NULL";
-            split($16, date, "/");
-            fecha_final = (length($16) != 0) ? sprintf("\x27%s-%s-%s\x27", date[3], date[2], date[1]) : "NULL";
+            fecha_inicio = format_date($15);
+            fecha_final = format_date($16);
 
             printf "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s),\n",
             format_value($1), format_value($2), format_value($3), format_value($4), format_value($5), format_value($6), format_value($7), format_value($8), format_value($9), format_value($10), format_value($11), format_value($12), format_value($13), format_value($14), fecha_inicio, fecha_final, format_value($17), format_value($18), format_value($19), format_value($20), format_value($21), format_value($22), format_value($23), id_tipo;
         }
     ' $csv_file | sed '$ s/,$/;/' >> temp.sql
-
-
 
     if ! mysql -u $DB_USER -p$DB_PASS $DB_NAME < temp.sql; then
         echo "Error al insertar en la tabla aps"
@@ -84,7 +88,8 @@ function insert_aps_data {
 }
 
 # Llamar a insert_to_analisis y guardar el resultado en una variable
-ID_ANALISIS_TIPO_RESULT=$(insert_to_analisis $ID_USUARIO $TIPO_ANALISIS)
+ID_ANALISIS_TIPO_RESULT=$(insert_to_analisis $ID_USUARIO $TIPO_A
+NALISIS)
 echo $ID_ANALISIS_TIPO_RESULT > "${PARENT_DIR}/tempIdAnalisis.txt"
 # Verificar que ID_ANALISIS_TIPO_RESULT tiene valor, si no, terminar el script con un error
 if [[ -z $ID_ANALISIS_TIPO_RESULT ]]; then

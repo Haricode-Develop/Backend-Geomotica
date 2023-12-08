@@ -6,9 +6,7 @@ const eSender = new emailSender();
 
 const login = async (req, res) => {
   const { email, password } = req.body;
-  console.log("Estos son los parametros========");
-  console.log(email);
-  console.log(password);
+
   const user = await UserModel.findByEmail(email);
   if (!user) {
     return res.status(404).json({ message: "Usuario no encontrado" });
@@ -18,22 +16,13 @@ const login = async (req, res) => {
   if (!isValidPassword) {
     return res.status(403).json({ message: "Contraseña incorrecta" });
   }
-  console.log("ESTE ES EL USUARIO ======");
-  console.log(user);
+
   return res.json({ user });
 };
 
 const register = async (req, res) => {
   const { nombre, apellido, email, password } = req.body;
-  console.log("Entre al registro");
-  console.log("NOMBRE ====");
-  console.log(nombre);
-  console.log("APELLIDO =====");
-  console.log(apellido);
-  console.log("EMAIL ====");
-  console.log(email);
-  console.log("PASSWORD =====");
-  console.log(password);
+
   try {
     const existingUser = await UserModel.findByEmail(email);
     if (existingUser) {
