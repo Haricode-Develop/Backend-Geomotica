@@ -25,7 +25,6 @@ fi
 ID_USUARIO=$1
 TIPO_ANALISIS="APS"
 ARCHIVO_CSV=$2
-echo "El ID de usuario es: $ID_USUARIO"
 
 function insert_to_analisis {
     local id_usuario=$1
@@ -56,7 +55,7 @@ function insert_aps_data {
     fi
 
     echo "INSERT INTO aps (LONGITUD, LATITUD, CULTIVO, PARCELA, NOMBRE_FINCA, CODIGO_FINCA, AREA_BRUTA, AREA_NETA, DIFERENCIA_DE_AREA, CODIGO_DE_MAQUINA, RESPONSABLE, ACTIVIDAD, EQUIPO, OPERADOR, FECHA_INICIO, FECHA_FINAL, HORA_INICIO, HORA_FINAL, TIEMPO_TOTAL, EFICIENCIA, VELOCIDAD_Km_H, TCH, TAH, ID_ANALISIS) VALUES" > temp.sql
-
+    echo "APUNTO DE ENTRAR AL AWK ======"
     awk -F',' -v id_tipo=$id_analisis_tipo '
         BEGIN { print "ID_ANALISIS_TIPO:", id_tipo > "/dev/stderr"; }
        function format_value(value) {
@@ -87,18 +86,22 @@ function insert_aps_data {
     rm temp.sql
 }
 
+echo "SE INSERTA EL ANALISIS EN LA BASE DE DATOS DESDE INSERTDATOS.SH ======="
 # Llamar a insert_to_analisis y guardar el resultado en una variable
-ID_ANALISIS_TIPO_RESULT=$(insert_to_analisis $ID_USUARIO $TIPO_A
-NALISIS)
+ID_ANALISIS_TIPO_RESULT=$(insert_to_analisis $ID_USUARIO $TIPO_ANALISIS)
+echo "SE GUARDA EL ID DEL ANALISIS QUE SE ACABA DE INSERTAR EN TXT TEMPORAL ======="
+
 echo $ID_ANALISIS_TIPO_RESULT > "${PARENT_DIR}/tempIdAnalisis.txt"
 # Verificar que ID_ANALISIS_TIPO_RESULT tiene valor, si no, terminar el script con un error
 if [[ -z $ID_ANALISIS_TIPO_RESULT ]]; then
     echo "Error: No se pudo obtener ID_ANALISIS_TIPO"
     exit 1
 fi
+echo "SE PARSEA EL TEXTO DEL CSV ======="
 
 CSV_FILE="$ARCHIVO_CSV"
 dos2unix $CSV_FILE
+echo "SE INSERTAN LOS DATOS A LA TABLA RESPECTIVA DEL ANÁLISIS======="
 
 # Pasar el ID_ANALISIS_TIPO_RESULT como segundo argumento a insert_aps_data
 insert_aps_data $CSV_FILE $ID_ANALISIS_TIPO_RESULT

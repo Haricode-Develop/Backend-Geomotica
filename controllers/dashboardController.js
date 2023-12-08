@@ -6,7 +6,7 @@ const fs = require('fs');
 const {exec} = require('child_process');
 
 const execBash = async (req, res) => {
-    console.log("======= EJECUTANDO EL BASH DEL LADO DE NODE.JS =======");
+    console.log("======= EJECUTANDO EL BASH DEL LADO DE NODE.JS ==========");
     const idUsuario = req.params.idUsuario;
     const idAnalisis = req.params.idAnalisis;
 
@@ -17,9 +17,11 @@ const execBash = async (req, res) => {
 
     const csvPath = req.files['csv'][0].path;
     const polygonPath = req.files['polygon'][0].path;
-
-
-
+    console.log("PARAMETROS QUE SE LE PASAN AL INIT_ANALISIS: ");
+    console.log("ID USUARIO = " + idUsuario);
+    console.log("ID ANALISIS = " + idAnalisis);
+    console.log("CSV PATH = " + csvPath);
+    console.log("PAOLYGON PATH = " + polygonPath);
 
     exec(`bash /geomotica/init_analisis.sh ${idUsuario} ${idAnalisis} ${csvPath} ${polygonPath}`, (error, stdout, stderr) => {
         if (error) {
