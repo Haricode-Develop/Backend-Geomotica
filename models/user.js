@@ -15,6 +15,7 @@ const pool = mysql.createPool({
 
 const findByEmail = async (email) => {
     const [rows] = await pool.query('SELECT * FROM usuarios WHERE EMAIL = ?', [email]);
+    console.log( "Este es el rows 0 " + rows[0].ID_USUARIO);
     return rows[0];
 }
 
@@ -33,8 +34,15 @@ const createUser = async (nombre, apellido, email, password) => {
     await pool.query('INSERT INTO usuarios (NOMBRE, APELLIDO, EMAIL, PASSWORD, FOTO_PERFIL) VALUES (?, ?, ?, ?, "")', [nombre, apellido, email, hashedPassword]);
 }
 
-const createTemporalPassword = async()=>{
-    
+const insertTemporalPassword = async(email, temporalPassword)=>{
+    try {
+        const hashedPassword = await bcrypt.hash(temporalPassword, 10);
+        const usuario= await findByEmail(email);
+        await pool.query('INSERT INTO claves_temporales (clave, id_usuario) VALUES (?,?)', [hashedPassword, usuario.ID_USUARIO]);
+    } catch (error) {
+        throw error;
+    }
+
 }
 
 app.use(errorHandler);
@@ -42,5 +50,6 @@ app.use(errorHandler);
 module.exports = {
     findByEmail,
     verifyPassword,
-    createUser
+    createUser,
+    insertTemporalPassword
 };

@@ -1,8 +1,10 @@
 const UserModel = require("../models/user");
 const jwt = require("jsonwebtoken");
 const emailSender = require("../utils/emailSender.js");
+const temporalPassword = require("../utils/temporalPassword.js");
 //const passwordRecuperation =require("../utils/passwordRecuperation.js");
 const eSender = new emailSender();
+const tPassword = new temporalPassword();
 
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -70,6 +72,19 @@ const registerConfirmation = async (req, res) => {
   }
 };
 
+const temporalPasswordGeneration = async (req, res) => {
+  const email = req.query.email;
+  console.log("Estos son los parametros========");
+  console.log(email);
+  try {
+    eSender.sendEmail("temporal", email);
+    return res.status(200).json({ message: `Contraseña temporal generada ${TemporalPassword}` });
+  } catch (error) {
+    return res.status(500).json({ message: "Error al generar la contraseña temporal" });
+  }
+}
+
+
 
 
 module.exports = {
@@ -77,5 +92,5 @@ module.exports = {
   register,
   passwordRecuperation,
   registerConfirmation,
-
+  temporalPasswordGeneration,
 };
