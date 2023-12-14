@@ -13,6 +13,13 @@ const pool = mysql.createPool({
 
 
 const obtenerUltimoAnalisisQuery = async (tipoAnalisis, usuario) =>{
+    console.log("OBTENIENDO EL ULTIMO ANALISIS =========");
+    console.log("TIPO ANALISIS:");
+    console.log(tipoAnalisis);
+    console.log("USUARIO:");
+    console.log(usuario);
+    console.log("=========");
+
     const query = `
         SELECT 
             MAX(ID_ANALISIS) AS ID_ANALISIS
