@@ -10,29 +10,40 @@ const execBash = async (req, res) => {
     const idUsuario = req.params.idUsuario;
     const idAnalisis = req.params.idAnalisis;
 
-    // Verificar si los archivos están presentes
     if (!req.files['csv'] || !req.files['polygon']) {
         return res.status(400).send('Archivos CSV o polígono no proporcionados');
     }
 
     const csvPath = req.files['csv'][0].path;
     const polygonPath = req.files['polygon'][0].path;
+
     console.log("PARAMETROS QUE SE LE PASAN AL INIT_ANALISIS: ");
     console.log("ID USUARIO = " + idUsuario);
     console.log("ID ANALISIS = " + idAnalisis);
     console.log("CSV PATH = " + csvPath);
     console.log("PAOLYGON PATH = " + polygonPath);
 
-    exec(`bash /geomotica/init_analisis.sh ${idUsuario} ${idAnalisis} ${csvPath} ${polygonPath}`, (error, stdout, stderr) => {
-        if (error) {
-            console.error(`exec error: ${error}`);
-            return res.status(500).send(`Error executing script: ${error.message}`);
-        }
-        console.log(`stdout: ${stdout}`);
-        console.error(`stderr: ${stderr}`);
+    try {
+        await new Promise((resolve, reject) => {
+            exec(`bash /geomotica/init_analisis.sh ${idUsuario} ${idAnalisis} ${csvPath} ${polygonPath}`, (error, stdout, stderr) => {
+                if (error) {
+                    console.error(`exec error: ${error}`);
+                    reject(`Error executing script: ${error.message}`);
+                } else {
+                    if (stderr) {
+                        console.error(`stderr: ${stderr}`);
+                    }
+                    console.log(`stdout: ${stdout}`);
+                    resolve();
+                }
+            });
+        });
         res.send('Script executed successfully');
-    });
+    } catch (error) {
+        res.status(500).send(error);
+    }
 };
+
 const obtenerUltimoAnalisis = async (req, res) => {
     const tipoAnalisis = req.params.tipoAnalisis;
     const idUsuario = req.params.idUsuario;
