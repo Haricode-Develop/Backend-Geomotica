@@ -39,7 +39,7 @@ const execBash = async (req, res) => {
                 }
             });
         });
-        io.getIo().emit('emitirEvento');
+        io.getIo().emit('datosInsertados');
         res.send('Script executed successfully');
     } catch (error) {
         res.status(500).send(error);
