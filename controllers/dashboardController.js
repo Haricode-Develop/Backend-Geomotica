@@ -2,6 +2,7 @@ const DashboardModel = require('../models/dashboard');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const io = require('../socket');
 
 const {exec} = require('child_process');
 
@@ -38,6 +39,7 @@ const execBash = async (req, res) => {
                 }
             });
         });
+        io.getIo().emit('emitirEvento');
         res.send('Script executed successfully');
     } catch (error) {
         res.status(500).send(error);
