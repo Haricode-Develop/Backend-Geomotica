@@ -27,6 +27,8 @@ const obtenerUltimoAnalisisQuery = async (tipoAnalisis, usuario) =>{
         WHERE TIPO_ANALISIS = '${tipoAnalisis}'
         AND ID_USUARIO = ${usuario}; 
     `;
+    console.log("ULTIMO ANALISIS QUERY ========");
+    console.log(query);
     const [rows] = await pool.query(query);
     return rows[0];
 }

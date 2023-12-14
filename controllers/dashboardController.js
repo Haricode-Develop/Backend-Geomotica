@@ -46,6 +46,7 @@ const execBash = async (req, res) => {
     }
 };
 
+
 const obtenerUltimoAnalisis = async (req, res) => {
     const tipoAnalisis = req.params.tipoAnalisis;
     const idUsuario = req.params.idUsuario;
