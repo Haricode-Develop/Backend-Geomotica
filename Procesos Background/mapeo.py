@@ -94,6 +94,7 @@ url_archivo = upload_to_bucket(nombre_bucket, nombre_archivo_temp, nombre_archiv
 api_url = "http://localhost:3001/socket/reciveMap"
 data = {'htmlContent': url_archivo}
 response = requests.post(api_url, json=data)
+requests.post("http://localhost:3001/socket/loadingAnalysis", data={"progress": 75})
 
 print(f"Mapa subido con éxito a {url_archivo}")
 os.remove(nombre_archivo_temp)
