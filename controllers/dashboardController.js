@@ -51,6 +51,7 @@ const obtenerUltimoAnalisis = async (req, res) => {
     const tipoAnalisis = req.params.tipoAnalisis;
     const idUsuario = req.params.idUsuario;
     const obtenerUltimoAnalisisResult = await DashboardModel.obtenerUltimoAnalisisQuery(tipoAnalisis, idUsuario);
+    console.log("SE OBTIENE EL ULTIMO ANÁLISIS ======");
     return res.json(obtenerUltimoAnalisisResult);
 }
 

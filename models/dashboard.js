@@ -30,6 +30,7 @@ const obtenerUltimoAnalisisQuery = async (tipoAnalisis, usuario) =>{
     console.log("ULTIMO ANALISIS QUERY ========");
     console.log(query);
     const [rows] = await pool.query(query);
+    console.log(rows);
     return rows[0];
 }
 
