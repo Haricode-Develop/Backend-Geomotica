@@ -35,7 +35,7 @@ function insert_to_analisis {
 
     if ! mysql -u $DB_USER -p$DB_PASS $DB_NAME < "${PARENT_DIR}/insert_analisis.sql"; then
         echo "Error al insertar en la tabla analisis"
-        rm insert_analisis.sql
+         rm "${PARENT_DIR}/insert_analisis.sql"
         exit 1
     fi
         echo "SELECT MAX(ID_ANALISIS) FROM analisis WHERE TIPO_ANALISIS = '$tipo_analisis';" >"${PARENT_DIR}/get_id_tipo.sql"
@@ -48,19 +48,43 @@ function insert_to_analisis {
 function insert_cosecha_data {
     local csv_file=$1
     local id_analisis_tipo=$2
+    local temp_sql="${PARENT_DIR}/temp.sql"
+    local awk_output_log="${PARENT_DIR}/awk_output.log"
+    local mysql_output_log="${PARENT_DIR}/mysql_output.log"
+    local mysql_error_log="${PARENT_DIR}/mysql_error.log"
 
-      if [[ ! -f $csv_file ]]; then
-        echo "Error: No se encontró el archivo $csv_file"
-        exit 1
-      fi
+      echo "Comprobando la existencia del archivo CSV: $csv_file"
 
-    echo "INSERT INTO cosecha_mecanica (LONGITUD, LATITUD, CULTIVO, PARCELA, NOMBRE_FINCA, CODIGO_FINCA, AREA_BRUTA, AREA_NETA, DIFERENCIA_DE_AREA, CODIGO_DE_MAQUINA, RESPONSABLE, ACTIVIDAD, EQUIPO, OPERADOR, FECHA_INICIO, FECHA_FINAL, HORA_INICIO, HORA_FINAL, TIEMPO_TOTAL, EFICIENCIA, VELOCIDAD_Km_H, PRESION_DE_CORTADOR_BASE, TCH, TAH, ID_ANALISIS) VALUES" > temp.sql
+        if [[ ! -f $csv_file ]]; then
+                echo "Error: Archivo CSV no encontrado ($csv_file)."
+                exit 1
+        fi
+    echo "Generando la consulta SQL para inserción de datos APS..."
+    echo "INSERT INTO cosecha_mecanica (LONGITUD, LATITUD, CULTIVO, PARCELA, NOMBRE_FINCA, CODIGO_FINCA, AREA_BRUTA, AREA_NETA, DIFERENCIA_DE_AREA, CODIGO_DE_MAQUINA, RESPONSABLE, ACTIVIDAD, EQUIPO, OPERADOR, FECHA_INICIO, FECHA_FINAL, HORA_INICIO, HORA_FINAL, TIEMPO_TOTAL, EFICIENCIA, VELOCIDAD_Km_H, PRESION_DE_CORTADOR_BASE, TCH, TAH, ID_ANALISIS, AUTO_TRACKET, PILOTO_AUTOMATICO, CALIDAD_DE_SENAL, CONSUMOS_DE_COMBUSTIBLE) VALUES" > "$temp_sql"
+          echo "Procesando el archivo CSV con AWK..."
       awk -F',' -v id_tipo=$id_analisis_tipo '
-        BEGIN { print "ID_ANALISIS_TIPO:", id_tipo > "/dev/stderr"; }
-          function format_value(value) {
-            gsub("\x27", "\x27\x27", value);
-            return (value != "") ? sprintf("\x27%s\x27", value) : "NULL";
-        }
+        BEGIN {
+                  print "ID_ANALISIS_TIPO:", id_tipo > "/dev/stderr";
+                   FPAT = "([^,]*)|(\"[^\"]+\")";
+                  # Definir los nombres de las columnas
+                  split("LONGITUD,LATITUD,CULTIVO,PARCELA,NOMBRE_FINCA,CODIGO_FINCA,AREA_BRUTA,AREA_NETA,DIFERENCIA_DE_AREA,CODIGO_DE_MAQUINA,RESPONSABLE,ACTIVIDAD,EQUIPO,OPERADOR,FECHA_INICIO,FECHA_FINAL,HORA_INICIO,HORA_FINAL,TIEMPO_TOTAL,EFICIENCIA,VELOCIDAD_Km_H,TCH,TAH", column_names, ",");
+              }
+ function format_value(value, field_number) {
+          # Si el valor está vacío y es la columna TCH (22), devuelve 0 como número, de lo contrario NULL como cadena
+          if (value == "" && field_number == 22) {
+              return "80";  # Devuelve 0 como número, sin comillas
+          } else if (value == "") {
+              return "NULL";  # Para otros campos vacíos, devuelve la cadena NULL
+          } else {
+              gsub("\x27", "\x27\x27", value);  # Escapar comillas simples
+              return sprintf("\x27%s\x27", value);  # Devuelve el valor con comillas simples
+          }
+      }
+
+       function format_date(date) {
+           split(date, parts, "/");
+           return sprintf("\x27%s-%s-%s\x27", parts[3], parts[2], parts[1]);
+       }
 
 
         NR > 1 {
@@ -68,33 +92,62 @@ function insert_cosecha_data {
             fecha_inicio = (length($15) != 0) ? sprintf("\x27%s-%s-%s\x27", date[3], date[2], date[1]) : "NULL";
             split($16, date, "/");
             fecha_final = (length($16) != 0) ? sprintf("\x27%s-%s-%s\x27", date[3], date[2], date[1]) : "NULL";
-            printf "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s),\n",
-            format_value($1), format_value($2), format_value($3), format_value($4), format_value($5), format_value($6), format_value($7), format_value($8), format_value($9), format_value($10), format_value($11), format_value($12), format_value($13), format_value($14), fecha_inicio, fecha_final, format_value($17), format_value($18), format_value($19), format_value($20), format_value($21), format_value($22), format_value($23), format_value($24), id_tipo;
+            printf "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s),\n",
+            format_value($1), format_value($2), format_value($3), format_value($4), format_value($5), format_value($6), format_value($7), format_value($8), format_value($9), format_value($10), format_value($11), format_value($12), format_value($13), format_value($14), fecha_inicio, fecha_final, format_value($17), format_value($18), format_value($19), format_value($20), format_value($21), format_value($22), format_value($23), format_value($24), id_tipo, format_value($25), format_value($26), format_value($27), format_value($28);
         }
-    ' $csv_file | sed '$ s/,$/;/' >> temp.sql
+    ' "$csv_file" | tee "$awk_output_log" | sed '$ s/,$/;/' >> "$temp_sql"
 
-    if ! mysql -u $DB_USER -p$DB_PASS $DB_NAME < temp.sql; then
-        echo "Error al insertar en la tabla Cosecha Mecanica"
-        rm temp.sql
-        exit 1
-    fi
+    echo "Consulta SQL generada y almacenada en $awk_output_log."
+    echo "Primeras dos líneas de la consulta SQL generada:"
+          head -n 2 "$temp_sql"
+        echo "Intentando insertar los datos en la base de datos..."
 
-    rm temp.sql
+ if mysql -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$temp_sql" >"$mysql_output_log" 2>"$mysql_error_log"; then
+        echo "Inserción de datos APS exitosa."
+        cat "$mysql_output_log"
+     else
+             echo "Error al insertar datos APS. Consulte $mysql_error_log para obtener detalles."
+             cat "$mysql_error_log"
+             exit 1
+     fi
+
+      echo "Limpiando archivos temporales..."
+      rm -f mysql_error.log
+      rm -f temp.sql
+      echo "Inserción de datos APS completada y archivos temporales eliminados."
 }
+
+
+echo "SE INSERTA EL ANALISIS EN LA BASE DE DATOS DESDE INSERTDATOS.SH ======="
 
 # Llamar a insert_to_analisis y guardar el resultado en una variable
 ID_ANALISIS_TIPO_RESULT=$(insert_to_analisis $ID_USUARIO $TIPO_ANALISIS)
+if [[ -z $ID_ANALISIS_TIPO_RESULT ]]; then
+    echo "Error: No se pudo obtener ID_ANALISIS_TIPO"
+    exit 1
+fi
+echo "ID de análisis obtenido: $ID_ANALISIS_TIPO_RESULT"
+
+echo "SE GUARDA EL ID DEL ANALISIS QUE SE ACABA DE INSERTAR EN TXT TEMPORAL ======="
+
 echo $ID_ANALISIS_TIPO_RESULT > "${PARENT_DIR}/tempIdAnalisis.txt"
-echo "El valor de ID_ANALISIS_TIPO_RESULT es: $ID_ANALISIS_TIPO_RESULT"
 
 # Verificar que ID_ANALISIS_TIPO_RESULT tiene valor, si no, terminar el script con un error
 if [[ -z $ID_ANALISIS_TIPO_RESULT ]]; then
     echo "Error: No se pudo obtener ID_ANALISIS_TIPO"
     exit 1
 fi
+echo "SE PARSEA EL TEXTO DEL CSV ======="
+
 
 CSV_FILE="$ARCHIVO_CSV"
+echo "Contenido inicial del CSV después de dos2unix (primeras 4 líneas):"
 dos2unix $CSV_FILE
+head -n 4 $CSV_FILE
+echo "SE INSERTAN LOS DATOS A LA TABLA RESPECTIVA DEL ANÁLISIS======="
 
 # Pasar el ID_ANALISIS_TIPO_RESULT como segundo argumento a insert_aps_data
 insert_cosecha_data $CSV_FILE $ID_ANALISIS_TIPO_RESULT
+
+echo "SE RALIZA LA PETICIÓN PARA MOSTRAR EL ANÁLISIS ======="
+exit 1

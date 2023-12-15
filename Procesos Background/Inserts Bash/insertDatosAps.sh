@@ -49,7 +49,7 @@ function insert_to_analisis {
 function insert_aps_data {
     local csv_file=$1
     local id_analisis_tipo=$2
- local temp_sql="${PARENT_DIR}/temp.sql"
+    local temp_sql="${PARENT_DIR}/temp.sql"
     local awk_output_log="${PARENT_DIR}/awk_output.log"
     local mysql_output_log="${PARENT_DIR}/mysql_output.log"
     local mysql_error_log="${PARENT_DIR}/mysql_error.log"
@@ -115,6 +115,7 @@ function insert_aps_data {
     echo "Limpiando archivos temporales..."
 
       rm -f mysql_error.log
+      rm temp.sql
           echo "Inserción de datos APS completada y archivos temporales eliminados."
 
 }
@@ -148,12 +149,13 @@ echo "SE INSERTAN LOS DATOS A LA TABLA RESPECTIVA DEL ANÁLISIS======="
 insert_aps_data $CSV_FILE $ID_ANALISIS_TIPO_RESULT
 echo "SE RALIZA LA PETICIÓN PARA MOSTRAR EL ANÁLISIS ======="
 # Ejecutar curl y capturar la respuesta y el código de salida
-RESPONSE=$(curl -X POST $API_URL --write-out "%{http_code}" --silent --output /dev/null)
+#RESPONSE=$(curl -X POST $API_URL --write-out "%{http_code}" --silent --output /dev/null)
 
 # Verificar el código de salida de curl
-if [ "$RESPONSE" -ne 200 ]; then
-    echo "Error: La petición curl falló con el código de respuesta $RESPONSE"
-    exit 1
-fi
+#if [ "$RESPONSE" -ne 200 ]; then
+ #   echo "Error: La petición curl falló con el código de respuesta $RESPONSE"
 
-echo "Petición curl exitosa. Código de respuesta: $RESPONSE"
+#fi
+
+#echo "Petición curl exitosa. Código de respuesta: $RESPONSE"
+exit 1
