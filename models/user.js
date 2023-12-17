@@ -14,10 +14,18 @@ const pool = mysql.createPool({
 });
 
 const findByEmail = async (email) => {
-    const [rows] = await pool.query('SELECT * FROM usuarios WHERE EMAIL = ?', [email]);
-    console.log( "Este es el rows 0 " + rows[0].ID_USUARIO);
-    return rows[0];
-}
+    try {
+      const [rows] = await pool.query('SELECT * FROM usuarios WHERE EMAIL = ?', [email]);
+  
+      if (rows.length === 0) {
+        return null; 
+      }
+      return rows[0];
+    } catch (error) {
+      throw error; 
+    }
+  };
+  
 
 const verifyPassword = async (inputPassword, hash) => {
     return await bcrypt.compare(inputPassword, hash);
@@ -31,18 +39,24 @@ function errorHandler(err, req, res, next) {
 
 const createUser = async (nombre, apellido, email, password) => {
     const hashedPassword = await bcrypt.hash(password, 10); // Hashing the password
-    await pool.query('INSERT INTO usuarios (NOMBRE, APELLIDO, EMAIL, PASSWORD, FOTO_PERFIL) VALUES (?, ?, ?, ?, "")', [nombre, apellido, email, hashedPassword]);
+    await pool.query('CALL sp_insertar_registro(?,?,?,?)', [nombre, apellido, email, hashedPassword]);
 }
 
 const insertTemporalPassword = async(email, temporalPassword)=>{
     try {
         const hashedPassword = await bcrypt.hash(temporalPassword, 10);
-        const usuario= await findByEmail(email);
-        await pool.query('INSERT INTO claves_temporales (clave, id_usuario) VALUES (?,?)', [hashedPassword, usuario.ID_USUARIO]);
+        await pool.query('CALL sp_insertar_clave_temporal(?, ?)', [email, hashedPassword]);
     } catch (error) {
         throw error;
     }
 
+}
+const confirmAccount = async (email) => {
+    try {
+        await pool.query('CALL sp_update_confirmar_cuenta(?)', [email]);
+    } catch (error) {
+        throw error;
+    }
 }
 
 app.use(errorHandler);
@@ -51,5 +65,6 @@ module.exports = {
     findByEmail,
     verifyPassword,
     createUser,
-    insertTemporalPassword
+    insertTemporalPassword,
+    confirmAccount
 };

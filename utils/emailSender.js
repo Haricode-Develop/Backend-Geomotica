@@ -1,5 +1,5 @@
 const sgMail = require("@sendgrid/mail");
-const API_BASE_URL = require("../config/config.js");
+const { API_BASE_URL, API_BASE_URL_FRONTEND } = require("../config/config.js");
 const temporalPassword = require("../utils/temporalPassword.js");
 const UserModel = require("../models/user.js");
 const tPassword = new temporalPassword();
@@ -44,6 +44,7 @@ class EmailSender {
           background-color: #27ae60;
           color: #fff;
           border-radius: 5px;
+          cursor: pointer;
         }
       </style>
     </head>`;
@@ -68,41 +69,13 @@ class EmailSender {
       html = `${this.head}
       <body>
           <div class="container">
-              <h2>Recuperación de Contraseña</h2>
-              <p>Hola ${recipient},</p>
-              <p>Recibimos una solicitud para cambiar tu contraseña, por favor haz clic en el enlace de abajo para obtener una contraseña temporal:</p>
-              <p>SOLO ES NECESARIO PRESIONAR UNA VEZ EL BOTÓN.</p>
-              <button class="button" id="resetPasswordButton">Reiniciar Contraseña</button>
-              <script>
-                  document.getElementById('resetPasswordButton').addEventListener('click', function() {
-                      this.setAttribute('disabled', true);
-                      this.style.pointerEvents = 'none';
-                      
-                      // Realizar la petición POST
-                      fetch('${API_BASE_URL}/auth/passwordGeneration', {
-                          method: 'POST',
-                          headers: {
-                              'Content-Type': 'application/json',
-                          },
-                          body: JSON.stringify({
-                              email: '${recipient}',
-                          }),
-                      })
-                      .then(response => {
-                          // Manejar la respuesta
-                          if (response.ok) {
-                              console.log('Contraseña reiniciada exitosamente');
-                          } else {
-                              console.error('Error al reiniciar la contraseña');
-                          }
-                      })
-                      .catch(error => {
-                          console.error('Error en la solicitud:', error);
-                      });
-                  });
-              </script>
-              <p>Si no solicitaste restablecer tu contraseña, por favor ignora este correo.</p>
-              <p>Los mejores deseos,<br>Geomotica</p>
+            <h2>Recuperación de Contraseña</h2>
+            <p>Hola ${recipient},</p>
+            <p>Recibimos una solicitud para cambiar tu contraseña, por favor haz clic en el enlace de abajo para obtener una contraseña temporal:</p>
+            <p>SOLO ES NECESARIO PRESIONAR UNA VEZ EL BOTÓN.</p>
+    <a href="${API_BASE_URL_FRONTEND}/passwordSender/${recipient}" class="button">Reiniciar Contraseña</a>
+            <p>Si no solicitaste restablecer tu contraseña, por favor ignora este correo.</p>
+            <p>Los mejores deseos,<br>Geomotica</p>
           </div>
       </body>
   </html>`;
@@ -119,6 +92,20 @@ class EmailSender {
           </div>
         </body>
         </html>`;
+    } else if (subject === "Account Confirmation") {
+      html = `${this.head}
+      <body>
+          <div class="container">
+            <h2>Confirmación de Cuenta</h2>
+            <p>Hola ${recipient},</p>
+            <p>Recibimos una solicitud para confirmar tu cuenta, por favor haz clic en el enlace de abajo para obtener una contraseña temporal:</p>
+            <p>SOLO ES NECESARIO PRESIONAR UNA VEZ EL BOTÓN.</p>
+            <a href="${API_BASE_URL_FRONTEND}/registerConfirmation/${recipient}" class="button">Confirmar Cuenta</a>
+            <p>Si no solicitaste restablecer tu contraseña, por favor ignora este correo.</p>
+            <p>Los mejores deseos,<br>Geomotica</p>
+          </div>
+      </body>
+    </html>`;
     }
 
     return {
@@ -139,8 +126,9 @@ class EmailSender {
     } else if (type === "temporal") {
       TemporalPassword = tPassword.generateSecurePassword();
       UserModel.insertTemporalPassword(recipient, TemporalPassword);
-      console.log(" es la tempo" + TemporalPassword);
       subject = "Temporal Password";
+    } else if (type === "confirm") {
+      subject = "Account Confirmation";
     }
     console.log(
       "Este es el reciente " +
