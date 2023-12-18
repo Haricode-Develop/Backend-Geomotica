@@ -8,7 +8,7 @@ const login = async (req, res) => {
   const { email, password } = req.body;
 
   const user = await UserModel.findByEmail(email);
-  if (!user) {
+  /*if (!user) {
     return res.status(404).json({ message: "Usuario no encontrado" });
   }
   //nota mental del barryways pasar esto a un SP despues
@@ -20,7 +20,7 @@ const login = async (req, res) => {
   if (!isValidPassword) { 
     return res.status(403).json({ message: "Contraseña incorrecta" });
   }
-
+*/
   return res.json({ user });
 };
 
