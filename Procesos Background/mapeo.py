@@ -19,7 +19,7 @@ def upload_to_bucket(bucket_name, source_file_name, destination_blob_name):
     return blob.public_url
 
 # Conectarse a la base de datos usando SQLAlchemy
-engine = create_engine("mysql+mysqlconnector://root:wtRykrEX9As8wN@localhost/geomotica")
+engine = create_engine("mysql+mysqlconnector://instancia:123456@34.172.98.144/geomotica")
 id_analisis = sys.argv[1]
 tabla = sys.argv[2]
 

@@ -23,39 +23,39 @@ fi
 ID_USUARIO=$1
 TIPO_ANALISIS="COSECHA_MECANICA"
 ARCHIVO_CSV=$2
+GCLOUD_SQL_INSTANCE="geomotica-base-dedicada"  # Asegúrate de que este es el nombre de tu instancia de Cloud SQL
+GCLOUD_SQL_DATABASE="geomotica"               # Nombre de tu base de datos
+GCLOUD_SQL_USER="danman"                      # Usuario de Cloud SQL
+BUCKET_PATH="gs://geomotica_mapeo/csv/"
 
 echo "El ID de usuario es: $ID_USUARIO"
 
 function insert_to_analisis {
     local id_usuario=$1
     local tipo_analisis=$2
-    mysql --default-character-set=utf8mb4 -u $DB_USER -p$DB_PASS $DB_NAME -e "SET autocommit=0; SET foreign_key_checks=0;"
+    mysql --default-character-set=utf8mb4 -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME -e "SET autocommit=0; SET foreign_key_checks=0;"
 
     # Crear una consulta temporal para insertar en la tabla análisis
     echo "INSERT INTO analisis (id_usuario, tipo_analisis) VALUES ($id_usuario, '$tipo_analisis');" > "${PARENT_DIR}/insert_analisis.sql"
 
-    if ! mysql --default-character-set=utf8mb4 -u $DB_USER -p$DB_PASS $DB_NAME < "${PARENT_DIR}/insert_analisis.sql"; then
+    if ! mysql --default-character-set=utf8mb4 -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME < "${PARENT_DIR}/insert_analisis.sql"; then
         echo "Error al insertar en la tabla analisis"
          rm "${PARENT_DIR}/insert_analisis.sql"
         exit 1
     fi
         echo "SELECT MAX(ID_ANALISIS) FROM analisis WHERE TIPO_ANALISIS = '$tipo_analisis';" >"${PARENT_DIR}/get_id_tipo.sql"
 
-        ID_ANALISIS_TIPO=$(mysql --default-character-set=utf8mb4 -u $DB_USER -p$DB_PASS $DB_NAME -N -s < "${PARENT_DIR}/get_id_tipo.sql")
+        ID_ANALISIS_TIPO=$(mysql --default-character-set=utf8mb4 -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME -N -s < "${PARENT_DIR}/get_id_tipo.sql")
 	rm "${PARENT_DIR}/insert_analisis.sql" "${PARENT_DIR}/get_id_tipo.sql"
   echo $ID_ANALISIS_TIPO
-  mysql --default-character-set=utf8mb4 -u $DB_USER -p$DB_PASS $DB_NAME -e "SET autocommit=1; SET foreign_key_checks=1;"
+  mysql --default-character-set=utf8mb4 -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME -e "SET autocommit=1; SET foreign_key_checks=1;"
 
 }
 function insert_cosecha_data {
     local csv_file=$1
     local id_analisis_tipo=$2
-    local awk_output_log="${PARENT_DIR}/awk_output.log"
-    local mysql_output_log="${PARENT_DIR}/mysql_output.log"
-    local mysql_error_log="${PARENT_DIR}/mysql_error.log"
     local converted_csv="${csv_file%.csv}_converted.csv"
     local cleaned_csv="${csv_file%.csv}_cleaned.csv"
-
     echo "Comprobando la existencia del archivo CSV: $csv_file"
     if [[ ! -f $csv_file ]]; then
         echo "Error: Archivo CSV no encontrado ($csv_file)."
@@ -70,50 +70,72 @@ function insert_cosecha_data {
         BEGIN {
             print "ID_ANALISIS_TIPO:", id_tipo > "/dev/stderr";
             FPAT = "([^,]*)|(\"[^\"]+\")";
-            split("LONGITUD,LATITUD,CULTIVO,PARCELA,NOMBRE_FINCA,CODIGO_FINCA,AREA_BRUTA,AREA_NETA,DIFERENCIA_DE_AREA,CODIGO_DE_MAQUINA,RESPONSABLE,ACTIVIDAD,EQUIPO,OPERADOR,FECHA_INICIO,FECHA_FINAL,HORA_INICIO,HORA_FINAL,TIEMPO_TOTAL,EFICIENCIA,VELOCIDAD_Km_H,TCH,TAH", column_names, ",");
+            split("LONGITUD,LATITUD,CULTIVO,PARCELA,NOMBRE_FINCA,CODIGO_FINCA,AREA_BRUTA,AREA_NETA,DIFERENCIA_DE_AREA,CODIGO_DE_MAQUINA,RESPONSABLE,ACTIVIDAD,EQUIPO,OPERADOR,FECHA_INICIO,FECHA_FINAL,HORA_INICIO,HORA_FINAL,TIEMPO_TOTAL,EFICIENCIA,VELOCIDAD_Km_H,PRESION_DE_CORTADOR_BASE,TCH,TAH,AUTO_TRACKET,PILOTO_AUTOMATICO,CALIDAD_DE_SENAL,CONSUMOS_DE_COMBUSTIBLE", column_names, ",");
         }
         function format_value(value, field_number) {
-            if (value == "" && field_number == 22) {
-                return "80";
-            } else if (value == "") {
-                return "NULL";
-            } else {
-                gsub("\x27", "\x27\x27", value);
-                return sprintf("\x27%s\x27", value);
-            }
-        }
-        function format_date(date) {
-            split(date, parts, "/");
-            return sprintf("\x27%s-%s-%s\x27", parts[3], parts[2], parts[1]);
-        }
-        NR > 1 {
-            split($15, date, "/");
-            fecha_inicio = (length($15) != 0) ? sprintf("\x27%s-%s-%s\x27", date[3], date[2], date[1]) : "NULL";
-            split($16, date, "/");
-            fecha_final = (length($16) != 0) ? sprintf("\x27%s-%s-%s\x27", date[3], date[2], date[1]) : "NULL";
-            printf "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
-            format_value($1, 1), format_value($2, 2), format_value($3, 3), format_value($4, 4), format_value($5, 5), format_value($6, 6), format_value($7, 7), format_value($8, 8), format_value($9, 9), format_value($10, 10), format_value($11, 11), format_value($12, 12), format_value($13, 13), format_value($14, 14), fecha_inicio, fecha_final, format_value($17, 17), format_value($18, 18), format_value($19, 19), format_value($20, 20), format_value($21, 21), format_value($22, 22), format_value($23, 23);
-        }
+                  # Identificar si el campo debe ser un número (sin comillas)
+                  if (field_number ~ /^(1|2|4|6|7|8|9|10|13|20|21|22|23|24|25|26|27|28)$/) {
+                      if (value == "") {
+                          return "NULL";  # Campos numéricos vacíos como NULL
+                      } else {
+                          # Remover comillas dobles si las hay
+                          gsub(/^"|"$/, "", value);
+                          return value;  # Devolver el valor numérico
+                      }
+                  } else if (field_number ~ /^(15|16)$/) { # Para fechas
+                      if (value == "") {
+                          return "NULL";
+                      } else {
+                          # Convertir fechas de formato MM/DD/YYYY a YYYY-MM-DD
+                          split(value, date_parts, "/");
+                      return sprintf("%04d-%02d-%02d", date_parts[3], date_parts[1], date_parts[2]);
+                      }
+                  } else if (field_number ~ /^(17|18|19)$/) { # Para horas
+                      if (value == "") {
+                          return "NULL";
+                      } else {
+                          # Asegurarse que el valor de la hora está en el formato correcto
+                          gsub(/^"|"$/, "", value);
+                          return sprintf("%s", value);
+                      }
+                  } else {  # Para campos de texto
+                      if (value == "") {
+                          return "NULL";
+                      } else {
+                          # Escapar comillas simples y envolver el valor en comillas simples
+                         gsub(/\x27/, "\x27\x27", value);
+                          gsub(/^"|"$/, "", value);
+                          return sprintf("\x27%s\x27", value);
+                      }
+                  }
+
+              }
+
+       NR > 1 {
+        printf "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+        format_value($1, 1), format_value($2, 2), format_value($3, 3), format_value($4, 4), format_value($5, 5), format_value($6, 6), format_value($7, 7), format_value($8, 8), format_value($9, 9), format_value($10, 10), format_value($11, 11), format_value($12, 12), format_value($13, 13), format_value($14, 14), format_value($15, 15), format_value($16, 16), format_value($17, 17), format_value($18, 18), format_value($19, 19), format_value($20, 20), format_value($21, 21), format_value($22, 22), format_value($23, 23), format_value($24, 24), id_tipo, format_value($25, 25), format_value($26, 26), format_value($27, 27), format_value($28, 28);
+               }
     ' "$converted_csv" > "$cleaned_csv"
 
-    echo "Intentando insertar los datos en la base de datos usando LOAD DATA INFILE..."
-    {
-        mysql --default-character-set=utf8mb4 -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" \
-        -e "LOAD DATA INFILE '$cleaned_csv' INTO TABLE cosecha_mecanica FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\n' (LONGITUD, LATITUD, CULTIVO, PARCELA, NOMBRE_FINCA, CODIGO_FINCA, AREA_BRUTA, AREA_NETA, DIFERENCIA_DE_AREA, CODIGO_DE_MAQUINA, RESPONSABLE, ACTIVIDAD, EQUIPO, OPERADOR, FECHA_INICIO, FECHA_FINAL, HORA_INICIO, HORA_FINAL, TIEMPO_TOTAL, EFICIENCIA, VELOCIDAD_Km_H, TCH, TAH);"
-    } >"$mysql_output_log" 2>"$mysql_error_log"
+    echo "Subiendo el archivo CSV limpio a Google Cloud Storage..."
+      if ! gsutil cp "$cleaned_csv" "${BUCKET_PATH}"; then
+          echo "Error al subir el archivo CSV a Google Cloud Storage."
+          exit 1
+      fi
 
-    if [ $? -eq 0 ]; then
-        echo "Inserción de datos APS exitosa."
-        cat "$mysql_output_log"
-    else
-        echo "Error al insertar datos APS. Consulte $mysql_error_log para obtener detalles."
-        cat "$mysql_error_log"
+ echo "Importando el archivo CSV desde Cloud Storage a Cloud SQL..."
+    if ! gcloud sql import csv "$GCLOUD_SQL_INSTANCE" \
+        "${BUCKET_PATH}$(basename "$cleaned_csv")" \
+        --database="$GCLOUD_SQL_DATABASE" --table="cosecha_mecanica" \
+        --quiet \
+        --verbosity=debug; then
+        echo "Error al importar datos a Cloud SQL."
         exit 1
     fi
 
     echo "Limpiando archivos temporales..."
-    rm -f "$mysql_error_log" "$cleaned_csv"
-    echo "Inserción de datos APS completada y archivos temporales eliminados."
+    rm -f "$converted_csv" "$cleaned_csv"
+    echo "Inserción de datos completada."
 }
 
 
