@@ -11,7 +11,34 @@ const pool = mysql.createPool({
     queueLimit: 0
 });
 
+const insertarAnalisis = async (usuario, tipoAnalisis) => {
+    let connection;
+    try {
+        connection = await pool.getConnection();
+        await connection.beginTransaction();
 
+        // Insertar en la tabla análisis
+        const insertQuery = `INSERT INTO analisis (id_usuario, tipo_analisis) VALUES (?, ?)`;
+        await connection.execute(insertQuery, [usuario, tipoAnalisis]);
+
+        // Obtener el ID máximo para el tipo de análisis especificado
+        const selectQuery = `SELECT MAX(ID_ANALISIS) FROM analisis WHERE TIPO_ANALISIS = ?`;
+        const [rows] = await connection.execute(selectQuery, [tipoAnalisis]);
+
+        await connection.commit();
+        return rows[0]['MAX(ID_ANALYSIS)'];
+    } catch (error) {
+        if (connection) {
+            await connection.rollback();
+        }
+        console.error('Error al insertar en la tabla análisis:', error);
+        throw error;
+    } finally {
+        if (connection) {
+            connection.release();
+        }
+    }
+};
 const obtenerUltimoAnalisisQuery = async (tipoAnalisis, usuario) =>{
     console.log("OBTENIENDO EL ULTIMO ANALISIS =========");
     console.log("TIPO ANALISIS:");
@@ -474,6 +501,7 @@ const obtenerPromedioDosisRealAplicadaHerbicidas = async (idAnalisis) => {
 };
 
 module.exports = {
+    insertarAnalisis,
     // ===== APS ======
     obtenerUltimoAnalisisQuery,
     obtenerNombreResponsableAps,

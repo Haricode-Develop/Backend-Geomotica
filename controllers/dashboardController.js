@@ -46,7 +46,17 @@ const execBash = async (req, res) => {
     }
 };
 
+const insertarAnalisis = async (req, res) =>{
+    try {
+        const tipoAnalisis = req.params.tipoAnalisis;
+        const idUsuario = req.params.idUsuario;
+        const insertarAnalisis = await DashboardModel.insertarAnalisis(tipoAnalisis, idUsuario);
+        res.json(insertarAnalisis);
+    }catch (error){
+        res.status(500).json({error: 'Error al insertar'})
+    }
 
+}
 const obtenerUltimoAnalisis = async (req, res) => {
     const tipoAnalisis = req.params.tipoAnalisis;
     const idUsuario = req.params.idUsuario;
@@ -473,6 +483,7 @@ const PromedioVelocidadHerbicidas = async(req, res) => {
 
 module.exports = {
     obtenerUltimoAnalisis,
+    insertarAnalisis,
     //==== ANALISIS APS=======
     ResponsableAps,
     FechaInicioCosechaAps,

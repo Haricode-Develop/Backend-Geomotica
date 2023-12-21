@@ -5,6 +5,7 @@ const upload = multer({ dest: 'uploads/' });
 const DashbBoard = require('../controllers/dashboardController');
 
 // Rutas existentes
+router.post('/insert_analisis/:tipoAnalisis/:idUsuario', DashbBoard.insertarAnalisis);
 router.get('/ultimo_analisis/:tipoAnalisis/:idUsuario', DashbBoard.obtenerUltimoAnalisis);
 router.post('/execBash/:idUsuario/:idAnalisis', upload.fields([{ name: 'csv' }, { name: 'polygon' }]), DashbBoard.execBash);
 // ==== ANALISIS APS =======
