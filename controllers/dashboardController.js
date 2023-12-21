@@ -51,7 +51,7 @@ const insertarAnalisis = async (req, res) =>{
         const tipoAnalisis = req.params.tipoAnalisis;
         const idUsuario = req.params.idUsuario;
         const insertarAnalisis = await DashboardModel.insertarAnalisis(tipoAnalisis, idUsuario);
-        res.json(insertarAnalisis);
+        return res.json(insertarAnalisis);
     }catch (error){
         res.status(500).json({error: 'Error al insertar'})
     }
