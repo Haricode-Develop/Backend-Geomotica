@@ -19,10 +19,14 @@ const insertarAnalisis = async (usuario, tipoAnalisis) => {
 
         // Insertar en la tabla análisis
         const insertQuery = `INSERT INTO analisis (id_usuario, tipo_analisis) VALUES (?, ?)`;
+        console.log("ESTA ES LA QUERY SE INSERT ======");
+        console.log(insertQuery);
         await connection.execute(insertQuery, [usuario, tipoAnalisis]);
 
         // Obtener el ID máximo para el tipo de análisis especificado
         const selectQuery = `SELECT MAX(ID_ANALISIS) FROM analisis WHERE TIPO_ANALISIS = ?`;
+        console.log("ESTA ES LA QUERY DE SELECT ======");
+        console.log(selectQuery);
         const [rows] = await connection.execute(selectQuery, [tipoAnalisis]);
         console.log("ESTE ES EL REULTADO QUE NECESITO VER =======");
         console.log(rows);
