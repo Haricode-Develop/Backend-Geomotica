@@ -31,7 +31,7 @@ const insertarAnalisis = async (usuario, tipoAnalisis) => {
         console.log(selectQuery);
         console.log("PRIMER PARAMETRO" + tipoAnalisis);
         const [rows] = await connection.execute(selectQuery, [tipoAnalisis]);
-        console.log("ESTE ES EL REULTADO QUE NECESITO VER =======");
+        console.log("ESTE ES EL REULTADO QUE NECESITO VER ======= ****");
         console.log(rows);
         await connection.commit();
         return rows[0]['idMax'];
