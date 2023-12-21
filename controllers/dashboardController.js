@@ -10,7 +10,7 @@ const execBash = async (req, res) => {
     console.log("======= EJECUTANDO EL BASH DEL LADO DE NODE.JS ==========");
     const idUsuario = req.params.idUsuario;
     const idAnalisis = req.params.idAnalisis;
-
+    const idMax = req.params.idMax;
     if (!req.files['csv'] || !req.files['polygon']) {
         return res.status(400).send('Archivos CSV o polígono no proporcionados');
     }
@@ -26,7 +26,7 @@ const execBash = async (req, res) => {
 
     try {
         await new Promise((resolve, reject) => {
-            exec(`bash /geomotica/init_analisis.sh ${idUsuario} ${idAnalisis} ${csvPath} ${polygonPath}`, (error, stdout, stderr) => {
+            exec(`bash /geomotica/init_analisis.sh ${idUsuario} ${idAnalisis} ${csvPath} ${polygonPath} ${idMax}`, (error, stdout, stderr) => {
                 if (error) {
                     console.error(`exec error: ${error}`);
                     reject(`Error executing script: ${error.message}`);

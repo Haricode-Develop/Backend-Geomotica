@@ -8,6 +8,7 @@ TABLA_ACTUAL=""
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 ARCHIVO_CSV="$3"
 ARCHIVO_POLIGONO="$4"
+ID_MAX="$5"
 echo "ESTA ES LA RUTA"
 echo $SCRIPT_DIR
 echo "============== INICIA PROCESO DE ANALISIS (INIT_ANALISIS.SH) ================"
@@ -24,7 +25,7 @@ fi
 
 if [ $2 -eq $COSECHA_MECANICA ]; then
 echo "======== Se ejecuta analisis COSECHA MECANICA  ======="
-  "$SCRIPT_DIR"/procesos/insertDatosCosechaMecanica.sh "$1" "$ARCHIVO_CSV"
+  "$SCRIPT_DIR"/procesos/insertDatosCosechaMecanica.sh "$1" "$ARCHIVO_CSV" "$ID_MAX"
 
 TABLA_ACTUAL="cosecha_mecanica"
 fi
