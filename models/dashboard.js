@@ -24,7 +24,8 @@ const insertarAnalisis = async (usuario, tipoAnalisis) => {
         // Obtener el ID máximo para el tipo de análisis especificado
         const selectQuery = `SELECT MAX(ID_ANALISIS) FROM analisis WHERE TIPO_ANALISIS = ?`;
         const [rows] = await connection.execute(selectQuery, [tipoAnalisis]);
-
+        console.log("ESTE ES EL REULTADO QUE NECESITO VER =======");
+        console.log(rows);
         await connection.commit();
         return rows[0]['MAX(ID_ANALYSIS)'];
     } catch (error) {
