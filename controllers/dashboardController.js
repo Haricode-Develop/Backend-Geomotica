@@ -50,10 +50,10 @@ const insertarAnalisis = async (req, res) =>{
     try {
         const tipoAnalisis = req.params.tipoAnalisis;
         const idUsuario = req.params.idUsuario;
-        const insertarAnalisis = await DashboardModel.insertarAnalisis(tipoAnalisis, idUsuario);
+        const idAnalisisInsertado  = await DashboardModel.insertarAnalisis(tipoAnalisis, idUsuario);
         console.log("ESTE ES EL ANALISIS QUE SE INSERTO =====");
-        console.log(insertarAnalisis);
-        return res.json(insertarAnalisis);
+        console.log(idAnalisisInsertado);
+        return res.json({ idAnalisis: idAnalisisInsertado });
     }catch (error){
         res.status(500).json({error: 'Error al insertar'})
     }
