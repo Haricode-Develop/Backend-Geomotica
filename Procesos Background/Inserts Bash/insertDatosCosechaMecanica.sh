@@ -57,10 +57,7 @@ function insert_cosecha_data {
 echo "ESTE ES EL PARAMETRO 3 EN DONDE LE PASO EL ID MAX DESDE EL NODE.JS ======"
 # Llamar a insert_to_analisis y guardar el resultado en una variable
 ID_ANALISIS_TIPO_RESULT="$3"
-if [[ -z $ID_ANALISIS_TIPO_RESULT ]]; then
-    echo "Error: No se pudo obtener ID_ANALISIS_TIPO"
-    exit 1
-fi
+
 echo "ID de análisis obtenido: $ID_ANALISIS_TIPO_RESULT"
 
 echo "SE GUARDA EL ID DEL ANALISIS QUE SE ACABA DE INSERTAR EN TXT TEMPORAL ======="
