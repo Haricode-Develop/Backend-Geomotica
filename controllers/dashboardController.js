@@ -17,12 +17,13 @@ const execBash = async (req, res) => {
 
     const csvPath = req.files['csv'][0].path;
     const polygonPath = req.files['polygon'][0].path;
-
+    console.log("==============================================");
     console.log("PARAMETROS QUE SE LE PASAN AL INIT_ANALISIS: ");
     console.log("ID USUARIO = " + idUsuario);
     console.log("ID ANALISIS = " + idAnalisis);
     console.log("CSV PATH = " + csvPath);
     console.log("PAOLYGON PATH = " + polygonPath);
+    console.log("==============================================");
 
     try {
         await new Promise((resolve, reject) => {
