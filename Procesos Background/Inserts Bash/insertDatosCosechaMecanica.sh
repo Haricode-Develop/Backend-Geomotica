@@ -66,6 +66,8 @@ echo $ID_ANALISIS_TIPO_RESULT > "${PARENT_DIR}/tempIdAnalisis.txt"
 
 # Verificar que ID_ANALISIS_TIPO_RESULT tiene valor, si no, terminar el script con un error
 if [[ -z $ID_ANALISIS_TIPO_RESULT ]]; then
+  echo "ID de análisis obtenido: $ID_ANALISIS_TIPO_RESULT"
+
     echo "Error: No se pudo obtener ID_ANALISIS_TIPO"
     exit 1
 fi
