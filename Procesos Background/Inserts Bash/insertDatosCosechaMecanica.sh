@@ -34,9 +34,10 @@ echo "El ID de usuario es: $ID_USUARIO"
 function insert_cosecha_data {
     local csv_file=$1
 
-    echo "Subiendo el archivo CSV limpio a Google Cloud Storage..."
-      if ! gsutil cp "$csv_file" "${BUCKET_PATH}"; then
+   echo "Subiendo el archivo CSV limpio a Google Cloud Storage..."
+      if ! gsutil_output=$(gsutil cp "$csv_file" "${BUCKET_PATH}" 2>&1); then
           echo "Error al subir el archivo CSV a Google Cloud Storage."
+          echo "Detalles del error: $gsutil_output"
           exit 1
       fi
 
@@ -57,7 +58,11 @@ function insert_cosecha_data {
 echo "ESTE ES EL PARAMETRO 3 EN DONDE LE PASO EL ID MAX DESDE EL NODE.JS ======"
 # Llamar a insert_to_analisis y guardar el resultado en una variable
 ID_ANALISIS_TIPO_RESULT="$3"
-
+echo $ID_ANALISIS_TIPO_RESULT
+if [[ -z $ID_ANALISIS_TIPO_RESULT ]]; then
+    echo "Error: No se pudo obtener ID_ANALISIS_TIPO"
+    exit 1
+fi
 echo "ID de análisis obtenido: $ID_ANALISIS_TIPO_RESULT"
 
 echo "SE GUARDA EL ID DEL ANALISIS QUE SE ACABA DE INSERTAR EN TXT TEMPORAL ======="
@@ -66,8 +71,6 @@ echo $ID_ANALISIS_TIPO_RESULT > "${PARENT_DIR}/tempIdAnalisis.txt"
 
 # Verificar que ID_ANALISIS_TIPO_RESULT tiene valor, si no, terminar el script con un error
 if [[ -z $ID_ANALISIS_TIPO_RESULT ]]; then
-  echo "ID de análisis obtenido: $ID_ANALISIS_TIPO_RESULT"
-
     echo "Error: No se pudo obtener ID_ANALISIS_TIPO"
     exit 1
 fi
