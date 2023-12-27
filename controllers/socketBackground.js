@@ -9,9 +9,11 @@ exports.seInsertaronDatosAnalisis = (req, res) => {
 exports.recibirMapeoHtml = (req, res) => {
     console.log("EMITIO EL EVENTO DE ENVIAR MAPA =======");
 
-    const htmlContent = req.body.htmlContent;
-    io.getIo().emit('sendMap', htmlContent);
-    res.send('Mapeo Recibido');
+    const layerData = req.body;
+
+    io.getIo().emit('mapLayer', layerData);
+    res.status(200).send("Capa de mapa recibida y emitida");
+
 };
 
 

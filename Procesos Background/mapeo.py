@@ -1,79 +1,102 @@
 import sys
 import folium
-import requests
 import pandas as pd
 from sqlalchemy import create_engine
 from folium.plugins import MiniMap
-
 from google.cloud import storage
 import os
+import geopandas as gpd
+import requests
+
+# Define los parámetros iniciales para la paginación
+print("************** PARAMETROS QUE SE PASAN AL MAPEO **************")
+print(sys.argv)
+offset = int(sys.argv[4]) if len(sys.argv) > 4 else 0
+limit = 10000  # Define la cantidad de filas por lote
+polygon_folder = sys.argv[3]  # La carpeta donde se descomprimió el archivo ZIP
 
 def upload_to_bucket(bucket_name, source_file_name, destination_blob_name):
     """Sube un archivo al bucket de Google Cloud Storage."""
     storage_client = storage.Client()
-    bucket = storage_client.bucket(bucket_name)
+    bucket = storage_client.get_bucket(bucket_name)
     blob = bucket.blob(destination_blob_name)
 
     blob.upload_from_filename(source_file_name)
 
     return blob.public_url
 
-# Conectarse a la base de datos usando SQLAlchemy
+# Conexión a la base de datos usando SQLAlchemy
 engine = create_engine("mysql+mysqlconnector://instancia:123456@34.172.98.144/geomotica")
 id_analisis = sys.argv[1]
 tabla = sys.argv[2]
-
-# Consulta SQL para obtener datos
-query = f"""SELECT LONGITUD, LATITUD, CULTIVO, NOMBRE_FINCA, ACTIVIDAD,
-            FECHA_INICIO, HORA_INICIO, HORA_FINAL
-            FROM {tabla} WHERE ID_ANALISIS = {id_analisis};"""
-
-df = pd.read_sql(query, engine, params={"id_analisis": id_analisis})
-
-# Crear mapa centrado en la primera coordenada con opción de satélite
-tiles_option = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-attribution = "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
-
-m = folium.Map(location=[df['LATITUD'].iloc[0], df['LONGITUD'].iloc[0]], zoom_start=15, tiles=tiles_option, attr=attribution)
-
-# Añadir trazado de puntos
-locations = df[['LATITUD', 'LONGITUD']].values
-folium.PolyLine(locations, color="blue", weight=2.5).add_to(m)
-
-# Añadir popup a cada punto con información relevante
-for _, row in df.iterrows():
-    popup_content = f"""
-    <strong>Cultivo:</strong> {row['CULTIVO']}<br>
-    <strong>Finca:</strong> {row['NOMBRE_FINCA']}<br>
-    <strong>Actividad:</strong> {row['ACTIVIDAD']}<br>
-    <strong>Fecha:</strong> {row['FECHA_INICIO']}<br>
-    <strong>Horario:</strong> {row['HORA_INICIO']} - {row['HORA_FINAL']}
-    """
-    folium.CircleMarker((row['LATITUD'], row['LONGITUD']), radius=5, color="blue").add_child(folium.Popup(popup_content)).add_to(m)
-
-# Añadir controles de capas
-folium.LayerControl().add_to(m)
-
-# Añadir minimapa
-minimap = MiniMap()
-m.add_child(minimap)
-
-# Guardar el mapa como archivo HTML temporal
-nombre_archivo_temp = f"/tmp/mapa_{id_analisis}.html"
-m.save(nombre_archivo_temp)
 
 # Nombre del bucket y del archivo en el bucket
 nombre_bucket = "geomotica_mapeo"
 nombre_archivo_bucket = f"mapas/mapa_{id_analisis}.html"
 
-# Subir el archivo al bucket de Google Cloud Storage
+# Inicializa el mapa solo si es el primer lote
+if offset == 0:
+    m = folium.Map(location=[0, 0], zoom_start=2)  # Ubicación y zoom por defecto
+
+# Encuentra el archivo .shp en el directorio dado
+shp_file = next((f for f in os.listdir(polygon_folder) if f.endswith('.shp')), None)
+if shp_file is None:
+    raise FileNotFoundError("No se encontró un archivo .shp en la carpeta del polígono.")
+
+# Cargar el polígono con Geopandas
+gdf_polygon = gpd.read_file(os.path.join(polygon_folder, shp_file))
+polygon = gdf_polygon.unary_union  # Combina los polígonos si hay más de uno
+
+while True:
+    # Consulta SQL para obtener datos por lotes
+    query = f"""
+    SELECT LONGITUD, LATITUD, CULTIVO, NOMBRE_FINCA, ACTIVIDAD,
+            FECHA_INICIO, HORA_INICIO, HORA_FINAL
+            FROM {tabla} WHERE ID_ANALISIS = {id_analisis}
+            LIMIT {limit} OFFSET {offset};
+    """
+    df = pd.read_sql(query, engine)
+
+    # Si no hay más datos, rompe el bucle
+    if df.empty:
+        break
+
+    # Convierte el DataFrame de Pandas a un GeoDataFrame
+    gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.LONGITUD, df.LATITUD))
+
+    # Filtra solo los puntos que están dentro del polígono
+    gdf = gdf[gdf.geometry.within(polygon)]
+
+    # Si después del filtro no hay datos, continúa con el siguiente lote
+    if gdf.empty:
+        offset += limit
+        continue
+
+    # Genera la capa de datos y la convierte a GeoJSON
+    layer_data = gdf.to_json()
+
+    # Envía la capa al servidor Node.js mediante una solicitud HTTP POST
+    response = requests.post("http://localhost:3001/updateMapLayer", json={'layerData': layer_data})
+    if response.status_code == 200:
+        print(f"Capa enviada correctamente al servidor Node.js, offset: {offset}")
+    else:
+        print(f"Error al enviar la capa: {response.status_code}")
+
+    # Incrementa el offset para el siguiente lote
+    offset += limit
+
+# Añade controles de capas y minimapa solo después de procesar todos los lotes
+folium.LayerControl().add_to(m)
+MiniMap().add_to(m)
+
+# Guarda el mapa como archivo HTML temporal
+nombre_archivo_temp = f"/tmp/mapa_{id_analisis}.html"
+m.save(nombre_archivo_temp)
+
+# Sube el archivo completo al bucket de Google Cloud Storage
 url_archivo = upload_to_bucket(nombre_bucket, nombre_archivo_temp, nombre_archivo_bucket)
-api_url = "http://localhost:3001/socket/reciveMap"  # Reemplaza con tu URL del servidor
-data = {'htmlContent': url_archivo}
-response = requests.post(api_url, json=data)
-requests.post("http://localhost:3001/socket/loadingAnalysis", data={"progress": 75})
 print(f"Mapa subido con éxito a {url_archivo}")
 
-# Eliminar el archivo temporal
+# Elimina el archivo temporal
 os.remove(nombre_archivo_temp)
 print(f"Archivo temporal eliminado: {nombre_archivo_temp}")

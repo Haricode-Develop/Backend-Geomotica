@@ -9,6 +9,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 ARCHIVO_CSV="$3"
 ARCHIVO_POLIGONO="$4"
 ID_MAX="$5"
+OFFSET="$6"
 echo "ESTA ES LA RUTA"
 echo $SCRIPT_DIR
 echo "============== INICIA PROCESO DE ANALISIS (INIT_ANALISIS.SH) ================"
@@ -49,7 +50,7 @@ ID_ANALISIS=$(cat "$SCRIPT_DIR/tempIdAnalisis.txt")
 echo "Este es el ID del analisis: $ID_ANALISIS"
 echo "Esta es la tabla que se quiere hacer el análisis: $TABLA_ACTUAL"
 unzip -o $ARCHIVO_POLIGONO -d "poligonoTemp"
-python3 "$SCRIPT_DIR"/procesos/mapeo.py "$ID_ANALISIS" "$TABLA_ACTUAL" "poligonoTemp"
+python3 "$SCRIPT_DIR"/procesos/mapeo.py "$ID_ANALISIS" "$TABLA_ACTUAL" "poligonoTemp" "$OFFSET"
 else
 echo "Error: No se pudo obtener el ID del Analisis para el mapeo"
 fi
