@@ -39,23 +39,30 @@ const execBash = async (req, res) => {
                 if (error) {
                     console.error(`exec error: ${error}`);
                     reject(`Error executing script: ${error.message}`);
-                    return; // Asegúrate de retornar aquí para evitar llamar a resolve() después de un reject()
+                    return; // Asegúrate de salir para no llamar a resolve() después de reject()
                 }
+
+                // Solo imprime stderr si realmente hay un error
                 if (stderr) {
                     console.error(`stderr: ${stderr}`);
                 }
+
                 console.log(`stdout: ${stdout}`);
-                if (esPrimeraEjecucion) {
-                    console.log("SE HA EJECUTADO EL EVENTO PARA MOSTRAR EL ANÁLISIS ======");
-                    io.getIo().emit('datosInsertados');
-                    esPrimeraEjecucion = false;
-                }
                 resolve();
             });
         });
+
+        // Emitir el evento solo después de que la promesa se haya resuelto, lo cual indica que el script Bash ha finalizado
+        if (esPrimeraEjecucion) {
+            console.log("SE HA EJECUTADO EL EVENTO PARA MOSTRAR EL ANÁLISIS ======");
+            io.getIo().emit('datosInsertados');
+            esPrimeraEjecucion = false;
+        }
+
         res.send('Script executed successfully');
     } catch (error) {
-        res.status(500).send(error);
+        console.error('Error while executing bash script:', error);
+        res.status(500).send('Error executing bash script');
     }
 };
 
