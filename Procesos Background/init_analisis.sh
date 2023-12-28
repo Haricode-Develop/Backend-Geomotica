@@ -10,7 +10,7 @@ ARCHIVO_CSV="$3"
 ARCHIVO_POLIGONO="$4"
 ID_MAX="$5"
 OFFSET="$6"
-FLAG_FILE="${SCRIPT_DIR}/insercion_pendiente.flag"
+VALIDAR="$7"
 
 echo "ESTA ES LA RUTA"
 echo $SCRIPT_DIR
@@ -26,16 +26,10 @@ echo "======== Se ejecuta analisis APS ======="
 TABLA_ACTUAL="aps"
 fi
 
-if [ $2 -eq $COSECHA_MECANICA ]; then
-echo "======== Se ejecuta analisis COSECHA MECANICA  ======="
-if [ -f "$FLAG_FILE" ]; then
-      "$SCRIPT_DIR"/procesos/insertDatosCosechaMecanica.sh "$1" "$ARCHIVO_CSV" "$ID_MAX"
-    rm -f "$FLAG_FILE"
-else
-    echo "La inserción de datos ya se realizó en una ejecución anterior."
-fi
-
-TABLA_ACTUAL="cosecha_mecanica"
+if [ $2 -eq $COSECHA_MECANICA ] && [ "$VALIDAR" = "ok" ]; then
+    echo "======== Se ejecuta analisis COSECHA MECANICA  ======="
+    "$SCRIPT_DIR"/procesos/insertDatosCosechaMecanica.sh "$1" "$ARCHIVO_CSV" "$ID_MAX"
+    TABLA_ACTUAL="cosecha_mecanica"
 fi
 
 if [ $2  -eq  $HERBICIDAS ]; then
