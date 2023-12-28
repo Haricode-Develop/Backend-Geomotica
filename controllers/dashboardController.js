@@ -10,7 +10,8 @@ const {exec} = require('child_process');
 const procesarCsv = async (req, res) => {
     const idTipoAnalisis = req.body.idTipoAnalisis;
     const file = req.files['csv'];
-
+    console.log("ESTE ES EL PATH QUE ME ESTA TIRANDO ERROR AHORITA: =====****");
+    console.log(file);
     fs.readFile(file, 'utf8', (err, data) => {
         if (err) {
             console.error('Error al leer el archivo:', err);
