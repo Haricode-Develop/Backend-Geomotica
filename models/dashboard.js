@@ -183,6 +183,8 @@ const obtenerPromedioVelocidadAps = async (idAnalisis) => {
 const obtenerNombreResponsableCm = async (idAnalisis) => {
     const query = `SELECT DISTINCT RESPONSABLE FROM cosecha_mecanica WHERE ID_ANALISIS = ?;`;
     const [rows] = await pool.query(query, [idAnalisis]);
+    console.log("ESTA ES LA RESPUESTA PARA OBTENER AL RESPONSABLE +++++++++++++++++++++");
+    console.log(rows);
     return rows.map(row => row.RESPONSABLE);
 };
 
