@@ -1,6 +1,7 @@
 {
   "name": "backend-geomotica",
   "version": "1.0.0",
+  "proxy": "https://geomotica.ingeoproyectos.com",
   "description": "Backend para apliación de Geomotica para la empresa ingeo proyectos.",
   "main": "server.js",
   "scripts": {
