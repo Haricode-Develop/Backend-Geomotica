@@ -9,9 +9,12 @@ const Papa = require('papaparse');
 const {exec} = require('child_process');
 const procesarCsv = async (req, res) => {
     const idTipoAnalisis = req.body.idTipoAnalisis;
-    const file = req.files['csv'];
+    // Acceder al primer elemento del array y obtener la propiedad 'path'
+    const file = req.files['csv'][0].path;
+
     console.log("ESTE ES EL PATH QUE ME ESTA TIRANDO ERROR AHORITA: =====****");
     console.log(file);
+
     fs.readFile(file, 'utf8', (err, data) => {
         if (err) {
             console.error('Error al leer el archivo:', err);
@@ -31,6 +34,7 @@ const procesarCsv = async (req, res) => {
         });
     });
 }
+
 function formatearValor(valor, indice) {
     switch (indice) {
         case 14:
