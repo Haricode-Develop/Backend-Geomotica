@@ -39,19 +39,21 @@ const execBash = async (req, res) => {
                 if (error) {
                     console.error(`exec error: ${error}`);
                     reject(`Error executing script: ${error.message}`);
-                    return;
+                } else {
+                    if (stderr) {
+                        console.error(`stderr: ${stderr}`);
+                    }
+                    if (esPrimeraEjecucion) {
+                        console.log("SE HA EJECUTADO EL EVENTO PARA MOSTRAR EL ANÁLISIS ======");
+                        io.getIo().emit('datosInsertados');
+                        esPrimeraEjecucion = false;
+                    }
+                    console.log(`stdout: ${stdout}`);
+                    resolve();
                 }
-                if (stderr) {
-                    console.error(`stderr: ${stderr}`);
-                }
-                console.log(`stdout: ${stdout}`);
-                if (esPrimeraEjecucion) {
-                    console.log("SE HA EJECUTADO EL EVENTO PARA MOSTRAR EL ANÁLISIS ======");
-                    io.getIo().emit('datosInsertados');
-                    esPrimeraEjecucion = false;
-                }
-                resolve();
+                
             });
+
         });
         res.send('Script executed successfully');
     } catch (error) {
