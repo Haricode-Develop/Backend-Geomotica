@@ -16,7 +16,7 @@ const execBash = async (req, res) => {
     const idAnalisis = req.params.idAnalisis;
     const idMax = req.params.idMax;
     const offset = req.params.offset;
-
+    const validar = req.params.validar;
     if (!req.files['csv'] || !req.files['polygon']) {
         return res.status(400).send('Archivos CSV o polígono no proporcionados');
     }
@@ -35,24 +35,23 @@ const execBash = async (req, res) => {
 
     try {
         await new Promise((resolve, reject) => {
-            exec(`bash /geomotica/init_analisis.sh ${idUsuario} ${idAnalisis} ${csvPath} ${polygonPath} ${idMax} ${offset}`, (error, stdout, stderr) => {
+            exec(`bash /geomotica/init_analisis.sh ${idUsuario} ${idAnalisis} ${csvPath} ${polygonPath} ${idMax} ${offset} ${validar}`, (error, stdout, stderr) => {
                 if (error) {
                     console.error(`exec error: ${error}`);
                     reject(`Error executing script: ${error.message}`);
-                } else {
-                    if (stderr) {
-                        console.error(`stderr: ${stderr}`);
-                    }
-                    console.log(`stdout: ${stdout}`);
-                    resolve();
+                    return; // Asegúrate de retornar aquí para evitar llamar a resolve() después de un reject()
                 }
+                if (stderr) {
+                    console.error(`stderr: ${stderr}`);
+                }
+                console.log(`stdout: ${stdout}`);
+                if (esPrimeraEjecucion) {
+                    console.log("SE HA EJECUTADO EL EVENTO PARA MOSTRAR EL ANÁLISIS ======");
+                    io.getIo().emit('datosInsertados');
+                    esPrimeraEjecucion = false;
+                }
+                resolve();
             });
-            if (esPrimeraEjecucion) {
-                console.log("SE HA EJECUTADO EL EVENTO PARA MOSTRAR EL ANÁLISIS ======");
-                io.getIo().emit('datosInsertados');
-                esPrimeraEjecucion = false;
-            }
-            resolve();
         });
         res.send('Script executed successfully');
     } catch (error) {
