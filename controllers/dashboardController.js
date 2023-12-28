@@ -4,8 +4,58 @@ const path = require('path');
 const fs = require('fs');
 const io = require('../socket');
 let esPrimeraEjecucion = true;
+const Papa = require('papaparse');
 
 const {exec} = require('child_process');
+const procesarCsv = async (req, res) => {
+    const idTipoAnalisis = req.body.idTipoAnalisis;
+    const file = req.files['csv'];
+
+    fs.readFile(file, 'utf8', (err, data) => {
+        if (err) {
+            console.error('Error al leer el archivo:', err);
+            return res.status(500).send('Error al procesar el archivo');
+        }
+
+        // Procesa el archivo CSV
+        Papa.parse(data, {
+            header: false,
+            skipEmptyLines: true,
+            complete: (results) => {
+                const datos = results.data.slice(1).map((fila) => {
+                    return fila.map((valor, indice) => formatearValor(valor, indice)).concat(idTipoAnalisis);
+                });
+                res.json({ data: datos });
+            }
+        });
+    });
+}
+function formatearValor(valor, indice) {
+    switch (indice) {
+        case 14:
+        case 15:
+            return formatearFecha(valor);
+        case 16:
+        case 17:
+        case 18:
+            return formatearHora(valor);
+
+        default:
+            return valor;
+    }
+}
+
+function formatearFecha(fecha) {
+    if (fecha === '') return 'NULL';
+    const partes = fecha.split('/');
+    return `${partes[2]}-${partes[0].padStart(2, '0')}-${partes[1].padStart(2, '0')}`;
+}
+
+function formatearHora(hora) {
+    if (hora === '') return 'NULL';
+    // Aquí puedes agregar lógica de formateo de hora si es necesario
+    return hora;
+}
 
 const execBash = async (req, res) => {
 
@@ -673,5 +723,6 @@ module.exports = {
     TiempoTotalHerbicidas,
     EficienciaHerbicidas,
     PromedioVelocidadHerbicidas,
-    execBash
+    execBash,
+    procesarCsv
 };
