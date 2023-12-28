@@ -13,7 +13,7 @@ const socketRoutes = require('./routes/webSocket');
 app.use(cors({
     origin: "*",
     methods: ["GET", "POST"],
-    credentials: true
+    //credentials: true
 }));
 app.use(express.urlencoded({ extended: true })); // Para parsear application/x-www-form-urlencoded
 app.use(morgan('combined')); 
