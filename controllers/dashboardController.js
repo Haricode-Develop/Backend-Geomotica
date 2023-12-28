@@ -31,6 +31,8 @@ const execBash = async (req, res) => {
     console.log("PAOLYGON PATH = " + polygonPath);
     console.log("ID MAX = "+ idMax);
     console.log("OFFSET = "+offset);
+    console.log("VALIDAR = "+validar);
+
     console.log("==============================================");
 
     try {
