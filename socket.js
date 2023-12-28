@@ -2,14 +2,7 @@ let io;
 
 module.exports = {
     init: (server) => {
-        const ioOptions = {
-            cors: {
-                origin: "*",
-                methods: ["GET", "POST"],
-                credentials: true
-            }
-        };
-        io = require('socket.io')(server, ioOptions);
+        io = require('socket.io')(server);
 
         io.on('connection', (socket) => {
             console.log('Un cliente se ha conectado');
