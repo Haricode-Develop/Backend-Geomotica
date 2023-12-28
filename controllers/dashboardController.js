@@ -3,10 +3,12 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const io = require('../socket');
+let esPrimeraEjecucion = true;
 
 const {exec} = require('child_process');
 
 const execBash = async (req, res) => {
+
     console.log("======= EJECUTANDO EL BASH DEL LADO DE NODE.JS ==========");
     console.log("LOG DE PARAMETROS ====");
     console.log(req.params);
@@ -44,8 +46,12 @@ const execBash = async (req, res) => {
                     resolve();
                 }
             });
+            if (esPrimeraEjecucion) {
+                io.getIo().emit('datosInsertados');
+                esPrimeraEjecucion = false;
+            }
+            resolve();
         });
-        io.getIo().emit('datosInsertados');
         res.send('Script executed successfully');
     } catch (error) {
         res.status(500).send(error);

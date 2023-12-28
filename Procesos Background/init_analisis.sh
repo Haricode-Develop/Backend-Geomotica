@@ -10,6 +10,8 @@ ARCHIVO_CSV="$3"
 ARCHIVO_POLIGONO="$4"
 ID_MAX="$5"
 OFFSET="$6"
+FLAG_FILE="${SCRIPT_DIR}/insercion_pendiente.flag"
+
 echo "ESTA ES LA RUTA"
 echo $SCRIPT_DIR
 echo "============== INICIA PROCESO DE ANALISIS (INIT_ANALISIS.SH) ================"
@@ -26,7 +28,12 @@ fi
 
 if [ $2 -eq $COSECHA_MECANICA ]; then
 echo "======== Se ejecuta analisis COSECHA MECANICA  ======="
-  "$SCRIPT_DIR"/procesos/insertDatosCosechaMecanica.sh "$1" "$ARCHIVO_CSV" "$ID_MAX"
+if [ -f "$FLAG_FILE" ]; then
+      "$SCRIPT_DIR"/procesos/insertDatosCosechaMecanica.sh "$1" "$ARCHIVO_CSV" "$ID_MAX"
+    rm -f "$FLAG_FILE"
+else
+    echo "La inserción de datos ya se realizó en una ejecución anterior."
+fi
 
 TABLA_ACTUAL="cosecha_mecanica"
 fi
