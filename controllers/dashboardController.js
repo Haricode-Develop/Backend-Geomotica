@@ -43,17 +43,16 @@ const execBash = async (req, res) => {
                     if (stderr) {
                         console.error(`stderr: ${stderr}`);
                     }
-                    if (esPrimeraEjecucion) {
-                        console.log("SE HA EJECUTADO EL EVENTO PARA MOSTRAR EL ANÁLISIS ======");
-                        io.getIo().emit('datosInsertados');
-                        esPrimeraEjecucion = false;
-                    }
                     console.log(`stdout: ${stdout}`);
                     resolve();
                 }
-                
             });
-
+            if (esPrimeraEjecucion) {
+                console.log("SE HA EJECUTADO EL EVENTO PARA MOSTRAR EL ANÁLISIS ======");
+                io.getIo().emit('datosInsertados');
+                esPrimeraEjecucion = false;
+            }
+            resolve();
         });
         res.send('Script executed successfully');
     } catch (error) {
