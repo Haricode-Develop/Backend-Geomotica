@@ -281,21 +281,31 @@ const obtenerPromedioVelocidadCm = async (idAnalisis) => {
     return rows[0].promedioVelocidad;
 };
 
-const obtenerPorcentajeAreaPilotoCm = async () => {
+const obtenerPorcentajeAreaPilotoCm = async (idAnalisis) => {
     const query = `
-    SELECT SUM(CASE WHEN PILOTO_AUTOMATICO = 'SI' THEN AREA_NETA ELSE 0 END) / SUM(AREA_NETA) * 100 AS "PILOTO_AUTOMATICO"
-    FROM cosecha_mecanica;
+        SELECT
+            CASE
+                WHEN SUM(AREA_NETA) > 0 THEN
+                            SUM(CASE WHEN PILOTO_AUTOMATICO = 1 THEN AREA_NETA ELSE 0 END) / SUM(AREA_NETA) * 100
+                ELSE 0
+                END AS "PORCENTAJE_PILOTO_AUTOMATICO"
+        FROM cosecha_mecanica WHERE ID_ANALISIS = ?;
   `;
-    const [rows] = await pool.query(query);
+    const [rows] = await pool.query(query, [idAnalisis]);
     return rows[0]["PILOTO_AUTOMATICO"];
 };
 
-const obtenerPorcentajeAreaAutotrackerCm = async () => {
+const obtenerPorcentajeAreaAutotrackerCm = async (idAnalisis) => {
     const query = `
-    SELECT SUM(CASE WHEN AUTO_TRACKET  = 'SI' THEN AREA_NETA ELSE 0 END) / SUM(AREA_NETA) * 100 AS "AUTOTRACKER"
-    FROM cosecha_mecanica;
-  `;
-    const [rows] = await pool.query(query);
+        SELECT
+            CASE
+                WHEN SUM(AREA_NETA) > 0 THEN
+                            SUM(CASE WHEN AUTO_TRACKER = 1 THEN AREA_NETA ELSE 0 END) / SUM(AREA_NETA) * 100
+                ELSE 0
+                END AS "PORCENTAJE_AUTOTRACKER"
+        FROM cosecha_mecanica WHERE ID_ANALISIS = ?;
+    `;
+    const [rows] = await pool.query(query, [idAnalisis]);
     return rows[0]["% De area con Piloto automatico activo"];
 };
 
