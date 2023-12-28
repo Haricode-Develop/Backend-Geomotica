@@ -188,114 +188,217 @@ const PromedioVelocidadAps = async(req, res)=>{
 *  ENDPOINT'S INFORME COSECHA_MECANICA
 * ======================================================*/
 
-const NombreResponsableCm = async(req, res) =>{
+const NombreResponsableCm = async(req, res) => {
     const idAnalisis = req.params.ID_ANALISIS;
-    const obtenerResponsableCm = DashboardModel.obtenerNombreResponsableCm(idAnalisis);
-    return res.json(obtenerResponsableCm);
+
+    try {
+        const obtenerResponsableCm = await DashboardModel.obtenerNombreResponsableCm(idAnalisis);
+        return res.json(obtenerResponsableCm);
+    } catch (error) {
+        console.error("Error al obtener el nombre del responsable:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
 }
 
 const FechaInicioCosechaCm = async(req, res) =>{
     const idAnalisis = req.params.ID_ANALISIS;
-    const obtenerFechaIncioCosechaCm = DashboardModel.obtenerFechaInicioCosechaCm(idAnalisis);
+    try {
+    const obtenerFechaIncioCosechaCm = await DashboardModel.obtenerFechaInicioCosechaCm(idAnalisis);
     return res.json(obtenerFechaIncioCosechaCm);
+    } catch (error) {
+        console.error("Error al obtener el nombre del responsable:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
 }
 
 const FechaFinCosechaCm = async(req, res) =>{
     const idAnalisis = req.params.ID_ANALISIS;
-    const obtenerFechaFinCosechaCm = DashboardModel.obtenerFechaFinCosechaCm(idAnalisis);
+    try {
+    const obtenerFechaFinCosechaCm = await DashboardModel.obtenerFechaFinCosechaCm(idAnalisis);
     return res.json(obtenerFechaFinCosechaCm);
+    } catch (error) {
+        console.error("Error al obtener el nombre del responsable:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
 }
 
 const NombreFincaCm = async(req, res) =>{
     const idAnalisis = req.params.ID_ANALISIS;
-    const obtenerNombreFincaCm = DashboardModel.obtenerNombreFincaCm(idAnalisis);
+    try {
+
+        const obtenerNombreFincaCm = await DashboardModel.obtenerNombreFincaCm(idAnalisis);
     return res.json(obtenerNombreFincaCm);
+    } catch (error) {
+        console.error("Error al obtener el nombre del responsable:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
 }
 
 const CodigoParcelaResponsableCm = async (req, res) =>{
     const idAnalisis = req.params.ID_ANALISIS;
-    const obtenerCodigoParcelaResponsableCm = DashboardModel.obtenerCodigoParcelasResponsableCm(idAnalisis);
+    try {
+
+        const obtenerCodigoParcelaResponsableCm = await DashboardModel.obtenerCodigoParcelasResponsableCm(idAnalisis);
     return res.json(obtenerCodigoParcelaResponsableCm);
+    } catch (error) {
+        console.error("Error al obtener el nombre del responsable:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
 }
 
 const NombreOperadorCm = async (req, res) =>{
     const idAnalisis = req.params.ID_ANALISIS;
-    const obtenerNombreOperadorCm = DashboardModel.obtenerNombreOperadorCm(idAnalisis);
+    try {
+    const obtenerNombreOperadorCm = await DashboardModel.obtenerNombreOperadorCm(idAnalisis);
     return res.json(obtenerNombreOperadorCm);
+    } catch (error) {
+        console.error("Error al obtener el nombre del responsable:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
 }
 
 const NombreMaquinaCm = async(req, res) =>{
     const idAnalisis =  req.params.ID_ANALISIS;
-    const obtenerNombreMaquinaCm = DashboardModel.obtenerNombreMaquinaCm(idAnalisis);
+    try {
+    const obtenerNombreMaquinaCm = await DashboardModel.obtenerNombreMaquinaCm(idAnalisis);
     return res.json(obtenerNombreMaquinaCm);
+    } catch (error) {
+        console.error("Error al obtener el nombre del responsable:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
 }
 
 const ActividadCm = async(req, res)=>{
     const idAnalisis =  req.params.ID_ANALISIS;
-    const obtenerActividadCm = DashboardModel.obtenerActividadCm(idAnalisis);
+    try {
+    const obtenerActividadCm = await DashboardModel.obtenerActividadCm(idAnalisis);
     return res.json(obtenerActividadCm);
+    } catch (error) {
+        console.error("Error al obtener el nombre del responsable:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
 }
 
 const AreaNetaCm = async(req, res) =>{
     const idAnalisis =  req.params.ID_ANALISIS;
-     const obtenerAreaNetaCm = DashboardModel.obtenerAreaNetaCm(idAnalisis);
+    try {
+
+        const obtenerAreaNetaCm = await DashboardModel.obtenerAreaNetaCm(idAnalisis);
     return res.json(obtenerAreaNetaCm);
+    } catch (error) {
+        console.error("Error al obtener el nombre del responsable:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
 }
 
 const AreaBrutaCm = async(req, res) =>{
     const idAnalisis = req.params.ID_ANALISIS;
-    const obtenerAreaBrutaCm = DashboardModel.obtenerAreaBrutaCm(idAnalisis);
+    try {
+
+        const obtenerAreaBrutaCm = await DashboardModel.obtenerAreaBrutaCm(idAnalisis);
     return res.json(obtenerAreaBrutaCm);
+    } catch (error) {
+        console.error("Error al obtener el nombre del responsable:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
 }
 
 const DiferenciaDeAreaCm = async(req, res) =>{
     const idAnalisis = req.params.ID_ANALISIS;
-    const obtenerDiferenciaDeAreaCm = DashboardModel.obtenerDiferenciaDeAreaCm(idAnalisis);
+    try {
+        const obtenerDiferenciaDeAreaCm = await DashboardModel.obtenerDiferenciaDeAreaCm(idAnalisis);
     return res.json(obtenerDiferenciaDeAreaCm);
+    } catch (error) {
+        console.error("Error al obtener el nombre del responsable:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
 }
 
 const HoraInicioCm = async(req, res) =>{
     const idAnalisis =  req.params.ID_ANALISIS;
-    const obtenerHoraInicioCm = DashboardModel.obtenerHoraInicioCm(idAnalisis);
+    try {
+
+        const obtenerHoraInicioCm = await DashboardModel.obtenerHoraInicioCm(idAnalisis);
     return res.json(obtenerHoraInicioCm);
+    } catch (error) {
+        console.error("Error al obtener el nombre del responsable:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
 }
 
 const HoraFinalCm = async(req, res)=>{
     const idAnalisis =  req.params.ID_ANALISIS;
-    const obtenerHoraFinalCm = DashboardModel.obtenerHoraFinalCm(idAnalisis);
+    try {
+
+        const obtenerHoraFinalCm = await DashboardModel.obtenerHoraFinalCm(idAnalisis);
     return res.json(obtenerHoraFinalCm);
+    } catch (error) {
+        console.error("Error al obtener el nombre del responsable:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
 
 }
 
 const TiempoTotalActividadCm = async(req, res) =>{
     const idAnalisis =  req.params.ID_ANALISIS;
-    const obtenerTiempoTotalActividadCm = DashboardModel.obtenerTiempoTotalActividadCm(idAnalisis);
+    try {
+
+        const obtenerTiempoTotalActividadCm = await DashboardModel.obtenerTiempoTotalActividadCm(idAnalisis);
     return res.json(obtenerTiempoTotalActividadCm);
+    } catch (error) {
+        console.error("Error al obtener el nombre del responsable:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
 
 }
 
 const EficienciaCm = async(req, res) =>{
     const idAnalisis =  req.params.ID_ANALISIS;
-    const obtenerEficienciaCm = DashboardModel.obtenerEficienciaCm(idAnalisis);
+    try {
+
+        const obtenerEficienciaCm = await DashboardModel.obtenerEficienciaCm(idAnalisis);
     return res.json(obtenerEficienciaCm);
+    } catch (error) {
+        console.error("Error al obtener el nombre del responsable:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
+
 }
 
 const PromedioVelocidadCm = async(req, res) =>{
     const idAnalisis =  req.params.ID_ANALISIS;
-    const obtenerPromedioVelocidadCm = DashboardModel.obtenerPromedioVelocidadCm(idAnalisis);
+    try {
+
+        const obtenerPromedioVelocidadCm = await DashboardModel.obtenerPromedioVelocidadCm(idAnalisis);
     return res.json(obtenerPromedioVelocidadCm);
+    } catch (error) {
+        console.error("Error al obtener el nombre del responsable:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
 }
 
 const PorcentajeAreaPilotoCm = async(req, res) =>{
     const idAnalisis =  req.params.ID_ANALISIS;
-    const obtenerPorcentajeAreaPilotoCm = DashboardModel.obtenerPorcentajeAreaPilotoCm(idAnalisis);
+    try {
+
+        const obtenerPorcentajeAreaPilotoCm = await DashboardModel.obtenerPorcentajeAreaPilotoCm(idAnalisis);
     return res.json(obtenerPorcentajeAreaPilotoCm);
+    } catch (error) {
+        console.error("Error al obtener el nombre del responsable:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
 }
 
 const PorcentajeAreaAutoTrackerCm = async(req, res) => {
     const idAnalisis =  req.params.ID_ANALISIS;
-    const obtenerPorcentajeAreaAutoTrackerCm = DashboardModel.obtenerPorcentajeAreaAutotrackerCm(idAnalisis);
+    try {
+
+        const obtenerPorcentajeAreaAutoTrackerCm = await DashboardModel.obtenerPorcentajeAreaAutotrackerCm(idAnalisis);
     return res.json(obtenerPorcentajeAreaAutoTrackerCm);
+    } catch (error) {
+        console.error("Error al obtener el nombre del responsable:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
 }
 
 
