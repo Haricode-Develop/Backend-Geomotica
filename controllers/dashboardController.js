@@ -27,7 +27,9 @@ const procesarCsv = async (req, res) => {
             skipEmptyLines: true,
             complete: (results) => {
                 const datos = results.data.slice(1).map((fila) => {
-                    return fila.map((valor, indice) => formatearValor(valor, indice)).concat(idTipoAnalisis);
+                    const filaProcesada =  fila.map((valor, indice) => formatearValor(valor, indice));
+                    filaProcesada.splice(24, 0, idTipoAnalisis);
+                    return filaProcesada;
                 });
                 res.json({ data: datos });
             }
