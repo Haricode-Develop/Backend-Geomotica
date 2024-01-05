@@ -17,13 +17,13 @@ exports.recibirMapeoHtml = (req, res) => {
 };
 
 exports.recibirCapaGeoJSON = (req, res) => {
-    const layerUrl = req.body.layerUrl;
-    console.log("URL de la Capa GeoJSON Recibida: ", layerUrl);
+    const geojsonData = req.body.geojsonData;
+    console.log("Datos GeoJSON Recibidos: ", geojsonData);
 
-    // Emitir el evento con la URL de la capa
-    io.getIo().emit('updateGeoJSONLayer', layerUrl);
+    // Emitir el evento con los datos GeoJSON
+    io.getIo().emit('updateGeoJSONLayer', geojsonData);
 
-    res.send('Capa GeoJSON recibida y emitida');
+    res.send('Datos GeoJSON recibidos y emitidos');
 };
 exports.loadingAnalysis = (req, res) => {
     const progress = req.body.progress;

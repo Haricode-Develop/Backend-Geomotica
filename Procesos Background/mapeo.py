@@ -115,7 +115,7 @@ url_capa = upload_to_bucket(nombre_bucket, json.dumps(geojson_data), nombre_arch
 
 # Enviar URL de la capa al servidor
 api_url = "http://localhost:3001/socket/updateGeoJSONLayer"
-data = {'layerUrl': url_capa}
+data = {'geojsonData': geojson_data}  # Enviar el contenido GeoJSON directamente
 try:
     requests.post(api_url, json=data)
     logging.info("URL de la capa enviada al servidor")
