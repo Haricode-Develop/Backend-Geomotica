@@ -5,9 +5,14 @@ const emailSender = require("../utils/emailSender.js");
 const eSender = new emailSender();
 
 const login = async (req, res) => {
-  const { email, password } = req.body;
-
-  const user = await UserModel.findByEmail(email);
+  try {
+    const { email, password } = req.body;
+  console.log("Llega aca con el email "+ email);
+    const user = await UserModel.findByEmail(email);
+    return res.json({ user });
+  } catch (error) {
+    return res.error(error);
+  }
   /*if (!user) {
     return res.status(404).json({ message: "Usuario no encontrado" });
   }
@@ -21,7 +26,7 @@ const login = async (req, res) => {
     return res.status(403).json({ message: "Contraseña incorrecta" });
   }
 */
-  return res.json({ user });
+  
 };
 
 const register = async (req, res) => {

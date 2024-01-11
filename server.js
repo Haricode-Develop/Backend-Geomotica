@@ -15,6 +15,11 @@ const socketRoutes = require('./routes/webSocket');
 app.use(express.urlencoded({ extended: true })); // Para parsear application/x-www-form-urlencoded
 app.use(morgan('combined'));
 app.use(bodyParser.json({ limit: '50mb' }));
+app.use(cors({
+    origin: "*",
+    methods: ["GET", "POST"],
+    credentials: true
+}));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(express.json());
