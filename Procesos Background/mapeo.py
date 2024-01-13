@@ -61,7 +61,8 @@ polygon = load_polygon(polygon_file)
 
 # Consulta SQL para obtener datos
 try:
-    query = f"""SELECT LONGITUD, LATITUD, PILOTO_AUTOMATICO, VELOCIDAD_Km_H
+    query = f"""SELECT LONGITUD, LATITUD, PILOTO_AUTOMATICO, VELOCIDAD_Km_H, CALIDAD_DE_SENAL, CONSUMOS_DE_COMBUSTIBLE, PRESION_DE_CORTADOR_BASE,
+                AUTO_TRACKET, RPM
                 FROM {tabla} WHERE ID_ANALISIS = {id_analisis};"""
     df = pd.read_sql(query, engine)
     logging.info("Datos obtenidos de la base de datos")
@@ -105,7 +106,12 @@ geojson_data = {
             },
             "properties": {
                 "piloto_automatico": row['PILOTO_AUTOMATICO'],
-                "velocidad": row['VELOCIDAD_Km_H']
+                "velocidad": row['VELOCIDAD_Km_H'],
+                "calidad_senal": row['CALIDAD_DE_SENAL'],
+                "consumo_combustible": row['CONSUMOS_DE_COMBUSTIBLE'],
+                "presion_cortador": row['PRESION_DE_CORTADOR_BASE'],
+                "auto_tracket": row['AUTO_TRACKET'],
+                "rpm": row['RPM']
             }
         } for _, row in df_to_use.iterrows()
     ]
