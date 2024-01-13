@@ -300,7 +300,7 @@ const obtenerPorcentajeAreaAutotrackerCm = async (idAnalisis) => {
         SELECT
             CASE
                 WHEN SUM(AREA_NETA) > 0 THEN
-                            SUM(CASE WHEN AUTO_TRACKER = 1 THEN AREA_NETA ELSE 0 END) / SUM(AREA_NETA) * 100
+                            SUM(CASE WHEN AUTO_TRACKET = "1" THEN AREA_NETA ELSE "0" END) / SUM(AREA_NETA) * 100
                 ELSE 0
                 END AS "PORCENTAJE_AUTOTRACKER"
         FROM cosecha_mecanica WHERE ID_ANALISIS = ?;
