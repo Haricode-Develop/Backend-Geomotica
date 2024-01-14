@@ -1,15 +1,12 @@
 import sys
-import folium
 import pandas as pd
 from sqlalchemy import create_engine
-from folium.plugins import MiniMap
-from google.cloud import storage
-import os
-import json
 import geopandas as gpd
 from shapely.geometry import Point
 import requests
 import logging
+import json
+from google.cloud import storage
 
 # Configuración del logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -80,19 +77,6 @@ if df_filtered.empty:
 else:
     df_to_use = df_filtered
 
-# Crear mapa y configurar tiles
-tiles_option = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-attribution = "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
-
-if not df_to_use.empty:
-    m = folium.Map(location=[df_to_use['LATITUD'].iloc[0], df_to_use['LONGITUD'].iloc[0]], zoom_start=15, tiles=tiles_option, attr=attribution)
-    MiniMap().add_to(m)
-    folium.LayerControl().add_to(m)
-    logging.info("Mapa base creado")
-else:
-    logging.error("df_to_use está vacío, no se puede crear el mapa.")
-    raise ValueError("No hay datos para mostrar en el mapa.")
-
 # Generar GeoJSON de los puntos seleccionados
 geojson_data = {
     "type": "FeatureCollection",
@@ -119,28 +103,13 @@ url_capa = upload_to_bucket(nombre_bucket, json.dumps(geojson_data), nombre_arch
 
 # Enviar URL de la capa al servidor
 api_url = "http://localhost:3001/socket/updateGeoJSONLayer"
+#Envia la petición de la api para hacer e
+ requests.post(api_url, json=data)
 data = {'geojsonData': geojson_data}  # Enviar el contenido GeoJSON directamente
 try:
-    requests.post(api_url, json=data)
     logging.info("URL de la capa enviada al servidor")
 except Exception as e:
     logging.error(f"Error al enviar la URL de la capa al servidor: {e}")
-    raise
-
-# Guardar y subir el mapa base como HTML
-nombre_archivo_temp = f"/tmp/mapa_base_{id_analisis}.html"
-m.save(nombre_archivo_temp)
-url_mapa_base = upload_to_bucket(nombre_bucket, nombre_archivo_temp, f"mapas/mapa_base_{id_analisis}.html")
-os.remove(nombre_archivo_temp)
-logging.info("Mapa base guardado y subido")
-
-# Enviar URL del mapa base al servidor
-data = {'htmlContent': url_mapa_base}
-try:
-    requests.post(api_url, json=data)
-    logging.info("URL del mapa base enviada al servidor")
-except Exception as e:
-    logging.error(f"Error al enviar la URL del mapa base al servidor: {e}")
     raise
 
 logging.info("Proceso de mapeo finalizado")

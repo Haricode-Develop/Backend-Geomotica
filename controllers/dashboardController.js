@@ -103,12 +103,11 @@ const execBash = async (req, res) => {
                 if (stderr) {
                     console.error(`stderr: ${stderr}`);
                 }
-                console.log(`stdout: ${stdout}`);
-                if (esPrimeraEjecucion) {
+                    console.log(`stdout: ${stdout}`);
                     console.log("SE HA EJECUTADO EL EVENTO PARA MOSTRAR EL ANÁLISIS ======");
                     io.getIo().emit('datosInsertados');
                     esPrimeraEjecucion = false;
-                }
+
                 resolve();
             });
         });
