@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcryptjs');
+const { generateAccessToken } = require('../utils/auth/generateToken');
 
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
@@ -59,6 +60,25 @@ const confirmAccount = async (email) => {
     }
 }
 
+const getUserInfo = async (user) =>{
+    return {
+      email: user.EMAIL,
+      name: user.NOMBRE,
+      id: user.ID_USUARIO,
+    };
+  }
+
+
+const createAccessToken = async (user) => {
+    const payload = await getUserInfo(user);
+    return generateAccessToken(payload);
+}
+const createRefreshToken = async (user) => {
+    const payload = await getUserInfo(user);
+    return generateRefreshToken(payload);
+}
+
+
 app.use(errorHandler);
 
 module.exports = {
@@ -66,5 +86,7 @@ module.exports = {
     verifyPassword,
     createUser,
     insertTemporalPassword,
-    confirmAccount
+    confirmAccount,
+    createAccessToken,
+    createRefreshToken
 };
