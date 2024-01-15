@@ -112,4 +112,11 @@ except Exception as e:
     logging.error(f"Error al enviar la URL de la capa al servidor: {e}")
     raise
 
+ api_url_loader = "http://localhost:3001/socket/"
+ event = 'loadingAnalysis'
+ data = {"progress": 80, "message": "Se finaliza mapeo de datos, se procede a enviar los datos para su visualización"}
+ payload = json.dumps({"event": event, "data": data})
+ headers = {'Content-Type': 'application/json'}
+ response = requests.post(api_url, data=payload, headers=headers)
+
 logging.info("Proceso de mapeo finalizado")

@@ -28,6 +28,10 @@ GCLOUD_SQL_INSTANCE="geomotica-base-dedicada"  # Asegúrate de que este es el no
 GCLOUD_SQL_DATABASE="geomotica"               # Nombre de tu base de datos
 GCLOUD_SQL_USER="danman"                      # Usuario de Cloud SQL
 BUCKET_PATH="gs://geomotica_mapeo/csv/"
+API_URL="$4"
+EVENT="$5"
+
+
 
 echo "El ID de usuario es: $ID_USUARIO"
 
@@ -50,6 +54,9 @@ function insert_cosecha_data {
         echo "Error al importar datos a Cloud SQL."
         exit 1
     fi
+    DATA='{"progress": 30, "message": "Inserción de datos completada."}'
+
+    curl -X POST -H "Content-Type: application/json" -d "{\"event\":\"$EVENT\", \"data\":$DATA}" $API_URL
 
     echo "Inserción de datos completada."
 }

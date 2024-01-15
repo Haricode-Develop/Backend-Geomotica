@@ -106,6 +106,7 @@ const execBash = async (req, res) => {
                     console.log(`stdout: ${stdout}`);
                     console.log("SE HA EJECUTADO EL EVENTO PARA MOSTRAR EL ANÁLISIS ======");
                     io.getIo().emit('datosInsertados');
+                    io.getIo().emit('progressUpdate', { progress: 100, message: 'Carga finalizada' });
                     esPrimeraEjecucion = false;
 
                 resolve();

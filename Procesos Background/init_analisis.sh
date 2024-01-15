@@ -12,6 +12,14 @@ ID_MAX="$5"
 OFFSET="$6"
 VALIDAR="$7"
 
+API_URL="http://localhost:3001/socket/"
+EVENT='loadingAnalysis'
+DATA='{"progress": 10, "message": "Iniciando análisis"}'
+
+curl -X POST -H "Content-Type: application/json" -d "{\"event\":\"$EVENT\", \"data\":$DATA}" $API_URL
+
+
+
 echo "ESTA ES LA RUTA"
 echo $SCRIPT_DIR
 echo "============== INICIA PROCESO DE ANALISIS (INIT_ANALISIS.SH) ================"
@@ -28,7 +36,11 @@ fi
 
 if [ $2 -eq $COSECHA_MECANICA ] && [ "$VALIDAR" = "ok" ]; then
     echo "======== Se ejecuta analisis COSECHA MECANICA  ======="
-    "$SCRIPT_DIR"/procesos/insertDatosCosechaMecanica.sh "$1" "$ARCHIVO_CSV" "$ID_MAX"
+    DATA='{"progress": 20, "message": "Ejecutando inserción de datos de cosecha mecánica"}'
+
+    curl -X POST -H "Content-Type: application/json" -d "{\"event\":\"$EVENT\", \"data\":$DATA}" $API_URL
+
+    "$SCRIPT_DIR"/procesos/insertDatosCosechaMecanica.sh "$1" "$ARCHIVO_CSV" "$ID_MAX" "$API_URL" "$EVENT"
     TABLA_ACTUAL="cosecha_mecanica"
 fi
 
@@ -46,11 +58,15 @@ echo "======== Se ejecuta analisis FERTILIZACION  ======="
 TABLA_ACTUAL="usuarios"
 fi
 
+
 if [[ -f "$SCRIPT_DIR/tempIdAnalisis.txt" ]]; then
 ID_ANALISIS=$(cat "$SCRIPT_DIR/tempIdAnalisis.txt")
 echo "Este es el ID del analisis: $ID_ANALISIS"
 echo "Esta es la tabla que se quiere hacer el análisis: $TABLA_ACTUAL"
 unzip -o $ARCHIVO_POLIGONO -d "poligonoTemp"
+DATA='{"progress": 50, "message": "Iniciando mapeo de datos"}'
+
+curl -X POST -H "Content-Type: application/json" -d "{\"event\":\"$EVENT\", \"data\":$DATA}" $API_URL
 python3 "$SCRIPT_DIR"/procesos/mapeo.py "$ID_ANALISIS" "$TABLA_ACTUAL" "poligonoTemp" "$OFFSET"
 else
 echo "Error: No se pudo obtener el ID del Analisis para el mapeo"
