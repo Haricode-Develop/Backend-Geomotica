@@ -58,7 +58,7 @@ polygon = load_polygon(polygon_file)
 
 # Consulta SQL para obtener datos
 try:
-    query = f"""SELECT LONGITUD, LATITUD, PILOTO_AUTOMATICO, VELOCIDAD_Km_H
+    query = f"""SELECT LONGITUD, LATITUD, PILOTO_AUTOMATICO, VELOCIDAD_Km_H, CALIDAD_DE_SENAL, CONSUMOS_DE_COMBUSTIBLE
                 FROM {tabla} WHERE ID_ANALISIS = {id_analisis};"""
     df = pd.read_sql(query, engine)
     logging.info("Datos obtenidos de la base de datos")
@@ -89,7 +89,9 @@ geojson_data = {
             },
             "properties": {
                 "piloto_automatico": row['PILOTO_AUTOMATICO'],
-                "velocidad": row['VELOCIDAD_Km_H']
+                "velocidad": row['VELOCIDAD_Km_H'],
+                "calidad_senal": row['CALIDAD_DE_SENAL'],
+                "consumo_combustible": row['CONSUMOS_DE_COMBUSTIBLE']
             }
         } for _, row in df_to_use.iterrows()
     ]
@@ -103,13 +105,22 @@ url_capa = upload_to_bucket(nombre_bucket, json.dumps(geojson_data), nombre_arch
 
 # Enviar URL de la capa al servidor
 api_url = "http://localhost:3001/socket/updateGeoJSONLayer"
-#Envia la petición de la api para hacer e
- requests.post(api_url, json=data)
-data = {'geojsonData': geojson_data}  # Enviar el contenido GeoJSON directamente
+data = {'geojsonData': geojson_data}  # Enviar URL del GeoJSON
 try:
+    requests.post(api_url, json=data)
     logging.info("URL de la capa enviada al servidor")
 except Exception as e:
     logging.error(f"Error al enviar la URL de la capa al servidor: {e}")
-    raise
+
+# Actualizar el progreso del mapeo
+api_url_loader = "http://localhost:3001/socket/loadingAnalysis"
+data_loader = {"progress": 100, "message": "Se finaliza mapeo de datos, se procede a enviar los datos para su visualización"}
+payload = json.dumps(data_loader)
+headers = {'Content-Type': 'application/json'}
+try:
+    response = requests.post(api_url_loader, data=payload, headers=headers)
+    logging.info("Proceso de mapeo finalizado")
+except Exception as e:
+    logging.error(f"Error al actualizar el progreso del mapeo: {e}")
 
 logging.info("Proceso de mapeo finalizado")
