@@ -29,7 +29,6 @@ GCLOUD_SQL_DATABASE="geomotica"               # Nombre de tu base de datos
 GCLOUD_SQL_USER="danman"                      # Usuario de Cloud SQL
 BUCKET_PATH="gs://geomotica_mapeo/csv/"
 API_URL="$4"
-EVENT="$5"
 
 
 
@@ -56,7 +55,7 @@ function insert_cosecha_data {
     fi
     DATA='{"progress": 30, "message": "Inserción de datos completada."}'
 
-    curl -X POST -H "Content-Type: application/json" -d "{\"event\":\"$EVENT\", \"data\":$DATA}" $API_URL
+    curl -X POST -H "Content-Type: application/json" -d "$DATA" $API_URL
 
     echo "Inserción de datos completada."
 }
