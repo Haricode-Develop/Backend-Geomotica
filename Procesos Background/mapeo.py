@@ -6,6 +6,8 @@ from shapely.geometry import Point
 import requests
 import logging
 import json
+import os
+import glob
 from google.cloud import storage
 
 # Configuración del logging
@@ -25,15 +27,33 @@ def upload_to_bucket(bucket_name, file_content, destination_blob_name):
         logging.error(f"Error al subir archivo al bucket: {e}")
         raise
 
-def load_polygon(polygon_file):
-    """Carga un polígono desde un archivo GeoJSON."""
+def load_polygon(polygon_folder):
+    """Carga el polígono con más datos desde un conjunto de archivos Shapefile."""
     try:
-        gdf = gpd.read_file(polygon_file)
-        logging.info(f"Polígono cargado desde {polygon_file}")
-        return gdf.iloc[0].geometry
+        # Encuentra todos los archivos .shp en el directorio
+        polygon_files = glob.glob(os.path.join(polygon_folder, '*.shp'))
+        if not polygon_files:
+            raise ValueError(f"No se encontraron archivos .shp en {polygon_folder}")
+
+        # Carga todos los geodataframes y selecciona el más grande
+        largest_gdf = None
+        max_size = 0
+        for shp_file in polygon_files:
+            gdf = gpd.read_file(shp_file)
+            if len(gdf) > max_size:
+                largest_gdf = gdf
+                max_size = len(gdf)
+                selected_file = shp_file
+
+        if largest_gdf is None:
+            raise ValueError(f"No se pudieron cargar los archivos .shp en {polygon_folder}")
+
+        logging.info(f"El polígono más grande cargado desde {selected_file} con {max_size} registros.")
+        return largest_gdf.unary_union, largest_gdf.to_json()
     except Exception as e:
-        logging.error(f"Error al cargar el polígono: {e}")
-        raise
+        logging.error(f"Error al cargar el polígono más grande: {e}")
+        return None, None
+
 
 def point_in_polygon(point, polygon):
     """Verifica si un punto está dentro de un polígono."""
@@ -51,10 +71,15 @@ except Exception as e:
 
 id_analisis = sys.argv[1]
 tabla = sys.argv[2]
-polygon_file = sys.argv[3]
+polygon_folder = sys.argv[3]
 
 # Cargar el polígono
-polygon = load_polygon(polygon_file)
+polygon, polygon_geojson = load_polygon(polygon_folder)
+valid_polygon = polygon is not None
+if valid_polygon:
+    logging.info("Polígono válido y cargado correctamente.")
+else:
+    logging.warning("Polígono no válido o no se pudo cargar. Se continuarán otros procesos sin filtro de polígono.")
 
 # Consulta SQL para obtener datos
 try:
@@ -66,16 +91,15 @@ except Exception as e:
     logging.error(f"Error al obtener datos de la base de datos: {e}")
     raise
 
-# Filtrar los datos según el polígono
-df_filtered = df[df.apply(lambda row: point_in_polygon((row['LONGITUD'], row['LATITUD']), polygon), axis=1)]
-logging.info("Datos filtrados según el polígono")
-
-# Determinar qué conjunto de datos usar
-if df_filtered.empty:
-    logging.warning("No se encontraron datos dentro del polígono. Se utilizarán los datos originales.")
-    df_to_use = df
+if valid_polygon:
+    df_filtered = df[df.apply(lambda row: point_in_polygon((row['LONGITUD'], row['LATITUD']), polygon), axis=1)]
+    logging.info("Datos filtrados según el polígono")
 else:
-    df_to_use = df_filtered
+    df_filtered = df
+    logging.info("Se utilizarán todos los datos, sin filtrar por polígono.")
+
+df_to_use = df_filtered if not df_filtered.empty else df
+
 
 # Generar GeoJSON de los puntos seleccionados
 geojson_data = {
@@ -96,6 +120,10 @@ geojson_data = {
         } for _, row in df_to_use.iterrows()
     ]
 }
+if valid_polygon and polygon_geojson:
+    geojson_data["features"].append(json.loads(polygon_geojson)["features"][0])
+    logging.info("Polígono agregado al GeoJSON")
+
 logging.info("GeoJSON generado")
 
 # Subir el GeoJSON al bucket de Google Cloud Storage
