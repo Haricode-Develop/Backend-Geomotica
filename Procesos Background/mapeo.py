@@ -91,45 +91,50 @@ except Exception as e:
     logging.error(f"Error al obtener datos de la base de datos: {e}")
     raise
 
-if valid_polygon:
-    df_filtered = df[df.apply(lambda row: point_in_polygon((row['LONGITUD'], row['LATITUD']), polygon), axis=1)]
-    logging.info("Datos filtrados según el polígono")
-else:
-    df_filtered = df
-    logging.info("Se utilizarán todos los datos, sin filtrar por polígono.")
 
-df_to_use = df_filtered if not df_filtered.empty else df
+# Crear GeoDataFrame con todos los datos
+gdf = gpd.GeoDataFrame(df, geometry=[Point(xy) for xy in zip(df.LONGITUD, df.LATITUD)])
 
 
-# Generar GeoJSON de los puntos seleccionados
+# Filtrar puntos dentro y fuera del polígono si es válido, de lo contrario usar datos originales
+inside_gdf = gdf[gdf.geometry.within(polygon)] if valid_polygon else gpd.GeoDataFrame()
+outside_gdf = gdf[~gdf.geometry.within(polygon)] if valid_polygon else gpd.GeoDataFrame()
+
+def generate_geojson_features(gdf):
+    features = []
+    for index, row in gdf.iterrows():
+        feature = {
+            "type": "Feature",
+            "geometry": json.loads(gpd.GeoSeries([row['geometry']]).to_json())['features'][0]['geometry'],
+            "properties": row.drop(['geometry']).to_dict()
+        }
+        features.append(feature)
+    return features
+
+
+# Generar características GeoJSON para puntos dentro y fuera del polígono
+inside_features = generate_geojson_features(inside_gdf)
+outside_features = generate_geojson_features(outside_gdf)
+
+# Agregar el polígono al GeoJSON si es válido
+polygon_features = [json.loads(polygon_geojson)["features"][0]] if valid_polygon else []
+
+# Crear GeoJSON final
 geojson_data = {
     "type": "FeatureCollection",
-    "features": [
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [row['LONGITUD'], row['LATITUD']]
-            },
-            "properties": {
-                "piloto_automatico": row['PILOTO_AUTOMATICO'],
-                "velocidad": row['VELOCIDAD_Km_H'],
-                "calidad_senal": row['CALIDAD_DE_SENAL'],
-                "consumo_combustible": row['CONSUMOS_DE_COMBUSTIBLE']
-            }
-        } for _, row in df_to_use.iterrows()
-    ]
+    "features": inside_features + outside_features + polygon_features
 }
-if valid_polygon and polygon_geojson:
-    geojson_data["features"].append(json.loads(polygon_geojson)["features"][0])
-    logging.info("Polígono agregado al GeoJSON")
 
-logging.info("GeoJSON generado")
+logging.info(f"GeoJSON generado con {len(inside_features)} puntos dentro y {len(outside_features)} puntos fuera del polígono.")
 
 # Subir el GeoJSON al bucket de Google Cloud Storage
 nombre_bucket = "geomotica_mapeo"
 nombre_archivo_bucket = f"capas/capa_{id_analisis}.json"
-url_capa = upload_to_bucket(nombre_bucket, json.dumps(geojson_data), nombre_archivo_bucket)
+try:
+    url_capa = upload_to_bucket(nombre_bucket, json.dumps(geojson_data), nombre_archivo_bucket)
+    logging.info(f"GeoJSON subido al bucket: {url_capa}")
+except Exception as e:
+    logging.error(f"Error al subir GeoJSON al bucket: {e}")
 
 # Enviar URL de la capa al servidor
 api_url = "http://localhost:3001/socket/updateGeoJSONLayer"
