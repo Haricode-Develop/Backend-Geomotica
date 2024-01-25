@@ -37,6 +37,7 @@ const procesarCsv = async (req, res) => {
                 }
                 try {
                     const fila = row.data;
+                    console.log("ESTOS SON LOS DATOS DE LA FILA: ", fila);
                     fila[0] = validaciones.validarLongitud(fila[0]); // LATITUD VALIDACIÓN
                     fila[1] = validaciones.validarLongitud(fila[1]); // LONGITUD VALIDACIÓN
                     fila[22] = validaciones.validarPilotoAutomatico(fila[22]); // PILOTO VALIDACIÓN
