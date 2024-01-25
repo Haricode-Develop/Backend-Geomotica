@@ -58,9 +58,17 @@ const procesarCsv = async (req, res) => {
 
             },
             complete: function() {
+                console.log('Procesamiento completo, ningún error encontrado');
                 if (!errorEncountered) {
                     res.status(200).send('Archivo procesado correctamente');
                 }
+            },
+            error: function(error) {
+                console.error('Error al parsear CSV:', error.message);
+                res.status(500).json({
+                    mensaje: 'Error al parsear CSV',
+                    error: error.message
+                });
             }
         });
     });
