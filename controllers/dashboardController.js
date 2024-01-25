@@ -5,7 +5,7 @@ const fs = require('fs');
 const io = require('../socket');
 let esPrimeraEjecucion = true;
 const Papa = require('papaparse');
-
+const validaciones = require('../utils/validacionesMapeo');
 const {exec} = require('child_process');
 const procesarCsv = async (req, res) => {
     const idTipoAnalisis = req.body.idTipoAnalisis;
@@ -20,18 +20,31 @@ const procesarCsv = async (req, res) => {
             console.error('Error al leer el archivo:', err);
             return res.status(500).send('Error al procesar el archivo');
         }
-
+        let filaError = 0;
         // Procesa el archivo CSV
         Papa.parse(data, {
             header: false,
             skipEmptyLines: true,
-            complete: (results) => {
-                const datos = results.data.slice(1).map((fila) => {
-                    const filaProcesada =  fila.map((valor, indice) => formatearValor(valor, indice));
-                    filaProcesada.splice(24, 0, idTipoAnalisis);
-                    return filaProcesada;
-                });
-                res.json({ data: datos });
+            step: function(row, parser) {
+                filaError++;
+                try {
+                    const fila = row.data;
+                    fila[0] = validaciones.validarLongitud(fila[0]); // LATITUD VALIDACIÓN
+                    fila[1] = validaciones.validarLongitud(fila[1]); // LONGITUD VALIDACIÓN
+                    fila[24] = validaciones.validarAutoTracket(fila[24]); // AUTO TRACKET VALIDACIÓN
+                    fila[25] = validaciones.validarPilotoAutomatico(fila[25]); // PILOTO VALIDACIÓN
+                    fila.push(idTipoAnalisis);
+                } catch (error) {
+                    parser.abort();
+                    res.status(400).json({
+                        mensaje: 'Error de validación',
+                        error: error.message,
+                        fila: filaError,
+                    });
+                }
+            },
+            complete: function() {
+                res.status(200).send('Archivo procesado correctamente');
             }
         });
     });
