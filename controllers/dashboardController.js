@@ -35,6 +35,7 @@ const procesarCsv = async (req, res) => {
                     fila[25] = validaciones.validarPilotoAutomatico(fila[25]); // PILOTO VALIDACIÓN
                     fila.push(idTipoAnalisis);
                 } catch (error) {
+                    errorEncountered = true;
                     parser.abort();
                     res.status(400).json({
                         mensaje: 'Error de validación',
@@ -44,7 +45,9 @@ const procesarCsv = async (req, res) => {
                 }
             },
             complete: function() {
-                res.status(200).send('Archivo procesado correctamente');
+                if (!errorEncountered) {
+                    res.status(200).send('Archivo procesado correctamente');
+                }
             }
         });
     });
