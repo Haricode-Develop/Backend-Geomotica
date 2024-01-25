@@ -39,8 +39,8 @@ const procesarCsv = async (req, res) => {
                     const fila = row.data;
                     fila[0] = validaciones.validarLongitud(fila[0]); // LATITUD VALIDACIÓN
                     fila[1] = validaciones.validarLongitud(fila[1]); // LONGITUD VALIDACIÓN
-                    fila[24] = validaciones.validarAutoTracket(fila[24]); // AUTO TRACKET VALIDACIÓN
-                    fila[25] = validaciones.validarPilotoAutomatico(fila[25]); // PILOTO VALIDACIÓN
+                    fila[22] = validaciones.validarPilotoAutomatico(fila[25]); // PILOTO VALIDACIÓN
+                    fila[23] = validaciones.validarAutoTracket(fila[24]); // AUTO TRACKET VALIDACIÓN
                     fila.push(idTipoAnalisis);
                 } catch (error) {
                     errorEncountered = true;
@@ -124,7 +124,7 @@ const execBash = async (req, res) => {
                 if (error) {
                     console.error(`exec error: ${error}`);
                     reject(`Error executing script: ${error.message}`);
-                    return; // Asegúrate de retornar aquí para evitar llamar a resolve() después de un reject()
+                    return;
                 }
                 if (stderr) {
                     console.error(`stderr: ${stderr}`);
