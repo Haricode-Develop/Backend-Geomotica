@@ -12,8 +12,7 @@ const authRoutes = require('./routes/authRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const socketRoutes = require('./routes/webSocket');
 
-app.use(cors());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true })); // Para parsear application/x-www-form-urlencoded
 app.use(morgan('combined'));
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(cors({
@@ -22,6 +21,7 @@ app.use(cors({
     credentials: true
 }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+
 app.use(express.json());
 
 app.use('/auth', authRoutes);
@@ -34,8 +34,7 @@ app.get('/', (req, res) => {
 
 const server = http.createServer(app);
 
-server.timeout = 300000;
-
+// Inicializar Socket.io utilizando el módulo 'socket.js'
 socket.init(server);
 
 server.listen(PORT, () => {
