@@ -21,12 +21,20 @@ const procesarCsv = async (req, res) => {
             return res.status(500).send('Error al procesar el archivo');
         }
         let filaError = 0;
+        let errorEncountered = false;
         // Procesa el archivo CSV
         Papa.parse(data, {
             header: false,
             skipEmptyLines: true,
             step: function(row, parser) {
-                filaError++;
+                if (errorEncountered) {
+                    return;
+                }
+
+                if (filaError === 0) {
+                    filaError++;
+                    return;
+                }
                 try {
                     const fila = row.data;
                     fila[0] = validaciones.validarLongitud(fila[0]); // LATITUD VALIDACIÓN
@@ -43,6 +51,8 @@ const procesarCsv = async (req, res) => {
                         fila: filaError,
                     });
                 }
+                filaError++;
+
             },
             complete: function() {
                 if (!errorEncountered) {
