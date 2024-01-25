@@ -22,6 +22,7 @@ const procesarCsv = async (req, res) => {
         }
         let filaError = 0;
         let errorEncountered = false;
+        let processedData = [];
         // Procesa el archivo CSV
         Papa.parse(data, {
             header: false,
@@ -45,6 +46,8 @@ const procesarCsv = async (req, res) => {
                     fila[22] = validaciones.validarPilotoAutomatico(fila[22]); // PILOTO VALIDACIÓN
                     fila[23] = validaciones.validarAutoTracket(fila[23]); // AUTO TRACKET VALIDACIÓN
                     fila.push(idTipoAnalisis);
+
+                    processedData.push(fila);
                 } catch (error) {
                     errorEncountered = true;
                     parser.abort();
@@ -53,14 +56,15 @@ const procesarCsv = async (req, res) => {
                         error: error.message,
                         fila: filaError,
                     });
+                    return;
                 }
                 filaError++;
 
             },
             complete: function() {
-                console.log('Procesamiento completo, ningún error encontrado');
                 if (!errorEncountered) {
-                    res.status(200).send('Archivo procesado correctamente');
+                    // Enviar los datos procesados como respuesta JSON
+                    res.status(200).json({ mensaje: 'Archivo procesado correctamente', data: processedData });
                 }
             },
             error: function(error) {
