@@ -39,8 +39,8 @@ const procesarCsv = async (req, res) => {
                     const fila = row.data;
                     fila[0] = validaciones.validarLongitud(fila[0]); // LATITUD VALIDACIÓN
                     fila[1] = validaciones.validarLongitud(fila[1]); // LONGITUD VALIDACIÓN
-                    fila[22] = validaciones.validarPilotoAutomatico(fila[25]); // PILOTO VALIDACIÓN
-                    fila[23] = validaciones.validarAutoTracket(fila[24]); // AUTO TRACKET VALIDACIÓN
+                    fila[22] = validaciones.validarPilotoAutomatico(fila[22]); // PILOTO VALIDACIÓN
+                    fila[23] = validaciones.validarAutoTracket(fila[23]); // AUTO TRACKET VALIDACIÓN
                     fila.push(idTipoAnalisis);
                 } catch (error) {
                     errorEncountered = true;
