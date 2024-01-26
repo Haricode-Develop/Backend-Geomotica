@@ -8,18 +8,14 @@ const login = async (req, res) => {
     const { email, password } = req.body;
 
     const user = await UserModel.findByEmail(email);
-
+    const isValidPassword = await UserModel.isValidPassword(password, user.EMAIL);
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
-
-    // Verificar la contraseña (debes implementar tu lógica de verificación)
-    const isValidPassword = true; // Reemplaza con tu lógica real
-
-    if (!isValidPassword) {
+    if(!isValidPassword){
       return res.status(403).json({ message: "Contraseña incorrecta" });
     }
-
+    // Reemplaza con tu lógica real
     // Verificar el estatus del usuario (por ejemplo, si está verificado)
     // if (user.ESTATUS !== 1) {
     //   return res.status(403).json({ message: "Usuario no verificado aún, por favor verificar correo" });
