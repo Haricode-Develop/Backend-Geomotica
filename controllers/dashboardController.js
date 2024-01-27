@@ -43,8 +43,14 @@ const procesarCsv = async (req, res) => {
                     }
                     fila[0] = validaciones.validarLongitud(fila[0]); // LATITUD VALIDACIÓN
                     fila[1] = validaciones.validarLongitud(fila[1]); // LONGITUD VALIDACIÓN
+                    fila[14] = formatearValor(fila[14], 14); // FECHA INICIO COSECHA
+                    fila[15] = formatearValor(fila[15], 15); // FECHA INICIO VALIDACIÓN
+                    fila[16] = formatearValor(fila[16], 16); // HORA INICIO VALIDACIÓN
+                    fila[17] = formatearValor(fila[17], 17); // HORA FINAL VALIDACIÓN
+                    fila[18] = formatearValor(fila[18], 18); // TIEMPO TOTAL VALIDACIÓN
                     fila[22] = validaciones.validarPilotoAutomatico(fila[22]); // PILOTO VALIDACIÓN
                     fila[23] = validaciones.validarAutoTracket(fila[23]); // AUTO TRACKET VALIDACIÓN
+
                     fila.push(idTipoAnalisis);
 
                     processedData.push(fila);
