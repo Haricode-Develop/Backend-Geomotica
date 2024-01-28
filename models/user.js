@@ -75,17 +75,20 @@ const getUserInfo = async (user) => {
 const isValidPassword = async (password, email) => {
   try {
     const user = await findByEmail(email);
+    console.log(user);
+    console.log(user.PASSWORD)
+    console.log(bcrypt.compare(password, user.PASSWORD));
     if (email === null || email === undefined) {
       return false;
     }
-    return bcrypt.compare(password, user.CLAVE);
+    return bcrypt.compare(password, user.PASSWORD);
   } catch (error) {
     return false;
   }
 };
 const verifyPassword = async (inputPassword, hash) => {
   return await bcrypt.compare(inputPassword, hash);
-}
+};
 
 const createAccessToken = async (user) => {
   const payload = await getUserInfo(user);
@@ -106,5 +109,5 @@ module.exports = {
   confirmAccount,
   createAccessToken,
   createRefreshToken,
-  isValidPassword
+  isValidPassword,
 };
