@@ -1,27 +1,39 @@
 const UserModel = require("../models/user");
 const jwt = require("jsonwebtoken");
 const emailSender = require("../utils/emailSender.js");
-//const passwordRecuperation =require("../utils/passwordRecuperation.js");
 const eSender = new emailSender();
 
 const login = async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const user = await UserModel.findByEmail(email);
-  /*if (!user) {
-    return res.status(404).json({ message: "Usuario no encontrado" });
-  }
-  //nota mental del barryways pasar esto a un SP despues
-  if(user.ESTATUS != 1){
-    return res.status(403).json({ message: "Usuario no verificado aun, por favor verificar correo" });
-  }
+    const user = await UserModel.findByEmail(email);
+    console.log(user);
+    console.log(user.EMAIL);
+    console.log(user.PASSWORD);
+    //const isValidPassword = await UserModel.isValidPassword(password, user.EMAIL);
 
-  const isValidPassword = true;
-  if (!isValidPassword) { 
-    return res.status(403).json({ message: "Contraseña incorrecta" });
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+    // if(!isValidPassword){
+    //   return res.status(403).json({ message: "Contraseña incorrecta" });
+    // }
+    // Reemplaza con tu lógica real
+    // Verificar el estatus del usuario (por ejemplo, si está verificado)
+    // if (user.ESTATUS !== 1) {
+    //   return res.status(403).json({ message: "Usuario no verificado aún, por favor verificar correo" });
+    // }
+
+    // Generar un token JWT
+    const token = jwt.sign({ userId: user.id, email: user.email }, 'tu_clave_secreta', { expiresIn: '1h' });
+
+    // Enviar el token al cliente
+    return res.json({ user, token });
+  } catch (error) {
+    console.error('Error en el proceso de inicio de sesión:', error);
+    return res.status(500).json({ message: "Error en el servidor" });
   }
-*/
-  return res.json({ user });
 };
 
 const register = async (req, res) => {
