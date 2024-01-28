@@ -100,6 +100,11 @@ gdf = gpd.GeoDataFrame(df, geometry=[Point(xy) for xy in zip(df.LONGITUD, df.LAT
 inside_gdf = gdf[gdf.geometry.within(polygon)] if valid_polygon else gpd.GeoDataFrame()
 outside_gdf = gdf[~gdf.geometry.within(polygon)] if valid_polygon else gpd.GeoDataFrame()
 
+
+# Crear polígono de puntos cortados
+cut_points_polygon = create_polygon_from_points(outside_gdf)
+cut_points_polygon_json = json.loads(gpd.GeoSeries([cut_points_polygon]).to_json())["features"][0] if cut_points_polygon else None
+
 def generate_geojson_features(gdf):
     features = []
     for index, row in gdf.iterrows():
@@ -118,11 +123,12 @@ outside_features = generate_geojson_features(outside_gdf)
 
 # Agregar el polígono al GeoJSON si es válido
 polygon_features = [json.loads(polygon_geojson)["features"][0]] if valid_polygon else []
+cut_polygon_features = [cut_points_polygon_json] if cut_points_polygon_json else []
 
 # Crear GeoJSON final
 geojson_data = {
     "type": "FeatureCollection",
-    "features": inside_features + outside_features + polygon_features
+    "features": inside_features + outside_features + polygon_features + cut_polygon_features
 }
 
 logging.info(f"GeoJSON generado con {len(inside_features)} puntos dentro y {len(outside_features)} puntos fuera del polígono.")
