@@ -83,7 +83,7 @@ else:
 
 # Consulta SQL para obtener datos
 try:
-    query = f"""SELECT LONGITUD, LATITUD, PILOTO_AUTOMATICO, VELOCIDAD_Km_H, CALIDAD_DE_SENAL, CONSUMOS_DE_COMBUSTIBLE
+    query = f"""SELECT LONGITUD, LATITUD, PILOTO_AUTOMATICO, VELOCIDAD_Km_H, CALIDAD_DE_SENAL, CONSUMOS_DE_COMBUSTIBLE, AUTO_TRACKET, RPM, PRESION_DE_CORTADOR_BASE, TIEMPO_TOTAL
                 FROM {tabla} WHERE ID_ANALISIS = {id_analisis};"""
     df = pd.read_sql(query, engine)
     logging.info("Datos obtenidos de la base de datos")
@@ -91,6 +91,7 @@ except Exception as e:
     logging.error(f"Error al obtener datos de la base de datos: {e}")
     raise
 
+df['TIEMPO_TOTAL'] = df['TIEMPO_TOTAL'].apply(str)
 
 # Crear GeoDataFrame con todos los datos
 gdf = gpd.GeoDataFrame(df, geometry=[Point(xy) for xy in zip(df.LONGITUD, df.LATITUD)])
