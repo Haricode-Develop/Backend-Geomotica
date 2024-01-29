@@ -37,9 +37,6 @@ router.get('/codigoParcelaResponsableCm/:ID_ANALISIS', DashbBoard.CodigoParcelaR
 router.get('/nombreOperadorCm/:ID_ANALISIS', DashbBoard.NombreOperadorCm);
 router.get('/nombreMaquinaCm/:ID_ANALISIS', DashbBoard.NombreMaquinaCm);
 router.get('/actividadCm/:ID_ANALISIS', DashbBoard.ActividadCm);
-router.get('/areaNetaCm/:ID_ANALISIS', DashbBoard.AreaNetaCm);
-router.get('/areaBrutaCm/:ID_ANALISIS', DashbBoard.AreaBrutaCm);
-router.get('/diferenciaDeAreaCm/:ID_ANALISIS', DashbBoard.DiferenciaDeAreaCm);
 router.get('/horaInicioCm/:ID_ANALISIS', DashbBoard.HoraInicioCm);
 router.get('/horaFinalCm/:ID_ANALISIS', DashbBoard.HoraFinalCm);
 router.get('/tiempoTotalActividadCm/:ID_ANALISIS', DashbBoard.TiempoTotalActividadCm);
