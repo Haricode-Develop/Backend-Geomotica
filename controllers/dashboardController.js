@@ -374,7 +374,7 @@ const NombreMaquinaCm = async(req, res) =>{
 const consumoCombustibleCm = async(req, res) =>{
     const idAnalisis = req.params.ID_ANALISIS;
     try{
-        const obtenerConsumosCombustibleCm = await DashboardModel.obtenerConsumoCombustible(idAnalisis);
+        const obtenerConsumosCombustibleCm = await DashboardModel.obtenerConsumoCombustibleCm(idAnalisis);
         return res.json(obtenerConsumosCombustibleCm);
     } catch(error){
         console.error("Error al obtener el nombre del responsable:", error);
@@ -382,10 +382,10 @@ const consumoCombustibleCm = async(req, res) =>{
     }
 }
 
-const calidadGps = async(req, res) =>{
+const calidadGpsCm = async(req, res) =>{
     const idAnalisis = req.params.ID_ANALISIS;
     try{
-        const obtenerCalidadGps = await DashboardModel.obtenerCalidadGps(idAnalisis);
+        const obtenerCalidadGps = await DashboardModel.obtenerCalidadGpsCm(idAnalisis);
         return res.json(obtenerCalidadGps);
     } catch(error){
         console.error("Error al obtener el nombre del responsable:", error);
@@ -765,7 +765,7 @@ module.exports = {
     PromedioVelocidadCm,
     PorcentajeAreaPilotoCm,
     PorcentajeAreaAutoTrackerCm,
-    calidadGps,
+    calidadGpsCm,
     consumoCombustibleCm,
     //==== ANALISIS FERTILIZACIÓN=======
     ResponsableFetilizacion,

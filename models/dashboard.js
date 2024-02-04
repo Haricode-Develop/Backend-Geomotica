@@ -274,13 +274,13 @@ const obtenerEficienciaCm = async (idAnalisis) => {
     const [rows] = await pool.query(query, [idAnalisis]);
     return rows.map(row => row.EFICIENCIA);
 };
-const obtenerConsumoCombustible = async(idAnalisis) =>{
+const obtenerConsumoCombustibleCm = async(idAnalisis) =>{
     const query = `SELECT ROUND(AVG(CONSUMOS_DE_COMBUSTIBLE), 2) AS consumoCombustible FROM cosecha_mecanica WHERE ID_ANALISIS = ?;`;
     const[rows] = await pool.query(query, [idAnalisis]);
     return rows[0].consumoCombustible;
 }
 
-const obtenerCalidadGps = async(idAnalisis) =>{
+const obtenerCalidadGpsCm = async(idAnalisis) =>{
     const query = `SELECT ROUND(AVG(CALIDAD_DE_SENAL), 2) AS calidadGps FROM cosecha_mecanica WHERE ID_ANALISIS = ?`;
     const [rows] = await pool.query(query, [idAnalisis]);
     return rows[0].calidadGps;
@@ -574,7 +574,8 @@ module.exports = {
     obtenerPromedioVelocidadCm,
     obtenerPorcentajeAreaPilotoCm,
     obtenerPorcentajeAreaAutotrackerCm,
-    obtenerConsumoCombustible,
+    obtenerConsumoCombustibleCm,
+    obtenerCalidadGpsCm,
     // ===== FERTILIZACIÓN ======
     obtenerResponsableFertilizacion,
     obtenerFechaInicioFertilizacion,
