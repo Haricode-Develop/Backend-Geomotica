@@ -47,6 +47,7 @@ router.get('/porcentajeAreaAutoTrackerCm/:ID_ANALISIS', DashbBoard.PorcentajeAre
 router.get('/consumoCombustibleCm/:ID_ANALISIS', DashbBoard.consumoCombustibleCm);
 router.get('/calidadGpsCm/:ID_ANALISIS', DashbBoard.calidadGpsCm);
 router.get('/rpmCm/:ID_ANALISIS', DashbBoard.rpmCm);
+router.get('/tchCm/:ID_ANALISIS', DashbBoard.tchCm);
 
 
 // ==== ANALISIS FERTILIZACIÓN =======

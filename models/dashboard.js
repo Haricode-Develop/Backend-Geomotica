@@ -286,6 +286,13 @@ const obtenerRpmCm = async(idAnalisis) =>{
     return rows[0].rpm;
 }
 
+const obtenerTch = async(idAnalisis) => {
+    const query = `SELECT ROUND(AVG(TCH), 2) AS tch FROM cosecha_mecanica WHERE ID_ANALISIS = ?`;
+    const [rows] = await pool.query(query, [idAnalisis]);
+    return rows[0].tch;
+}
+
+
 const obtenerCalidadGpsCm = async(idAnalisis) =>{
     const query = `SELECT ROUND(AVG(CALIDAD_DE_SENAL), 2) AS calidadGps FROM cosecha_mecanica WHERE ID_ANALISIS = ?`;
     const [rows] = await pool.query(query, [idAnalisis]);
@@ -581,6 +588,7 @@ module.exports = {
     obtenerPorcentajeAreaPilotoCm,
     obtenerPorcentajeAreaAutotrackerCm,
     obtenerConsumoCombustibleCm,
+    obtenerTch,
     obtenerCalidadGpsCm,
     obtenerRpmCm,
     // ===== FERTILIZACIÓN ======
