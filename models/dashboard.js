@@ -292,6 +292,11 @@ const obtenerTch = async(idAnalisis) => {
     return rows[0].tch;
 }
 
+const obtenerTah = async(idAnalisis) => {
+    const query = `SELECT ROUND(AVG(TAH), 2) AS tah FROM cosecha_mecanica WHERE ID_ANALISIS = ?`;
+    const [rows] = await pool.query(query, [idAnalisis]);
+    return rows[0].tah;
+}
 
 const obtenerCalidadGpsCm = async(idAnalisis) =>{
     const query = `SELECT ROUND(AVG(CALIDAD_DE_SENAL), 2) AS calidadGps FROM cosecha_mecanica WHERE ID_ANALISIS = ?`;
@@ -590,6 +595,7 @@ module.exports = {
     obtenerConsumoCombustibleCm,
     obtenerTch,
     obtenerCalidadGpsCm,
+    obtenerTah,
     obtenerRpmCm,
     // ===== FERTILIZACIÓN ======
     obtenerResponsableFertilizacion,

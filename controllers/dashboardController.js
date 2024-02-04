@@ -405,6 +405,18 @@ const tchCm = async(req, res) => {
     }
 }
 
+const tahCm = async(req, res) => {
+    const idAnalisis = req.params.ID_ANALISIS;
+    try{
+        const obtenerTahCm = await DashboardModel.obtenerTah(idAnalisis);
+        return res.json(obtenerTahCm);
+
+    }catch(error){
+        console.error("Error al obtener el nombre del responsable:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
+}
+
 const calidadGpsCm = async(req, res) =>{
     const idAnalisis = req.params.ID_ANALISIS;
     try{
@@ -790,6 +802,7 @@ module.exports = {
     PorcentajeAreaAutoTrackerCm,
     calidadGpsCm,
     consumoCombustibleCm,
+    tahCm,
     tchCm,
     rpmCm,
     //==== ANALISIS FERTILIZACIÓN=======
