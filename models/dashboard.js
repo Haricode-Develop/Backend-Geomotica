@@ -274,7 +274,11 @@ const obtenerEficienciaCm = async (idAnalisis) => {
     const [rows] = await pool.query(query, [idAnalisis]);
     return rows.map(row => row.EFICIENCIA);
 };
-
+const obtenerConsumoCombustible = async(idAnalisis) =>{
+    const query = `SELECT ROUND(AVG(CONSUMOS_DE_COMBUSTIBLE), 2) AS consumoCombustible FROM cosecha_mecanica WHERE ID_ANALISIS = ?;`;
+    const[rows] = await pool.query(query, [idAnalisis]);
+    return rows[0].consumoCombustible;
+}
 const obtenerPromedioVelocidadCm = async (idAnalisis) => {
     const query = `SELECT ROUND(AVG(VELOCIDAD_Km_H), 2) AS promedioVelocidad FROM cosecha_mecanica WHERE ID_ANALISIS = ?;`;
     const [rows] = await pool.query(query, [idAnalisis]);
@@ -491,6 +495,7 @@ const obtenerHoraInicioHerbicidas = async (idAnalisis) => {
     return rows.map(row => row.HORA_INICIO);
 };
 
+
 const obtenerHoraFinalHerbicidas = async (idAnalisis) => {
     const query = `SELECT DISTINCT HORA_FINAL FROM herbicidas WHERE ID_ANALISIS = ?;`;
     const [rows] = await pool.query(query, [idAnalisis]);
@@ -562,6 +567,7 @@ module.exports = {
     obtenerPromedioVelocidadCm,
     obtenerPorcentajeAreaPilotoCm,
     obtenerPorcentajeAreaAutotrackerCm,
+    obtenerConsumoCombustible,
     // ===== FERTILIZACIÓN ======
     obtenerResponsableFertilizacion,
     obtenerFechaInicioFertilizacion,
