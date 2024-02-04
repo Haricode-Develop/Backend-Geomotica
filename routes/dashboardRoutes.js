@@ -45,6 +45,9 @@ router.get('/promedioVelocidadCm/:ID_ANALISIS', DashbBoard.PromedioVelocidadCm);
 router.get('/porcentajeAreaPilotoCm/:ID_ANALISIS', DashbBoard.PorcentajeAreaPilotoCm);
 router.get('/porcentajeAreaAutoTrackerCm/:ID_ANALISIS', DashbBoard.PorcentajeAreaAutoTrackerCm);
 router.get('/consumoCombustibleCm/:ID_ANALISIS', DashbBoard.consumoCombustibleCm);
+router.get('/calidadGps/:ID_ANALISIS', DashbBoard.calidadGps);
+
+.
 // ==== ANALISIS FERTILIZACIÓN =======
 router.get('/responsableFertilizacion/:ID_ANALISIS', DashbBoard.ResponsableFetilizacion);
 router.get('/fechaInicioFertilizacion/:ID_ANALISIS', DashbBoard.FechaInicioFertilizacion);

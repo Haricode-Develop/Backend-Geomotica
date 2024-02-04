@@ -279,6 +279,13 @@ const obtenerConsumoCombustible = async(idAnalisis) =>{
     const[rows] = await pool.query(query, [idAnalisis]);
     return rows[0].consumoCombustible;
 }
+
+const obtenerCalidadGps = async(idAnalisis) =>{
+    const query = `SELECT ROUND(AVG(CALIDAD_DE_SENAL), 2) AS calidadGps FROM cosecha_mecanica WHERE ID_ANALISIS = ?`;
+    const [rows] = await pool.query(query, [idAnalisis]);
+    return rows[0].calidadGps;
+}
+
 const obtenerPromedioVelocidadCm = async (idAnalisis) => {
     const query = `SELECT ROUND(AVG(VELOCIDAD_Km_H), 2) AS promedioVelocidad FROM cosecha_mecanica WHERE ID_ANALISIS = ?;`;
     const [rows] = await pool.query(query, [idAnalisis]);
