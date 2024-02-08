@@ -80,6 +80,7 @@ const isValidPassword = async (password, email) => {
     }
     const validation = await bcrypt.compare(password, user.PASSWORD);
     return validation;
+
   } catch (error) {
     return false;
   }
