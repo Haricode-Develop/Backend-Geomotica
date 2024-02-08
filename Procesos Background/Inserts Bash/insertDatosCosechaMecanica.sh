@@ -36,6 +36,8 @@ echo "El ID de usuario es: $ID_USUARIO"
 
 function insert_cosecha_data {
     local csv_file=$1
+  local num_registros_antes=$(wc -l < "$csv_file")
+      echo "Número de registros a insertar: $num_registros_antes"
 
     echo "Subiendo el archivo CSV limpio a Google Cloud Storage..."
     if ! gsutil_output=$(gsutil cp "$csv_file" "${BUCKET_PATH}" 2>&1); then

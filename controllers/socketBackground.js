@@ -25,6 +25,7 @@ exports.recibirCapaGeoJSON = (req, res) => {
 
     res.send('Datos GeoJSON recibidos y emitidos');
 };
+
 exports.loadingAnalysis = (req, res) => {
     const progress = req.body.progress;
     const message = req.body.message;

@@ -59,18 +59,23 @@ fi
 
 
 if [[ -f "$SCRIPT_DIR/tempIdAnalisis.txt" ]]; then
-ID_ANALISIS=$(cat "$SCRIPT_DIR/tempIdAnalisis.txt")
-echo "Este es el ID del analisis: $ID_ANALISIS"
-echo "Esta es la tabla que se quiere hacer el análisis: $TABLA_ACTUAL"
-unzip -o $ARCHIVO_POLIGONO -d "poligonoTemp"
+    ID_ANALISIS=$(cat "$SCRIPT_DIR/tempIdAnalisis.txt")
+    echo "Este es el ID del analisis: $ID_ANALISIS"
+    echo "Esta es la tabla que se quiere hacer el análisis: $TABLA_ACTUAL"
 
+    POLIGONO_DIR="$SCRIPT_DIR/poligonoTemp"
+    mkdir -p "$POLIGONO_DIR"
+    unzip -o "$ARCHIVO_POLIGONO" -d "$POLIGONO_DIR"
 
-DATA='{"progress": 50, "message": "Iniciando mapeo de datos"}'
-curl -X POST -H "Content-Type: application/json" -d "$DATA" $API_URL
-python3 "$SCRIPT_DIR"/procesos/mapeo.py "$ID_ANALISIS" "$TABLA_ACTUAL" "poligonoTemp" "$OFFSET"
+      echo "Contenido de $POLIGONO_DIR:"
+      ls -l "$POLIGONO_DIR"
+    DATA='{"progress": 50, "message": "Iniciando mapeo de datos"}'
+    curl -X POST -H "Content-Type: application/json" -d "$DATA" $API_URL
+    python3 "$SCRIPT_DIR/procesos/mapeo.py" "$ID_ANALISIS" "$TABLA_ACTUAL" "$POLIGONO_DIR" "$OFFSET"
 else
-echo "Error: No se pudo obtener el ID del Analisis para el mapeo"
+    echo "Error: No se pudo obtener el ID del Analisis para el mapeo"
 fi
+rm -rf "$SCRIPT_DIR/Backend-Geomotica/uploads/*"
 
-
-rm -f tempIdAnalisis.txt
+# Eliminar el archivo tempIdAnalisis.txt
+rm -f "$SCRIPT_DIR/tempIdAnalisis.txt"

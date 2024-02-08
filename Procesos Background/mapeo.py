@@ -2,10 +2,12 @@ import sys
 import pandas as pd
 from sqlalchemy import create_engine
 import geopandas as gpd
-from shapely.geometry import Point
+from shapely.geometry import Point, Polygon
 import requests
 import logging
 import json
+import os
+import glob
 from google.cloud import storage
 
 # Configuración del logging
@@ -25,15 +27,33 @@ def upload_to_bucket(bucket_name, file_content, destination_blob_name):
         logging.error(f"Error al subir archivo al bucket: {e}")
         raise
 
-def load_polygon(polygon_file):
-    """Carga un polígono desde un archivo GeoJSON."""
+def load_polygon(polygon_folder):
+    """Carga el polígono con más datos desde un conjunto de archivos Shapefile."""
     try:
-        gdf = gpd.read_file(polygon_file)
-        logging.info(f"Polígono cargado desde {polygon_file}")
-        return gdf.iloc[0].geometry
+        # Encuentra todos los archivos .shp en el directorio
+        polygon_files = glob.glob(os.path.join(polygon_folder, '*.shp'))
+        if not polygon_files:
+            raise ValueError(f"No se encontraron archivos .shp en {polygon_folder}")
+
+        # Carga todos los geodataframes y selecciona el más grande
+        largest_gdf = None
+        max_size = 0
+        for shp_file in polygon_files:
+            gdf = gpd.read_file(shp_file)
+            if len(gdf) > max_size:
+                largest_gdf = gdf
+                max_size = len(gdf)
+                selected_file = shp_file
+
+        if largest_gdf is None:
+            raise ValueError(f"No se pudieron cargar los archivos .shp en {polygon_folder}")
+
+        logging.info(f"El polígono más grande cargado desde {selected_file} con {max_size} registros.")
+        return largest_gdf.unary_union, largest_gdf.to_json()
     except Exception as e:
-        logging.error(f"Error al cargar el polígono: {e}")
-        raise
+        logging.error(f"Error al cargar el polígono más grande: {e}")
+        return None, None
+
 
 def point_in_polygon(point, polygon):
     """Verifica si un punto está dentro de un polígono."""
@@ -51,14 +71,19 @@ except Exception as e:
 
 id_analisis = sys.argv[1]
 tabla = sys.argv[2]
-polygon_file = sys.argv[3]
+polygon_folder = sys.argv[3]
 
 # Cargar el polígono
-polygon = load_polygon(polygon_file)
+polygon, polygon_geojson = load_polygon(polygon_folder)
+valid_polygon = polygon is not None
+if valid_polygon:
+    logging.info("Polígono válido y cargado correctamente.")
+else:
+    logging.warning("Polígono no válido o no se pudo cargar. Se continuarán otros procesos sin filtro de polígono.")
 
 # Consulta SQL para obtener datos
 try:
-    query = f"""SELECT LONGITUD, LATITUD, PILOTO_AUTOMATICO, VELOCIDAD_Km_H, CALIDAD_DE_SENAL, CONSUMOS_DE_COMBUSTIBLE
+    query = f"""SELECT LONGITUD, LATITUD, PILOTO_AUTOMATICO, VELOCIDAD_Km_H, CALIDAD_DE_SENAL, CONSUMOS_DE_COMBUSTIBLE, AUTO_TRACKET, RPM, PRESION_DE_CORTADOR_BASE, TIEMPO_TOTAL
                 FROM {tabla} WHERE ID_ANALISIS = {id_analisis};"""
     df = pd.read_sql(query, engine)
     logging.info("Datos obtenidos de la base de datos")
@@ -66,42 +91,55 @@ except Exception as e:
     logging.error(f"Error al obtener datos de la base de datos: {e}")
     raise
 
-# Filtrar los datos según el polígono
-df_filtered = df[df.apply(lambda row: point_in_polygon((row['LONGITUD'], row['LATITUD']), polygon), axis=1)]
-logging.info("Datos filtrados según el polígono")
+df['TIEMPO_TOTAL'] = df['TIEMPO_TOTAL'].apply(str)
 
-# Determinar qué conjunto de datos usar
-if df_filtered.empty:
-    logging.warning("No se encontraron datos dentro del polígono. Se utilizarán los datos originales.")
-    df_to_use = df
-else:
-    df_to_use = df_filtered
+# Crear GeoDataFrame con todos los datos
+gdf = gpd.GeoDataFrame(df, geometry=[Point(xy) for xy in zip(df.LONGITUD, df.LATITUD)])
 
-# Generar GeoJSON de los puntos seleccionados
+all_points = [Point(xy) for xy in zip(df.LONGITUD, df.LATITUD)]
+polygon_outside_features = Polygon([[p.x, p.y] for p in all_points]).convex_hull
+polygon_outside_geojson = gpd.GeoSeries([polygon_outside_features]).to_json()
+
+# Filtrar puntos dentro y fuera del polígono si es válido, de lo contrario usar datos originales
+inside_gdf = gdf[gdf.geometry.within(polygon)] if valid_polygon else gpd.GeoDataFrame()
+outside_gdf = gdf[~gdf.geometry.within(polygon)] if valid_polygon else gpd.GeoDataFrame()
+
+def generate_geojson_features(gdf):
+    features = []
+    for index, row in gdf.iterrows():
+        feature = {
+            "type": "Feature",
+            "geometry": json.loads(gpd.GeoSeries([row['geometry']]).to_json())['features'][0]['geometry'],
+            "properties": row.drop(['geometry']).to_dict()
+        }
+        features.append(feature)
+    return features
+
+
+# Generar características GeoJSON para puntos dentro y fuera del polígono
+inside_features = generate_geojson_features(inside_gdf)
+outside_features = generate_geojson_features(outside_gdf)
+
+# Agregar el polígono al GeoJSON si es válido
+polygon_features = [json.loads(polygon_geojson)["features"][0]] if valid_polygon else []
+polygon_outside_features = [json.loads(polygon_outside_geojson)["features"][0]] if valid_polygon else []
+
+# Crear GeoJSON final
 geojson_data = {
     "type": "FeatureCollection",
-    "features": [
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [row['LONGITUD'], row['LATITUD']]
-            },
-            "properties": {
-                "piloto_automatico": row['PILOTO_AUTOMATICO'],
-                "velocidad": row['VELOCIDAD_Km_H'],
-                "calidad_senal": row['CALIDAD_DE_SENAL'],
-                "consumo_combustible": row['CONSUMOS_DE_COMBUSTIBLE']
-            }
-        } for _, row in df_to_use.iterrows()
-    ]
+    "features": inside_features + polygon_features + polygon_outside_features
 }
-logging.info("GeoJSON generado")
+
+logging.info(f"GeoJSON generado con {len(inside_features)} puntos dentro y {len(outside_features)} puntos fuera del polígono.")
 
 # Subir el GeoJSON al bucket de Google Cloud Storage
 nombre_bucket = "geomotica_mapeo"
 nombre_archivo_bucket = f"capas/capa_{id_analisis}.json"
-url_capa = upload_to_bucket(nombre_bucket, json.dumps(geojson_data), nombre_archivo_bucket)
+try:
+    url_capa = upload_to_bucket(nombre_bucket, json.dumps(geojson_data), nombre_archivo_bucket)
+    logging.info(f"GeoJSON subido al bucket: {url_capa}")
+except Exception as e:
+    logging.error(f"Error al subir GeoJSON al bucket: {e}")
 
 # Enviar URL de la capa al servidor
 api_url = "http://localhost:3001/socket/updateGeoJSONLayer"

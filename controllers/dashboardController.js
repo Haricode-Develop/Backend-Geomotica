@@ -5,7 +5,7 @@ const fs = require('fs');
 const io = require('../socket');
 let esPrimeraEjecucion = true;
 const Papa = require('papaparse');
-
+const validaciones = require('../utils/validacionesMapeo');
 const {exec} = require('child_process');
 const procesarCsv = async (req, res) => {
     const idTipoAnalisis = req.body.idTipoAnalisis;
@@ -20,18 +20,65 @@ const procesarCsv = async (req, res) => {
             console.error('Error al leer el archivo:', err);
             return res.status(500).send('Error al procesar el archivo');
         }
-
+        let filaError = 0;
+        let errorEncountered = false;
+        let processedData = [];
         // Procesa el archivo CSV
         Papa.parse(data, {
             header: false,
             skipEmptyLines: true,
-            complete: (results) => {
-                const datos = results.data.slice(1).map((fila) => {
-                    const filaProcesada =  fila.map((valor, indice) => formatearValor(valor, indice));
-                    filaProcesada.splice(24, 0, idTipoAnalisis);
-                    return filaProcesada;
+            step: function(row, parser) {
+                if (errorEncountered) {
+                    return;
+                }
+
+                if (filaError === 0) {
+                    filaError++;
+                    return;
+                }
+                try {
+                    const fila = row.data;
+                    if (fila.every(campo => campo === null || campo.match(/^ *$/) !== null)) {
+                        return;
+                    }
+                    fila[0] = validaciones.validarLongitud(fila[0]); // LATITUD VALIDACIÓN
+                    fila[1] = validaciones.validarLongitud(fila[1]); // LONGITUD VALIDACIÓN
+                    fila[14] = formatearValor(fila[14], 14); // FECHA INICIO COSECHA
+                    fila[15] = formatearValor(fila[15], 15); // FECHA INICIO VALIDACIÓN
+                    fila[16] = formatearValor(fila[16], 16); // HORA INICIO VALIDACIÓN
+                    fila[17] = formatearValor(fila[17], 17); // HORA FINAL VALIDACIÓN
+                    fila[18] = formatearValor(fila[18], 18); // TIEMPO TOTAL VALIDACIÓN
+                    fila[22] = validaciones.validarPilotoAutomatico(fila[22]); // PILOTO VALIDACIÓN
+                    fila[23] = validaciones.validarAutoTracket(fila[23]); // AUTO TRACKET VALIDACIÓN
+
+                    fila.push(idTipoAnalisis);
+
+                    processedData.push(fila);
+                } catch (error) {
+                    errorEncountered = true;
+                    parser.abort();
+                    res.status(400).json({
+                        mensaje: 'Error de validación',
+                        error: error.message,
+                        fila: filaError,
+                    });
+                    return;
+                }
+                filaError++;
+
+            },
+            complete: function() {
+                if (!errorEncountered) {
+                    // Enviar los datos procesados como respuesta JSON
+                    res.status(200).json({ mensaje: 'Archivo procesado correctamente', data: processedData });
+                }
+            },
+            error: function(error) {
+                console.error('Error al parsear CSV:', error.message);
+                res.status(500).json({
+                    mensaje: 'Error al parsear CSV',
+                    error: error.message
                 });
-                res.json({ data: datos });
             }
         });
     });
@@ -98,7 +145,7 @@ const execBash = async (req, res) => {
                 if (error) {
                     console.error(`exec error: ${error}`);
                     reject(`Error executing script: ${error.message}`);
-                    return; // Asegúrate de retornar aquí para evitar llamar a resolve() después de un reject()
+                    return;
                 }
                 if (stderr) {
                     console.error(`stderr: ${stderr}`);
@@ -324,7 +371,63 @@ const NombreMaquinaCm = async(req, res) =>{
         return res.status(500).json({ error: "Error interno del servidor" });
     }
 }
+const consumoCombustibleCm = async(req, res) =>{
+    const idAnalisis = req.params.ID_ANALISIS;
+    try{
+        const obtenerConsumosCombustibleCm = await DashboardModel.obtenerConsumoCombustibleCm(idAnalisis);
+        return res.json(obtenerConsumosCombustibleCm);
+    } catch(error){
+        console.error("Error al obtener el nombre del responsable:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
+}
+const rpmCm = async(req, res) =>{
+    const idAnalisis = req.params.ID_ANALISIS;
+    try{
+        const obtenerRpmCm = await DashboardModel.obtenerRpmCm(idAnalisis);
+        return res.json(obtenerRpmCm);
 
+    } catch(error){
+        console.error("Error al obtener el nombre del responsable:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
+}
+
+const tchCm = async(req, res) => {
+    const idAnalisis = req.params.ID_ANALISIS;
+    try{
+        const obtenerTchCm = await DashboardModel.obtenerTch(idAnalisis);
+        return res.json(obtenerTchCm);
+
+    } catch(error){
+        console.error("Error al obtener el nombre del responsable:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
+}
+
+const tahCm = async(req, res) => {
+    const idAnalisis = req.params.ID_ANALISIS;
+    try{
+        const obtenerTahCm = await DashboardModel.obtenerTah(idAnalisis);
+        return res.json(obtenerTahCm);
+
+    }catch(error){
+        console.error("Error al obtener el nombre del responsable:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
+}
+
+const calidadGpsCm = async(req, res) =>{
+    const idAnalisis = req.params.ID_ANALISIS;
+    try{
+        const obtenerCalidadGps = await DashboardModel.obtenerCalidadGpsCm(idAnalisis);
+        return res.json(obtenerCalidadGps);
+    } catch(error){
+        console.error("Error al obtener el nombre del responsable:", error);
+        return res.status(500).json({error: "Error interno del servidor"});
+
+    }
+}
 const ActividadCm = async(req, res)=>{
     const idAnalisis =  req.params.ID_ANALISIS;
     try {
@@ -697,6 +800,11 @@ module.exports = {
     PromedioVelocidadCm,
     PorcentajeAreaPilotoCm,
     PorcentajeAreaAutoTrackerCm,
+    calidadGpsCm,
+    consumoCombustibleCm,
+    tahCm,
+    tchCm,
+    rpmCm,
     //==== ANALISIS FERTILIZACIÓN=======
     ResponsableFetilizacion,
     FechaInicioFertilizacion,
