@@ -37,9 +37,6 @@ router.get('/codigoParcelaResponsableCm/:ID_ANALISIS', DashbBoard.CodigoParcelaR
 router.get('/nombreOperadorCm/:ID_ANALISIS', DashbBoard.NombreOperadorCm);
 router.get('/nombreMaquinaCm/:ID_ANALISIS', DashbBoard.NombreMaquinaCm);
 router.get('/actividadCm/:ID_ANALISIS', DashbBoard.ActividadCm);
-router.get('/areaNetaCm/:ID_ANALISIS', DashbBoard.AreaNetaCm);
-router.get('/areaBrutaCm/:ID_ANALISIS', DashbBoard.AreaBrutaCm);
-router.get('/diferenciaDeAreaCm/:ID_ANALISIS', DashbBoard.DiferenciaDeAreaCm);
 router.get('/horaInicioCm/:ID_ANALISIS', DashbBoard.HoraInicioCm);
 router.get('/horaFinalCm/:ID_ANALISIS', DashbBoard.HoraFinalCm);
 router.get('/tiempoTotalActividadCm/:ID_ANALISIS', DashbBoard.TiempoTotalActividadCm);
@@ -47,6 +44,11 @@ router.get('/eficienciaCm/:ID_ANALISIS', DashbBoard.EficienciaCm);
 router.get('/promedioVelocidadCm/:ID_ANALISIS', DashbBoard.PromedioVelocidadCm);
 router.get('/porcentajeAreaPilotoCm/:ID_ANALISIS', DashbBoard.PorcentajeAreaPilotoCm);
 router.get('/porcentajeAreaAutoTrackerCm/:ID_ANALISIS', DashbBoard.PorcentajeAreaAutoTrackerCm);
+router.get('/consumoCombustibleCm/:ID_ANALISIS', DashbBoard.consumoCombustibleCm);
+router.get('/calidadGpsCm/:ID_ANALISIS', DashbBoard.calidadGpsCm);
+router.get('/rpmCm/:ID_ANALISIS', DashbBoard.rpmCm);
+router.get('/tchCm/:ID_ANALISIS', DashbBoard.tchCm);
+router.get('/tahCm/:ID_ANALISIS', DashbBoard.tahCm);
 
 // ==== ANALISIS FERTILIZACIÓN =======
 router.get('/responsableFertilizacion/:ID_ANALISIS', DashbBoard.ResponsableFetilizacion);

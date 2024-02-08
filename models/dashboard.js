@@ -274,6 +274,35 @@ const obtenerEficienciaCm = async (idAnalisis) => {
     const [rows] = await pool.query(query, [idAnalisis]);
     return rows.map(row => row.EFICIENCIA);
 };
+const obtenerConsumoCombustibleCm = async(idAnalisis) =>{
+    const query = `SELECT ROUND(AVG(CONSUMOS_DE_COMBUSTIBLE), 2) AS consumoCombustible FROM cosecha_mecanica WHERE ID_ANALISIS = ?;`;
+    const[rows] = await pool.query(query, [idAnalisis]);
+    return rows[0].consumoCombustible;
+}
+
+const obtenerRpmCm = async(idAnalisis) =>{
+    const query =`SELECT ROUND(AVG(RPM), 2) AS rpm FROM cosecha_mecanica WHERE ID_ANALISIS = ?`;
+    const [rows] = await pool.query(query, [idAnalisis]);
+    return rows[0].rpm;
+}
+
+const obtenerTch = async(idAnalisis) => {
+    const query = `SELECT ROUND(AVG(TCH), 2) AS tch FROM cosecha_mecanica WHERE ID_ANALISIS = ?`;
+    const [rows] = await pool.query(query, [idAnalisis]);
+    return rows[0].tch;
+}
+
+const obtenerTah = async(idAnalisis) => {
+    const query = `SELECT ROUND(AVG(TAH), 2) AS tah FROM cosecha_mecanica WHERE ID_ANALISIS = ?`;
+    const [rows] = await pool.query(query, [idAnalisis]);
+    return rows[0].tah;
+}
+
+const obtenerCalidadGpsCm = async(idAnalisis) =>{
+    const query = `SELECT ROUND(AVG(CALIDAD_DE_SENAL), 2) AS calidadGps FROM cosecha_mecanica WHERE ID_ANALISIS = ?`;
+    const [rows] = await pool.query(query, [idAnalisis]);
+    return rows[0].calidadGps;
+}
 
 const obtenerPromedioVelocidadCm = async (idAnalisis) => {
     const query = `SELECT ROUND(AVG(VELOCIDAD_Km_H), 2) AS promedioVelocidad FROM cosecha_mecanica WHERE ID_ANALISIS = ?;`;
@@ -491,6 +520,7 @@ const obtenerHoraInicioHerbicidas = async (idAnalisis) => {
     return rows.map(row => row.HORA_INICIO);
 };
 
+
 const obtenerHoraFinalHerbicidas = async (idAnalisis) => {
     const query = `SELECT DISTINCT HORA_FINAL FROM herbicidas WHERE ID_ANALISIS = ?;`;
     const [rows] = await pool.query(query, [idAnalisis]);
@@ -562,6 +592,11 @@ module.exports = {
     obtenerPromedioVelocidadCm,
     obtenerPorcentajeAreaPilotoCm,
     obtenerPorcentajeAreaAutotrackerCm,
+    obtenerConsumoCombustibleCm,
+    obtenerTch,
+    obtenerCalidadGpsCm,
+    obtenerTah,
+    obtenerRpmCm,
     // ===== FERTILIZACIÓN ======
     obtenerResponsableFertilizacion,
     obtenerFechaInicioFertilizacion,

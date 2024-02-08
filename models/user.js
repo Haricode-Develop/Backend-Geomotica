@@ -75,13 +75,12 @@ const getUserInfo = async (user) => {
 const isValidPassword = async (password, email) => {
   try {
     const user = await findByEmail(email);
-    console.log(user);
-    console.log(user.PASSWORD)
-    console.log(bcrypt.compare(password, user.PASSWORD));
     if (email === null || email === undefined) {
       return false;
     }
-    return bcrypt.compare(password, user.PASSWORD);
+    const validation = await bcrypt.compare(password, user.PASSWORD);
+    return validation;
+
   } catch (error) {
     return false;
   }

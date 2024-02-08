@@ -2,7 +2,7 @@ import sys
 import pandas as pd
 from sqlalchemy import create_engine
 import geopandas as gpd
-from shapely.geometry import Point
+from shapely.geometry import Point, Polygon
 import requests
 import logging
 import json
@@ -83,7 +83,7 @@ else:
 
 # Consulta SQL para obtener datos
 try:
-    query = f"""SELECT LONGITUD, LATITUD, PILOTO_AUTOMATICO, VELOCIDAD_Km_H, CALIDAD_DE_SENAL, CONSUMOS_DE_COMBUSTIBLE
+    query = f"""SELECT LONGITUD, LATITUD, PILOTO_AUTOMATICO, VELOCIDAD_Km_H, CALIDAD_DE_SENAL, CONSUMOS_DE_COMBUSTIBLE, AUTO_TRACKET, RPM, PRESION_DE_CORTADOR_BASE, TIEMPO_TOTAL
                 FROM {tabla} WHERE ID_ANALISIS = {id_analisis};"""
     df = pd.read_sql(query, engine)
     logging.info("Datos obtenidos de la base de datos")
@@ -91,10 +91,14 @@ except Exception as e:
     logging.error(f"Error al obtener datos de la base de datos: {e}")
     raise
 
+df['TIEMPO_TOTAL'] = df['TIEMPO_TOTAL'].apply(str)
 
 # Crear GeoDataFrame con todos los datos
 gdf = gpd.GeoDataFrame(df, geometry=[Point(xy) for xy in zip(df.LONGITUD, df.LATITUD)])
 
+all_points = [Point(xy) for xy in zip(df.LONGITUD, df.LATITUD)]
+polygon_outside_features = Polygon([[p.x, p.y] for p in all_points]).convex_hull
+polygon_outside_geojson = gpd.GeoSeries([polygon_outside_features]).to_json()
 
 # Filtrar puntos dentro y fuera del polígono si es válido, de lo contrario usar datos originales
 inside_gdf = gdf[gdf.geometry.within(polygon)] if valid_polygon else gpd.GeoDataFrame()
@@ -118,11 +122,12 @@ outside_features = generate_geojson_features(outside_gdf)
 
 # Agregar el polígono al GeoJSON si es válido
 polygon_features = [json.loads(polygon_geojson)["features"][0]] if valid_polygon else []
+polygon_outside_features = [json.loads(polygon_outside_geojson)["features"][0]] if valid_polygon else []
 
 # Crear GeoJSON final
 geojson_data = {
     "type": "FeatureCollection",
-    "features": inside_features + outside_features + polygon_features
+    "features": inside_features + polygon_features + polygon_outside_features
 }
 
 logging.info(f"GeoJSON generado con {len(inside_features)} puntos dentro y {len(outside_features)} puntos fuera del polígono.")

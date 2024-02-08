@@ -11,19 +11,20 @@ const login = async (req, res) => {
     console.log(user);
     console.log(user.EMAIL);
     console.log(user.PASSWORD);
-    //const isValidPassword = await UserModel.isValidPassword(password, user.EMAIL);
+    const isValidPassword = await UserModel.isValidPassword(password, user.EMAIL);
 
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
-    // if(!isValidPassword){
-    //   return res.status(403).json({ message: "Contraseña incorrecta" });
-    // }
+    console.log("Este es el resultado de isvalidpassword "+ isValidPassword);
+    if(!isValidPassword){
+      return res.status(403).json({ message: "Contraseña incorrecta" });
+    }
     // Reemplaza con tu lógica real
     // Verificar el estatus del usuario (por ejemplo, si está verificado)
-    // if (user.ESTATUS !== 1) {
-    //   return res.status(403).json({ message: "Usuario no verificado aún, por favor verificar correo" });
-    // }
+    if (user.ESTATUS !== 1) {
+      return res.status(403).json({ message: "Usuario no verificado aún, por favor verificar correo" });
+    }
 
     // Generar un token JWT
     const token = jwt.sign({ userId: user.id, email: user.email }, 'tu_clave_secreta', { expiresIn: '1h' });

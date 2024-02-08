@@ -18,15 +18,16 @@ function validarLongitud(longitud) {
 
 function validarPilotoAutomatico(valPilotAuto) {
     const valor = valPilotAuto.toLowerCase().trim();
-    if (valor === 'disengaged' || valor === 'engaged') {
+    if (valor === 'manual' || valor === 'automatic') {
         return valPilotAuto;
     }
     throw new Error(`Piloto automático inválido: ${valPilotAuto}`);
+
 }
 
 function validarAutoTracket(valAutoTrack) {
     const valor = valAutoTrack.toLowerCase().trim();
-    if (valor === 'manual' || valor === 'automatic') {
+    if (valor === 'disengaged' || valor === 'engaged') {
         return valAutoTrack;
     }
     throw new Error(`Auto track inválido: ${valAutoTrack}`);
