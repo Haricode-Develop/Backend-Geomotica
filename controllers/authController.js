@@ -13,7 +13,7 @@ const login = async (req, res) => {
     console.log(user.PASSWORD);
     const isValidPassword = await UserModel.isValidPassword(password, user.EMAIL);
 
-    if (!user) {
+  /*  if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
     console.log("Este es el resultado de isvalidpassword "+ isValidPassword);
@@ -29,7 +29,7 @@ const login = async (req, res) => {
     // Generar un token JWT
     const token = jwt.sign({ userId: user.id, email: user.email }, 'tu_clave_secreta', { expiresIn: '1h' });
 
-    // Enviar el token al cliente
+    // Enviar el token al cliente*/
     return res.json({ user, token });
   } catch (error) {
     console.error('Error en el proceso de inicio de sesión:', error);
@@ -39,12 +39,16 @@ const login = async (req, res) => {
 
 const register = async (req, res) => {
   const { nombre, apellido, email, password } = req.body;
-
+console.log("ENTRO AL REGISTRAR");
+console.log("PARAMETROS: ");
+console.log("NOMBRE: " + nombre + "APELLIDO: " + apellido + "EMAIL: " + email + "PASSWORD: " + password);
   try {
     const existingUser = await UserModel.findByEmail(email);
+    console.log("USUARIO EXISTE: ", existingUser);
     if (existingUser) {
       return res.status(409).json({ message: "El correo ya está en uso" });
     }
+
     await UserModel.createUser(nombre, apellido, email, password);
     res.json({ success: true });
   } catch (err) {
