@@ -11,9 +11,9 @@ const login = async (req, res) => {
     console.log(user);
     console.log(user.EMAIL);
     console.log(user.PASSWORD);
-    const isValidPassword = await UserModel.isValidPassword(password, user.EMAIL);
+    // const isValidPassword = await UserModel.isValidPassword(password, user.EMAIL);
 
-  /*  if (!user) {
+    if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
     console.log("Este es el resultado de isvalidpassword "+ isValidPassword);
@@ -29,7 +29,7 @@ const login = async (req, res) => {
     // Generar un token JWT
     const token = jwt.sign({ userId: user.id, email: user.email }, 'tu_clave_secreta', { expiresIn: '1h' });
 
-    // Enviar el token al cliente*/
+    // Enviar el token al cliente
     return res.json({ user, token });
   } catch (error) {
     console.error('Error en el proceso de inicio de sesión:', error);
