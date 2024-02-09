@@ -7,7 +7,6 @@ let esPrimeraEjecucion = true;
 const Papa = require('papaparse');
 const validaciones = require('../utils/validacionesMapeo');
 const {exec} = require('child_process');
-const puppeteer = require('puppeteer');
 
 
 
