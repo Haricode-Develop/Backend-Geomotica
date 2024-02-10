@@ -16,9 +16,13 @@ const pool = mysql.createPool({
 
 const findByEmail = async (email) => {
   try {
-    const [rows] = await pool.query("SELECT * FROM usuarios WHERE EMAIL = ?", [
-      email,
-    ]);
+    const query = `
+      SELECT usuarios.*, rol.Nombre as RolNombre
+      FROM usuarios
+      INNER JOIN rol ON usuarios.ID_Rol = rol.ID_Rol
+      WHERE usuarios.EMAIL = ?
+    `;
+    const [rows] = await pool.query(query, [email]);
 
     if (rows.length === 0) {
       return null;
@@ -28,6 +32,7 @@ const findByEmail = async (email) => {
     throw error;
   }
 };
+
 
 // Middleware para manejo de errores
 function errorHandler(err, req, res, next) {
