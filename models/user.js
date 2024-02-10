@@ -17,7 +17,7 @@ const pool = mysql.createPool({
 const findByEmail = async (email) => {
   try {
     const query = `
-      SELECT usuarios.*, rol.Nombre as RolNombre
+      SELECT usuarios.*, rol.Rol as RolNombre
       FROM usuarios
       INNER JOIN rol ON usuarios.ID_Rol = rol.ID_Rol
       WHERE usuarios.EMAIL = ?
