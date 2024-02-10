@@ -11,14 +11,14 @@ const login = async (req, res) => {
     console.log(user);
     console.log(user.EMAIL);
     console.log(user.PASSWORD);
-    // const isValidPassword = await UserModel.isValidPassword(password, user.EMAIL);
-
+    const isValidPassword = await UserModel.isValidPassword(password, user.EMAIL);
+    console.log("VALOR DEL VALID PASSWORD: ", isValidPassword);
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
-    //if(!isValidPassword){
-      //return res.status(403).json({ message: "Contraseña incorrecta" });
-    //}
+    if(!isValidPassword){
+      return res.status(403).json({ message: "Contraseña incorrecta" });
+    }
     // Reemplaza con tu lógica real
     // Verificar el estatus del usuario (por ejemplo, si está verificado)
     if (user.ESTATUS !== 1) {
