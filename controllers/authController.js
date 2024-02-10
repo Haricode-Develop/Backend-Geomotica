@@ -16,7 +16,6 @@ const login = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
-    console.log("Este es el resultado de isvalidpassword "+ isValidPassword);
     //if(!isValidPassword){
       //return res.status(403).json({ message: "Contraseña incorrecta" });
     //}
