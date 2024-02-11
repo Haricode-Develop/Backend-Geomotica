@@ -122,6 +122,7 @@ const execBash = async (req, res) => {
     const idUsuario = req.params.idUsuario;
     const idAnalisis = req.params.idAnalisis;
     const idMax = req.params.idMax;
+    const lineas = req.params.lines;
     const offset = req.params.offset;
     const validar = req.params.validar;
     const esPrimeraIteracion = req.body.esPrimeraIteracion === 'true';
@@ -143,10 +144,13 @@ const execBash = async (req, res) => {
     console.log("VALIDAR = "+validar);
 
     console.log("==============================================");
-
+    const totalLines = parseInt(lineas, 10);
+    const currentOffset = parseInt(req.params.offset, 10);
+    const batchSize = 10000;
+    const isLastIteration = (currentOffset + batchSize) >= totalLines;
     try {
         await new Promise((resolve, reject) => {
-            let comandoBash = `bash /geomotica/init_analisis.sh ${idUsuario} ${idAnalisis} ${csvPath} ${polygonPath} ${idMax} ${offset} ${validar} ${esPrimeraIteracion}`;
+            let comandoBash = `bash /geomotica/init_analisis.sh ${idUsuario} ${idAnalisis} ${csvPath} ${polygonPath} ${idMax} ${offset} ${validar} ${esPrimeraIteracion}  ${isLastIteration ? 'true' : 'false'}`;
 
             exec(comandoBash, (error, stdout, stderr) => {
                 if (error) {

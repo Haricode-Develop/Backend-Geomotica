@@ -12,7 +12,7 @@ ID_MAX="$5"
 OFFSET="$6"
 VALIDAR="$7"
 ES_PRIMERA_ITERACION="$8"
-
+ES_ULTIMA_ITERACION="$9"
 API_URL="http://localhost:3001/socket/loadingAnalysis"
 DATA='{"progress": 10, "message": "Iniciando análisis"}'
 
@@ -80,12 +80,10 @@ else
     echo "Error: No se pudo obtener el ID del Analisis para el mapeo"
 fi
 
-rm -rf "$SCRIPT_DIR/poligonoTemp"
+if [ "$ES_ULTIMA_ITERACION" = "true" ]; then
+    rm -rf "$SCRIPT_DIR/poligonoTemp"
 
-rm -rf "${SCRIPT_DIR}/Backend-Geomotica/uploads"/*
+    rm -rf "${SCRIPT_DIR}/Backend-Geomotica/uploads"/*
 
-#echo "Eliminando contenido de la carpeta uploads..."
-#rm -rf "${PARENT_DIR}/Backend-Geomotica/uploads"/*
-
-# Eliminar el archivo tempIdAnalisis.txt
-rm -f "$SCRIPT_DIR/tempIdAnalisis.txt"
+    rm -f "$SCRIPT_DIR/tempIdAnalisis.txt"
+fi
