@@ -46,13 +46,13 @@ const procesarCsv = async (req, res) => {
                     }
                     fila[0] = validaciones.validarLongitud(fila[0]); // LATITUD VALIDACIÓN
                     fila[1] = validaciones.validarLongitud(fila[1]); // LONGITUD VALIDACIÓN
-                    fila[14] = formatearValor(fila[14], 14); // FECHA INICIO COSECHA
-                    fila[15] = formatearValor(fila[15], 15); // FECHA INICIO VALIDACIÓN
-                    fila[16] = formatearValor(fila[16], 16); // HORA INICIO VALIDACIÓN
-                    fila[17] = formatearValor(fila[17], 17); // HORA FINAL VALIDACIÓN
-                    fila[18] = formatearValor(fila[18], 18); // TIEMPO TOTAL VALIDACIÓN
-                    fila[22] = validaciones.validarPilotoAutomatico(fila[22]); // PILOTO VALIDACIÓN
-                    fila[23] = validaciones.validarAutoTracket(fila[23]); // AUTO TRACKET VALIDACIÓN
+                    fila[11] = formatearValor(fila[11], 11); // FECHA INICIO COSECHA
+                    fila[12] = formatearValor(fila[12], 12); // FECHA INICIO VALIDACIÓN
+                    fila[13] = formatearValor(fila[13], 13); // HORA INICIO VALIDACIÓN
+                    fila[14] = formatearValor(fila[14], 14); // HORA FINAL VALIDACIÓN
+                    fila[15] = formatearValor(fila[15], 15); // TIEMPO TOTAL VALIDACIÓN
+                    fila[19] = validaciones.validarPilotoAutomatico(fila[19]); // PILOTO VALIDACIÓN
+                    fila[20] = validaciones.validarAutoTracket(fila[20]); // AUTO TRACKET VALIDACIÓN
 
                     fila.push(idTipoAnalisis);
 
@@ -89,12 +89,12 @@ const procesarCsv = async (req, res) => {
 
 function formatearValor(valor, indice) {
     switch (indice) {
+        case 11:
+        case 12:
+            return formatearFecha(valor);
+        case 13:
         case 14:
         case 15:
-            return formatearFecha(valor);
-        case 16:
-        case 17:
-        case 18:
             return formatearHora(valor);
 
         default:
