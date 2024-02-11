@@ -9,23 +9,47 @@ import json
 import os
 import glob
 from google.cloud import storage
+from datetime import datetime, timedelta
+from google.oauth2 import service_account
 
 # Configuración del logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def upload_to_bucket(bucket_name, file_content, destination_blob_name):
-    """Sube un archivo al bucket de Google Cloud Storage."""
+# Cargar credenciales explícitamente
+credentials = service_account.Credentials.from_service_account_file(
+    os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+)
+print(f"Credenciales desde: {os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')}")
+
+# Pasar las credenciales al cliente de Storage
+storage_client = storage.Client(credentials=credentials)
+
+def upload_to_bucket(bucket_name, geojson_data, destination_blob_name):
+    """Actualiza un archivo en el bucket de Google Cloud Storage y devuelve una URL firmada."""
     try:
-        storage_client = storage.Client()
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(destination_blob_name)
 
+        # Verifica si el archivo ya existe y carga su contenido
+        if blob.exists():
+            existing_data = json.loads(blob.download_as_string(client=storage_client))
+            # Combina el GeoJSON existente con los nuevos datos
+            existing_data["features"].extend(geojson_data["features"])
+            file_content = json.dumps(existing_data)
+        else:
+            file_content = json.dumps(geojson_data)
+
         blob.upload_from_string(file_content, content_type='application/json')
-        logging.info(f"Archivo subido exitosamente a {destination_blob_name} en {bucket_name}")
-        return blob.public_url
+
+        # Generar URL firmada para el blob
+        url_firmada = blob.generate_signed_url(expiration=timedelta(hours=8), method='GET')
+
+        logging.info(f"Archivo actualizado exitosamente a {destination_blob_name} en {bucket_name}")
+        return url_firmada
     except Exception as e:
-        logging.error(f"Error al subir archivo al bucket: {e}")
+        logging.error(f"Error al actualizar el archivo en el bucket: {e}")
         raise
+
 
 def load_polygon(polygon_folder):
     """Carga el polígono con más datos desde un conjunto de archivos Shapefile."""
@@ -72,6 +96,8 @@ except Exception as e:
 id_analisis = sys.argv[1]
 tabla = sys.argv[2]
 polygon_folder = sys.argv[3]
+offset = int(sys.argv[4])
+
 
 # Cargar el polígono
 polygon, polygon_geojson = load_polygon(polygon_folder)
@@ -81,15 +107,21 @@ if valid_polygon:
 else:
     logging.warning("Polígono no válido o no se pudo cargar. Se continuarán otros procesos sin filtro de polígono.")
 
+
+limit = 10000
+
 # Consulta SQL para obtener datos
 try:
     query = f"""SELECT LONGITUD, LATITUD, PILOTO_AUTOMATICO, VELOCIDAD_Km_H, CALIDAD_DE_SENAL, CONSUMOS_DE_COMBUSTIBLE, AUTO_TRACKET, RPM, PRESION_DE_CORTADOR_BASE, TIEMPO_TOTAL
-                FROM {tabla} WHERE ID_ANALISIS = {id_analisis};"""
+                FROM {tabla}
+                WHERE ID_ANALISIS = {id_analisis}
+                LIMIT {limit} OFFSET {offset};"""
     df = pd.read_sql(query, engine)
-    logging.info("Datos obtenidos de la base de datos")
+    logging.info(f"Datos obtenidos de la base de datos con OFFSET {offset}.")
 except Exception as e:
     logging.error(f"Error al obtener datos de la base de datos: {e}")
     raise
+
 
 df['TIEMPO_TOTAL'] = df['TIEMPO_TOTAL'].apply(str)
 
@@ -143,7 +175,7 @@ except Exception as e:
 
 # Enviar URL de la capa al servidor
 api_url = "http://localhost:3001/socket/updateGeoJSONLayer"
-data = {'geojsonData': geojson_data}  # Enviar URL del GeoJSON
+data = {'geojsonData': url_capa}
 try:
     requests.post(api_url, json=data)
     logging.info("URL de la capa enviada al servidor")

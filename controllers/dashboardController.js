@@ -124,6 +124,8 @@ const execBash = async (req, res) => {
     const idMax = req.params.idMax;
     const offset = req.params.offset;
     const validar = req.params.validar;
+    const esPrimeraIteracion = req.body.esPrimeraIteracion === 'si';
+    console.log("ES LA PRIMERA ITERACIÓN: ", esPrimeraIteracion);
     if (!req.files['csv'] || !req.files['polygon']) {
         return res.status(400).send('Archivos CSV o polígono no proporcionados');
     }
@@ -144,7 +146,9 @@ const execBash = async (req, res) => {
 
     try {
         await new Promise((resolve, reject) => {
-            exec(`bash /geomotica/init_analisis.sh ${idUsuario} ${idAnalisis} ${csvPath} ${polygonPath} ${idMax} ${offset} ${validar}`, (error, stdout, stderr) => {
+            let comandoBash = `bash /geomotica/init_analisis.sh ${idUsuario} ${idAnalisis} ${csvPath} ${polygonPath} ${idMax} ${offset} ${validar} ${esPrimeraIteracion}`;
+
+            exec(comandoBash, (error, stdout, stderr) => {
                 if (error) {
                     console.error(`exec error: ${error}`);
                     reject(`Error executing script: ${error.message}`);
