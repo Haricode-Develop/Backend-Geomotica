@@ -1,6 +1,7 @@
 import sys
+import gc
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 import geopandas as gpd
 from shapely.geometry import Point, Polygon
 import requests
@@ -33,8 +34,10 @@ def upload_to_bucket(bucket_name, geojson_data, destination_blob_name):
         # Verifica si el archivo ya existe y carga su contenido
         if blob.exists():
             existing_data = json.loads(blob.download_as_string(client=storage_client))
-            # Combina el GeoJSON existente con los nuevos datos
-            existing_data["features"].extend(geojson_data["features"])
+            # Asegúrate de que existing_data es un diccionario con una lista en 'features'
+            if 'features' in existing_data and isinstance(existing_data['features'], list):
+                # Combina el GeoJSON existente con los nuevos datos
+                existing_data["features"].extend(geojson_data["features"])
             file_content = json.dumps(existing_data)
         else:
             file_content = json.dumps(geojson_data)
@@ -49,6 +52,7 @@ def upload_to_bucket(bucket_name, geojson_data, destination_blob_name):
     except Exception as e:
         logging.error(f"Error al actualizar el archivo en el bucket: {e}")
         raise
+
 
 
 def load_polygon(polygon_folder):
@@ -120,15 +124,17 @@ limit = 10000
 
 # Consulta SQL para obtener datos
 try:
-    query = f"""SELECT LONGITUD, LATITUD, PILOTO_AUTOMATICO, VELOCIDAD_Km_H, CALIDAD_DE_SENAL, CONSUMOS_DE_COMBUSTIBLE, AUTO_TRACKET, RPM, PRESION_DE_CORTADOR_BASE, TIEMPO_TOTAL
-                FROM {tabla}
-                WHERE ID_ANALISIS = {id_analisis}
-                LIMIT {limit} OFFSET {offset};"""
-    df = pd.read_sql(query, engine)
+    sql_query = text("""SELECT LONGITUD, LATITUD, PILOTO_AUTOMATICO, VELOCIDAD_Km_H, CALIDAD_DE_SENAL, CONSUMOS_DE_COMBUSTIBLE, AUTO_TRACKET, RPM, PRESION_DE_CORTADOR_BASE, TIEMPO_TOTAL
+                FROM {}
+                WHERE ID_ANALISIS = :id_analisis
+                LIMIT :limit OFFSET :offset;""".format(tabla))
+
+    df = pd.read_sql(sql_query, engine, params={"id_analisis": id_analisis, "limit": limit, "offset": offset})
     logging.info(f"Datos obtenidos de la base de datos con OFFSET {offset}.")
 except Exception as e:
     logging.error(f"Error al obtener datos de la base de datos: {e}")
     raise
+
 
 
 df['TIEMPO_TOTAL'] = df['TIEMPO_TOTAL'].apply(str)
@@ -176,7 +182,7 @@ logging.info(f"GeoJSON generado con {len(inside_features)} puntos dentro y {len(
 nombre_bucket = "geomotica_mapeo"
 nombre_archivo_bucket = f"capas/capa_{id_analisis}.json"
 try:
-    url_capa = upload_to_bucket(nombre_bucket, json.dumps(geojson_data), nombre_archivo_bucket)
+    url_capa = upload_to_bucket(nombre_bucket, geojson_data, nombre_archivo_bucket)
     logging.info(f"GeoJSON subido al bucket: {url_capa}")
 except Exception as e:
     logging.error(f"Error al subir GeoJSON al bucket: {e}")
@@ -200,5 +206,11 @@ try:
     logging.info("Proceso de mapeo finalizado")
 except Exception as e:
     logging.error(f"Error al actualizar el progreso del mapeo: {e}")
+
+finally:
+    if 'engine' in locals():
+        engine.dispose()
+    gc.collect()
+    logging.info("Recursos liberados y proceso de mapeo finalizado.")
 
 logging.info("Proceso de mapeo finalizado")
