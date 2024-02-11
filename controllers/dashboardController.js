@@ -122,7 +122,7 @@ const execBash = async (req, res) => {
     const idUsuario = req.params.idUsuario;
     const idAnalisis = req.params.idAnalisis;
     const idMax = req.params.idMax;
-    const lineas = req.params.lines;
+    const lineas = req.params.lineas;
     const offset = req.params.offset;
     const validar = req.params.validar;
     const esPrimeraIteracion = req.body.esPrimeraIteracion === 'true';

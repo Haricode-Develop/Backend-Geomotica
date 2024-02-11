@@ -7,7 +7,7 @@ const DashbBoard = require('../controllers/dashboardController');
 // Rutas existentes
 router.post('/insert_analisis/:tipoAnalisis/:idUsuario', DashbBoard.insertarAnalisis);
 router.get('/ultimo_analisis/:tipoAnalisis/:idUsuario', DashbBoard.obtenerUltimoAnalisis);
-router.post('/execBash/:idUsuario/:idAnalisis/:idMax/:offset/:validar', upload.fields([{ name: 'csv' }, { name: 'polygon' }]), DashbBoard.execBash);
+router.post('/execBash/:idUsuario/:idAnalisis/:idMax/:offset/:validar/:lineas', upload.fields([{ name: 'csv' }, { name: 'polygon' }]), DashbBoard.execBash);
 router.post('/procesarCsv/',  upload.fields([{ name: 'csv' }]), DashbBoard.procesarCsv);
 
 // ==== ANALISIS APS =======
