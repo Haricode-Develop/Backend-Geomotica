@@ -29,7 +29,7 @@ echo "PARAMETRO 2 QUE SE LE PASA AL SH: "
 echo "$2"
 echo "PARAMETRO ES PRIMERA ITERACIÓN: "
 echo "$8"
-if [ "$ES_PRIMERA_ITERACION" = "si" ]; then
+if [ "$ES_PRIMERA_ITERACION" = "true" ]; then
       if [ $2 -eq $APS ]; then
       echo "======== Se ejecuta analisis APS ======="
       "$SCRIPT_DIR"/procesos/insertDatosAps.sh "$1" "$ARCHIVO_CSV"

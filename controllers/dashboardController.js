@@ -124,7 +124,7 @@ const execBash = async (req, res) => {
     const idMax = req.params.idMax;
     const offset = req.params.offset;
     const validar = req.params.validar;
-    const esPrimeraIteracion = req.body.esPrimeraIteracion === 'si';
+    const esPrimeraIteracion = req.body.esPrimeraIteracion;
     console.log("ES LA PRIMERA ITERACIÓN: ", esPrimeraIteracion);
     if (!req.files['csv'] || !req.files['polygon']) {
         return res.status(400).send('Archivos CSV o polígono no proporcionados');

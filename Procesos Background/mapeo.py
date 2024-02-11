@@ -99,6 +99,14 @@ polygon_folder = sys.argv[3]
 offset = int(sys.argv[4])
 
 
+logging.info("ESTOS SON LOS PARAMETROS DE PYTHON*****************************")
+logging.info(f"ESTE ES EL ID ANALISIS: {id_analisis}")
+logging.info(f"ESTA ES LA TABLA: {tabla}" )
+logging.info(f"ESTE ES EL POLIGONO: {polygon_folder}" )
+logging.info(f"ESTE ES EL OFFSET: {offset}" )
+
+
+
 # Cargar el polígono
 polygon, polygon_geojson = load_polygon(polygon_folder)
 valid_polygon = polygon is not None
