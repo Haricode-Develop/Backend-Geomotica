@@ -44,7 +44,6 @@ const procesarCsv = async (req, res) => {
                     if (fila.every(campo => campo === null || campo.match(/^ *$/) !== null)) {
                         return;
                     }
-                    console.log("ESTA ES LA FILA: ", fila);
                     fila[0] = validaciones.validarLongitud(fila[0]); // LATITUD VALIDACIÓN
                     fila[1] = validaciones.validarLongitud(fila[1]); // LONGITUD VALIDACIÓN
                     fila[11] = formatearValor(fila[11], 11); // FECHA INICIO COSECHA
@@ -89,7 +88,6 @@ const procesarCsv = async (req, res) => {
 }
 
 function formatearValor(valor, indice) {
-    console.log("VALOR: "+valor+" INDICE: " + indice);
     switch (indice) {
         case 11:
         case 12:

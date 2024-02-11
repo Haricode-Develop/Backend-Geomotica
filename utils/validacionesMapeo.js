@@ -1,7 +1,6 @@
 // validaciones.js
 
 function validarLatitud(latitud) {
-    console.log("ESTA ES LA LATITU: "+ latitud);
 
     const num = parseFloat(latitud);
     if (!isNaN(num) && num >= -90 && num <= 90) {
@@ -11,7 +10,6 @@ function validarLatitud(latitud) {
 }
 
 function validarLongitud(longitud) {
-    console.log("ESTA ES LA LONGITUD: "+ longitud);
     const num = parseFloat(longitud);
     if (!isNaN(num) && num >= -180 && num <= 180) {
         return num;
@@ -20,7 +18,6 @@ function validarLongitud(longitud) {
 }
 
 function validarPilotoAutomatico(valPilotAuto) {
-    console.log("ESTA ES EL PILOTO AUTOMATICO: "+ valPilotAuto);
 
     const valor = valPilotAuto.toLowerCase().trim();
     if (valor === 'manual' || valor === 'automatic') {
@@ -31,7 +28,6 @@ function validarPilotoAutomatico(valPilotAuto) {
 }
 
 function validarAutoTracket(valAutoTrack) {
-    console.log("ESTA ES EL PILOTO AUTO TRACKET: "+ valAutoTrack);
 
 
     const valor = valAutoTrack.toLowerCase().trim();
