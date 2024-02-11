@@ -89,6 +89,7 @@ const procesarCsv = async (req, res) => {
 }
 
 function formatearValor(valor, indice) {
+    console.log("VALOR: "+valor+" INDICE: " + indice);
     switch (indice) {
         case 11:
         case 12:
