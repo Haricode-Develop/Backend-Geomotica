@@ -50,7 +50,7 @@ const procesarCsv = async (req, res) => {
                     fila[12] = formatearValor(fila[12], 12); // FECHA INICIO VALIDACIÓN
                     fila[13] = formatearValor(fila[13], 13); // HORA INICIO VALIDACIÓN
                     fila[14] = formatearValor(fila[14], 14); // HORA FINAL VALIDACIÓN
-                    fila[15] = formatearValor(fila[15], 15); // TIEMPO TOTAL VALIDACIÓN
+                    fila[15] = validaciones.calcularTiempoTotal(fila[13], fila[14]); // TIEMPO TOTAL VALIDACIÓN
                     fila[19] = validaciones.validarPilotoAutomatico(fila[19]); // PILOTO VALIDACIÓN
                     fila[20] = validaciones.validarAutoTracket(fila[20]); // AUTO TRACKET VALIDACIÓN
 
@@ -86,6 +86,8 @@ const procesarCsv = async (req, res) => {
         });
     });
 }
+
+
 
 function formatearValor(valor, indice) {
     switch (indice) {

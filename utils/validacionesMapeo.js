@@ -1,4 +1,5 @@
 // validaciones.js
+const moment = require('moment');
 
 function validarLatitud(latitud) {
 
@@ -37,9 +38,41 @@ function validarAutoTracket(valAutoTrack) {
     throw new Error(`Auto track inválido: ${valAutoTrack}`);
 }
 
+
+function calcularTiempoTotal(horaInicio, horaFinal) {
+    const formato = 'HH:mm';
+    const momentoInicio = moment(horaInicio, formato);
+    const momentoFinal = moment(horaFinal, formato);
+    // Calcular la diferencia en minutos
+    const diferencia = momentoFinal.diff(momentoInicio, 'minutes');
+    const horas = Math.floor(diferencia / 60);
+    const minutos = diferencia % 60;
+    return `${horas}h ${minutos}m`;
+}
+function calcularTiempoTotal(horaInicio, horaFinal) {
+    const [horaIni, minutoIni] = horaInicio.split(':').map(Number);
+    const [horaFin, minutoFin] = horaFinal.split(':').map(Number);
+
+    let horaTotal = horaFin - horaIni;
+    let minutoTotal = minutoFin - minutoIni;
+
+    if (minutoTotal < 0) {
+        minutoTotal += 60; // Ajustar minutos
+        horaTotal -= 1; // Ajustar horas
+    }
+
+    // Asegurarse de que las horas y minutos tengan dos dígitos
+    const horasFormateadas = horaTotal.toString().padStart(2, '0');
+    const minutosFormateados = minutoTotal.toString().padStart(2, '0');
+
+    return `${horasFormateadas}:${minutosFormateados}`;
+}
+
+
 module.exports = {
     validarLatitud,
     validarLongitud,
     validarPilotoAutomatico,
-    validarAutoTracket
+    validarAutoTracket,
+    calcularTiempoTotal
 };

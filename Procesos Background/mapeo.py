@@ -9,6 +9,7 @@ import logging
 import json
 import os
 import glob
+import alphashape
 from google.cloud import storage
 from datetime import datetime, timedelta
 from google.oauth2 import service_account
@@ -82,6 +83,11 @@ def load_polygon(polygon_folder):
         logging.error(f"Error al cargar el polígono más grande: {e}")
         return None, None
 
+def calculate_dynamic_polygon(df, alpha=0.1):
+    """Calcula la envolvente concava (concave hull) de los puntos en un DataFrame y devuelve el polígono resultante."""
+    points = [(x, y) for x, y in zip(df.LONGITUD, df.LATITUD)]
+    alpha_shape = alphashape.alphashape(points, alpha)
+    return alpha_shape
 
 def point_in_polygon(point, polygon):
     """Verifica si un punto está dentro de un polígono."""
@@ -142,9 +148,12 @@ df['TIEMPO_TOTAL'] = df['TIEMPO_TOTAL'].apply(str)
 # Crear GeoDataFrame con todos los datos
 gdf = gpd.GeoDataFrame(df, geometry=[Point(xy) for xy in zip(df.LONGITUD, df.LATITUD)])
 
+
+
+dynamic_polygon = calculate_dynamic_polygon(df, alpha=1.0)  # Aquí puedes ajustar el valor de alpha según sea necesario
+dynamic_polygon_geojson = gpd.GeoSeries([dynamic_polygon]).to_json()
+
 all_points = [Point(xy) for xy in zip(df.LONGITUD, df.LATITUD)]
-polygon_outside_features = Polygon([[p.x, p.y] for p in all_points]).convex_hull
-polygon_outside_geojson = gpd.GeoSeries([polygon_outside_features]).to_json()
 
 # Filtrar puntos dentro y fuera del polígono si es válido, de lo contrario usar datos originales
 inside_gdf = gdf[gdf.geometry.within(polygon)] if valid_polygon else gpd.GeoDataFrame()
@@ -168,12 +177,11 @@ outside_features = generate_geojson_features(outside_gdf)
 
 # Agregar el polígono al GeoJSON si es válido
 polygon_features = [json.loads(polygon_geojson)["features"][0]] if valid_polygon else []
-polygon_outside_features = [json.loads(polygon_outside_geojson)["features"][0]] if valid_polygon else []
 
 # Crear GeoJSON final
 geojson_data = {
     "type": "FeatureCollection",
-    "features": inside_features + polygon_features + polygon_outside_features
+    "features": inside_features + polygon_features + [json.loads(dynamic_polygon_geojson)["features"][0]]
 }
 
 logging.info(f"GeoJSON generado con {len(inside_features)} puntos dentro y {len(outside_features)} puntos fuera del polígono.")
