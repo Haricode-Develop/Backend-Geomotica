@@ -52,8 +52,8 @@ const procesarCsv = async (req, res) => {
                     fila[14] = formatearValor(fila[14], 14); // HORA FINAL VALIDACIÓN
                     const tiempoTotal = validaciones.calcularTiempoTotal(fila[13], fila[14]);
                     fila.splice(15, 0, tiempoTotal);
-                    fila[19] = validaciones.validarPilotoAutomatico(fila[19]); // PILOTO VALIDACIÓN
-                    fila[20] = validaciones.validarAutoTracket(fila[20]); // AUTO TRACKET VALIDACIÓN
+                    fila[18] = validaciones.validarPilotoAutomatico(fila[18]); // PILOTO VALIDACIÓN
+                    fila[19] = validaciones.validarAutoTracket(fila[19]); // AUTO TRACKET VALIDACIÓN
 
                     fila.push(idTipoAnalisis);
 
