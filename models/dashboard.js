@@ -181,12 +181,8 @@ const obtenerPromedioVelocidadAps = async (idAnalisis) => {
 
 
 const obtenerNombreResponsableCm = async (idAnalisis) => {
-    console.log("ESTE ES EL ID ANÁLISIS ======");
-    console.log(idAnalisis);
     const query = `SELECT DISTINCT RESPONSABLE FROM cosecha_mecanica WHERE ID_ANALISIS = ?;`;
     const [rows] = await pool.query(query, [idAnalisis]);
-    console.log("ESTA ES LA RESPUESTA PARA OBTENER AL RESPONSABLE +++++++++++++++++++++");
-    console.log(rows);
     return rows.map(row => row.RESPONSABLE);
 };
 
@@ -204,7 +200,7 @@ const obtenerFechaFinCosechaCm = async(idAnalisis) =>{
 }
 
 const obtenerNombreFincaCm = async (idAnalisis) => {
-    const query = `SELECT NOMBRE_FINCA FROM cosecha_mecanica WHERE ID_ANALISIS = ?;`;
+    const query = `SELECT DISTINCT NOMBRE_FINCA FROM cosecha_mecanica WHERE ID_ANALISIS = ?;`;
     const [rows] = await pool.query(query, [idAnalisis]);
     return rows.map(row => row.NOMBRE_FINCA);
 };
