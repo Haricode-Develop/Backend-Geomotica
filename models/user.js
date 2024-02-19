@@ -40,16 +40,6 @@ function errorHandler(err, req, res, next) {
   res.status(500).send("Algo salió mal");
 }
 
-const createUser = async (nombre, apellido, email, password) => {
-  const hashedPassword = await bcrypt.hash(password, 10); // Hashing the password
-  await pool.query("CALL sp_insertar_registro(?,?,?,?)", [
-    nombre,
-    apellido,
-    email,
-    hashedPassword,
-  ]);
-};
-
 const insertTemporalPassword = async (email, temporalPassword) => {
   try {
     const hashedPassword = await bcrypt.hash(temporalPassword, 10);
@@ -61,12 +51,29 @@ const insertTemporalPassword = async (email, temporalPassword) => {
     throw error;
   }
 };
+
 const confirmAccount = async (email) => {
   try {
     await pool.query("CALL sp_update_confirmar_cuenta(?)", [email]);
   } catch (error) {
     throw error;
   }
+};
+const createUser = async (nombre, apellido, email, password) => {
+  const hashedPassword = await bcrypt.hash(password, 10); // Hashing the password
+  console.log("llega hasta la insercion en la bd antes del metodo ")
+  try{
+    return (await pool.query("CALL sp_insertar_registro(?,?,?,?)", [
+      nombre,
+      apellido,
+      email,
+      hashedPassword,
+    ]));
+  }
+  catch(error){
+    console.log("Error en el intento del SP "+error);
+  }
+
 };
 
 const getUserInfo = async (user) => {
