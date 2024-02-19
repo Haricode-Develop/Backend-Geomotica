@@ -288,6 +288,13 @@ const obtenerTch = async(idAnalisis) => {
     return rows[0].tch;
 }
 
+const obtenerPresionCortadorBase = async(idAnalisis)  => {
+    const query = `SELECT ROUND(AVG(PRESION_DE_CORTADOR_BASE), 2) AS presionCortador FROM cosecha_mecanica WHERE ID_ANALISIS = ?`;
+    const [rows] = await pool.query(query, [idAnalisis]);
+    return rows[0].presionCortador;
+}
+
+
 const obtenerTah = async(idAnalisis) => {
     const query = `SELECT ROUND(AVG(TAH), 2) AS tah FROM cosecha_mecanica WHERE ID_ANALISIS = ?`;
     const [rows] = await pool.query(query, [idAnalisis]);
@@ -591,6 +598,7 @@ module.exports = {
     obtenerConsumoCombustibleCm,
     obtenerTch,
     obtenerCalidadGpsCm,
+    obtenerPresionCortadorBase,
     obtenerTah,
     obtenerRpmCm,
     // ===== FERTILIZACIÓN ======

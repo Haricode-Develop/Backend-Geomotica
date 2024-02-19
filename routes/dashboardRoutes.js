@@ -49,6 +49,8 @@ router.get('/calidadGpsCm/:ID_ANALISIS', DashbBoard.calidadGpsCm);
 router.get('/rpmCm/:ID_ANALISIS', DashbBoard.rpmCm);
 router.get('/tchCm/:ID_ANALISIS', DashbBoard.tchCm);
 router.get('/tahCm/:ID_ANALISIS', DashbBoard.tahCm);
+router.get('/presionCortadorBaseCm/:ID_ANALISIS', DashbBoard.presionCortadorBaseCm);
+
 
 // ==== ANALISIS FERTILIZACIÓN =======
 router.get('/responsableFertilizacion/:ID_ANALISIS', DashbBoard.ResponsableFetilizacion);

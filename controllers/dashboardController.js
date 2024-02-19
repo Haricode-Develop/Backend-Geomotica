@@ -394,7 +394,20 @@ const consumoCombustibleCm = async(req, res) =>{
         console.error("Error al obtener el nombre del responsable:", error);
         return res.status(500).json({ error: "Error interno del servidor" });
     }
+
 }
+
+const presionCortadorBaseCm = async(req, res)  =>{
+    const idAnalisis = req.params.ID_ANALISIS;
+    try{
+        const obtenerPresionCortadorBaseCm = await DashboardModel.obtenerPresionCortadorBase(idAnalisis);
+        return res.json(obtenerPresionCortadorBaseCm);
+    } catch(error){
+        console.error("Error al obtener la presion de cortador Base:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
+}
+
 const rpmCm = async(req, res) =>{
     const idAnalisis = req.params.ID_ANALISIS;
     try{
@@ -816,6 +829,7 @@ module.exports = {
     PorcentajeAreaAutoTrackerCm,
     calidadGpsCm,
     consumoCombustibleCm,
+    presionCortadorBaseCm,
     tahCm,
     tchCm,
     rpmCm,
