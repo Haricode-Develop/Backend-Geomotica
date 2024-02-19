@@ -51,6 +51,7 @@ class EmailSender {
   }
 
   createEmail(recipient, subject, temporalPassword) {
+    console.log("Llega al metodo CreateEmail")
     let html = ""; // Default html
     if (subject === "Registration Confirmation") {
       html = `${this.head}
@@ -119,7 +120,9 @@ class EmailSender {
   async sendEmail(type, recipient) {
     let subject = ""; // Default subject
     let TemporalPassword = "";
+    console.log("Llega al metodo asincrono")
     if (type === "registry") {
+      console.log("Llega al if de registry")
       subject = "Registration Confirmation";
     } else if (type === "recovery") {
       subject = "Password Recovery";
@@ -136,9 +139,12 @@ class EmailSender {
         "Este es el subject " +
         subject +
         "Este es el temporal " +
-        TemporalPassword
+        TemporalPassword+
+        "este es el sender "+ this.sender
     );
     const msg = this.createEmail(recipient, subject, TemporalPassword);
+    console.log("Este es el mensaje " ) 
+    console.log(msg)
     return sgMail
       .send(msg)
       .then((response) => {

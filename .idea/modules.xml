@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Backend-Geomotica.iml" filepath="$PROJECT_DIR$/.idea/Backend-Geomotica.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Backend-Geomotica.iml" filepath="$PROJECT_DIR$/Backend-Geomotica.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../Geomotica/Geomotica.iml" filepath="$PROJECT_DIR$/../Geomotica/Geomotica.iml" />
     </modules>
   </component>
 </project>
