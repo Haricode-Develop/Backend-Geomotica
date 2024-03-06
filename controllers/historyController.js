@@ -1,5 +1,6 @@
 const HistoryModel = require('../models/HistoryModel');
 const path = require("path");
+const { Storage } = require('@google-cloud/storage'); // Importa correctamente Storage
 
 const keyFilename = path.join(__dirname, '..', 'analog-figure-382403-e34ca94833aa.json');
 const storage = new Storage({ keyFilename: keyFilename });
