@@ -82,7 +82,7 @@ if [[ -f "$SCRIPT_DIR/tempIdAnalisis.txt" ]]; then
     fi
     curl -X POST -H "Content-Type: application/json" -d "$DATA" $API_URL
     export GOOGLE_APPLICATION_CREDENTIALS="/geomotica/procesos/analog-figure-382403-0c07b0baecfa.json"
-    python3 "$SCRIPT_DIR/procesos/mapeo.py" "$ID_ANALISIS" "$TABLA_ACTUAL" "$POLIGONO_DIR" "$OFFSET"
+    python3 "$SCRIPT_DIR/procesos/mapeo.py" "$ID_ANALISIS" "$TABLA_ACTUAL" "$POLIGONO_DIR" "$OFFSET" "$ES_ULTIMA_ITERACION"
 else
     echo "Error: No se pudo obtener el ID del Analisis para el mapeo"
 fi
@@ -92,4 +92,5 @@ if [ "$ES_ULTIMA_ITERACION" = "true" ]; then
     rm -rf "${SCRIPT_DIR}/Backend-Geomotica/uploads"/*
     rm -f "$SCRIPT_DIR/tempIdAnalisis.txt"
     rm -f "$TABLA_ACTUAL_FILE"
+    rm -rf "mnt"
 fi

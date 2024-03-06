@@ -10,6 +10,10 @@ const pool = mysql.createPool({
     queueLimit: 0
 });
 
+const storage = new Storage({
+    keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+    projectId: process.env.GCP_PROJECT_ID,
+});
 
 
 const obtenerAnalisisUsuarios = async (usuario) => {
@@ -33,7 +37,22 @@ const obtenerAnalisisUsuarios = async (usuario) => {
     return rows;
 }
 
+const generateV4ReadSignedUrl = async (bucketName, fileName) => {
+    const options = {
+        version: 'v4',
+        action: 'read',
+        expires: Date.now() + 1 * 60 * 60 * 1000, // 1 hour
+    };
+
+    // Obtiene la URL firmada
+    const [url] = await storage.bucket(bucketName).file(fileName).getSignedUrl(options);
+    console.log(`La URL firmada para ${fileName} es ${url}`);
+    return url;
+};
+
+
 
 module.exports = {
-    obtenerAnalisisUsuarios
+    obtenerAnalisisUsuarios,
+    generateV4ReadSignedUrl
 }
