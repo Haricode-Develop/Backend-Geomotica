@@ -26,6 +26,7 @@ const obtenerArchivoGeoJSON = async (req, res) => {
     const archivoNombre = `interpolacion_${nombreAnalisis}_${id}`;
 
     try {
+        console.log("ARCHIVO: ", `interpolaciones/${archivoNombre}.geojson`);
         const archivo = bucket.file(`interpolaciones/${archivoNombre}.geojson`);
         const existeArchivo = await archivo.exists();
 

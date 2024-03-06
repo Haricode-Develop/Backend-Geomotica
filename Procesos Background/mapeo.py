@@ -85,13 +85,12 @@ def perform_idw_and_generate_geojson(gdf, polygon, bucket_name, variables, id_an
         gdf_accumulated = pd.concat([gdf_accumulated, gdf])
 
     points = np.array(gdf_accumulated[['LONGITUD', 'LATITUD']])
-    geojson_features = []
 
     for variable in variables:
+        geojson_features = []
         try:
             if variable in gdf_accumulated.columns:
                 logging.info(f"Procesando interpolación para la variable: {variable}")
-                # Asegurar que los valores sean numéricos, intenta convertirlos a float
                 values = np.array(gdf_accumulated[variable], dtype=float)
 
                 grid_x, grid_y = np.mgrid[min(points[:,0]):max(points[:,0]):100j, min(points[:,1]):max(points[:,1]):100j]
@@ -108,21 +107,23 @@ def perform_idw_and_generate_geojson(gdf, polygon, bucket_name, variables, id_an
                             "properties": {"variable": variable, "value": level},
                         })
                 plt.close()
+
+                geojson = {
+                    "type": "FeatureCollection",
+                    "features": geojson_features,
+                }
+
+                # Cambio en la ruta y nombre del archivo
+                geojson_file_path = f'{output_directory}interpolacion_{variable}_{id_analisis}.geojson'
+                with open(geojson_file_path, 'w') as f:
+                    json.dump(geojson, f)
+
+                # Actualización en el nombre del blob
+                upload_image_to_bucket(bucket_name, geojson_file_path, f"interpolacion_{variable}_{id_analisis}.geojson")
+
         except Exception as e:
             logging.error(f"No se pudo procesar la variable {variable} debido a un error: {e}")
             continue  # Continuar con la siguiente variable
-
-    geojson = {
-        "type": "FeatureCollection",
-        "features": geojson_features,
-    }
-
-    geojson_file_path = f'{output_directory}interpolacion_{id_analisis}.geojson'
-    with open(geojson_file_path, 'w') as f:
-        json.dump(geojson, f)
-
-    upload_image_to_bucket(bucket_name, geojson_file_path, f"interpolacion_{id_analisis}.geojson")
-
 
 
 def upload_to_bucket(bucket_name, data, destination_blob_name, content_type='application/json'):
