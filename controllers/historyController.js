@@ -19,18 +19,33 @@ const analisis = async(req, res) => {
     }
 }
 
-const generateV4ReadSignedUrl = async (bucketName, fileName) => {
-    const options = {
-        version: 'v4',
-        action: 'read',
-        expires: Date.now() + 1 * 60 * 60 * 1000,
-    };
+const obtenerArchivoGeoJSON = async (req, res) => {
+    const nombreAnalisis = req.params.nombreAnalisis.replace(/_/g, ' ');
+    const id = req.params.id;
+    const archivoNombre = `interpolaciones_${nombreAnalisis}_${id}`;
 
-    const [url] = await storage.bucket(bucketName).file(fileName).getSignedUrl(options);
-    console.log(`La URL firmada para ${fileName} es ${url}`);
-    return url;
+    try {
+        const archivo = bucket.file(`interpolaciones/${archivoNombre}.geojson`);
+        const existeArchivo = await archivo.exists();
+
+        if (!existeArchivo[0]) {
+            return res.status(404).json({ mensaje: 'Archivo no encontrado' });
+        }
+
+        // Descargar el archivo y enviarlo en la respuesta
+        const stream = archivo.createReadStream();
+        let buf = '';
+        stream.on('data', function(d) {
+            buf += d;
+        }).on('end', function() {
+            return res.json(JSON.parse(buf));
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ mensaje: 'Error al obtener el archivo' });
+    }
 };
 
 module.exports = {
-    analisis
+    analisis, obtenerArchivoGeoJSON
 }
