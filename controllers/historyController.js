@@ -23,7 +23,7 @@ const analisis = async(req, res) => {
 const obtenerArchivoGeoJSON = async (req, res) => {
     const nombreAnalisis = req.params.nombreAnalisis.replace(/_/g, ' ');
     const id = req.params.id;
-    const archivoNombre = `interpolaciones_${nombreAnalisis}_${id}`;
+    const archivoNombre = `interpolacion_${nombreAnalisis}_${id}`;
 
     try {
         const archivo = bucket.file(`interpolaciones/${archivoNombre}.geojson`);
