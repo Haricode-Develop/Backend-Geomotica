@@ -2,7 +2,7 @@ const HistoryModel = require('../models/HistoryModel');
 const path = require("path");
 const { Storage } = require('@google-cloud/storage'); // Importa correctamente Storage
 
-const keyFilename = path.join(__dirname, '..', 'analog-figure-382403-e34ca94833aa.json');
+const keyFilename = path.join(__dirname, '..', 'analog-figure-382403-c95d79364b3d.json');
 const storage = new Storage({ keyFilename: keyFilename });
 
 const bucketName = 'geomotica_mapeo';
