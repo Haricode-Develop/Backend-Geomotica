@@ -21,7 +21,7 @@ const analisis = async(req, res) => {
 }
 
 const obtenerArchivoGeoJSON = async (req, res) => {
-    const nombreAnalisis = req.params.nombreAnalisis.replace(/_/g, ' ');
+    const nombreAnalisis = req.params.nombreAnalisis;
     const id = req.params.id;
     const archivoNombre = `interpolacion_${nombreAnalisis}_${id}`;
 

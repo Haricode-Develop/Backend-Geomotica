@@ -75,6 +75,28 @@ def upload_image_to_bucket(bucket_name, file_path, destination_blob_name):
         logging.error(f"Error al subir la imagen al bucket: {e}")
 
 
+def generate_and_upload_original_geojson(gdf, bucket_name, tabla, id_analisis):
+    """
+    Genera un GeoJSON simplificado con solo latitud y longitud de los datos y lo sube al bucket especificado.
+    """
+    try:
+        # Crear un nuevo GeoDataFrame con solo las geometrías
+        gdf_simple = gpd.GeoDataFrame(geometry=gdf['geometry'])
+
+        # Generar el GeoJSON
+        geojson_data = json.loads(gdf_simple.to_json())
+
+        # Ruta y nombre del archivo GeoJSON
+        geojson_file_path = f'{output_directory}interpolacion_{tabla}_{id_analisis}_original.geojson'
+        with open(geojson_file_path, 'w') as f:
+            json.dump(geojson_data, f)
+
+        # Subir el archivo GeoJSON al bucket
+        upload_image_to_bucket(bucket_name, geojson_file_path, f"interpolacion_{tabla.upper()}_{id_analisis}.geojson")
+
+        logging.info(f"GeoJSON simplificado de la tabla {tabla} y análisis {id_analisis} generado y subido exitosamente.")
+    except Exception as e:
+        logging.error(f"Error al generar o subir el GeoJSON simplificado: {e}")
 
 
 def perform_idw_and_generate_geojson(gdf, polygon, bucket_name, variables, id_analisis):
@@ -276,8 +298,10 @@ if __name__ == "__main__":
     else:
         gdf_accumulated = pd.concat([gdf_accumulated, gdf])
 
-    if es_ultimo_lote == 'true':
-        perform_idw_and_generate_geojson(gdf_accumulated, polygon, "geomotica_mapeo", variables_interes, id_analisis)
+if es_ultimo_lote == 'true':
+    perform_idw_and_generate_geojson(gdf_accumulated, polygon, "geomotica_mapeo", variables_interes, id_analisis)
+    # Llama a la nueva función aquí, para generar y subir el GeoJSON original
+    generate_and_upload_original_geojson(gdf_accumulated, "geomotica_mapeo", tabla, id_analisis)
 
 
     dynamic_polygon = calculate_dynamic_polygon(df, alpha=1.0)
