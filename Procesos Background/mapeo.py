@@ -15,6 +15,7 @@ from google.oauth2 import service_account
 import numpy as np
 from scipy.interpolate import griddata
 import matplotlib.pyplot as plt
+import matplotlib.colors as colors
 from scipy.spatial.distance import cdist
 import alphashape
 # Configuración del logging
@@ -37,25 +38,31 @@ print(f"Credenciales desde: {os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')}")
 storage_client = storage.Client(credentials=credentials)
 gdf_accumulated = None
 
-def idw_interpolation(x, y, z, xi, yi, power=2):
-    """Realiza la interpolación IDW sobre una malla de puntos."""
-    try:
-        xz = np.array(list(zip(x, y)))
-        iz = np.array(list(zip(xi.flatten(), yi.flatten())))
-        dists = cdist(iz, xz, metric='euclidean')
-        dists[dists == 0] = 1e-10
-        weights = 1 / dists ** power
-        wz = weights / weights.sum(axis=1)[:, None]
+def idw_interpolation(x, y, z, grid_size=100, power=2):
+    """Interpolación IDW mejorada con mejor resolución y visualización."""
+    xi = np.linspace(min(x), max(x), grid_size)
+    yi = np.linspace(min(y), max(y), grid_size)
+    xi, yi = np.meshgrid(xi, yi)
+    xz = np.array(list(zip(x, y)))
+    iz = np.array(list(zip(xi.flatten(), yi.flatten())))
 
-        # Asegurarse de que 'z' es un arreglo numpy para la operación de multiplicación de matrices
-        if not isinstance(z, np.ndarray):
-            z = np.array(z)
+    # Distancias y pesos
+    dists = cdist(iz, xz, 'euclidean')
+    dists[dists == 0] = 1e-10  # Evitar división por cero
+    weights = 1 / dists ** power
+    wz = weights / weights.sum(axis=1)[:, None]
 
-        zi = np.dot(wz, z)
-        return zi.reshape(xi.shape)
-    except Exception as e:
-        logging.error(f"Error en la interpolación IDW: {e}")
-        return None
+    # Interpolación
+    zi = np.dot(wz, z)
+    zi = zi.reshape(xi.shape)
+
+    # Visualización mejorada
+    fig, ax = plt.subplots(figsize=(10, 10))
+    cmap = plt.cm.jet  # Puedes elegir una paleta de colores que prefieras
+    cf = ax.contourf(xi, yi, zi, levels=100, cmap=cmap)
+    plt.colorbar(cf, ax=ax)
+
+    return xi, yi, zi
 
 
 def upload_image_to_bucket(bucket_name, file_path, destination_blob_name):
@@ -75,28 +82,48 @@ def upload_image_to_bucket(bucket_name, file_path, destination_blob_name):
         logging.error(f"Error al subir la imagen al bucket: {e}")
 
 
-def generate_and_upload_original_geojson(gdf, bucket_name, tabla, id_analisis):
+
+def generate_and_upload_original_geojson(gdf, bucket_name, tabla, id_analisis, polygon):
     """
-    Genera un GeoJSON simplificado con solo latitud y longitud de los datos y lo sube al bucket especificado.
+    Genera un GeoJSON de la forma original de los datos y lo sube al bucket especificado.
+    Los datos se recortan con el polígono proporcionado y se simula una forma similar a IDW.
     """
     try:
-        # Crear un nuevo GeoDataFrame con solo las geometrías
-        gdf_simple = gpd.GeoDataFrame(geometry=gdf['geometry'])
+        # Recortar los datos con el polígono proporcionado
+        gdf_clipped = gdf.clip(polygon)
 
-        # Generar el GeoJSON
-        geojson_data = json.loads(gdf_simple.to_json())
+        # Crear GeoDataFrame con la geometría del polígono para simular IDW
+        polygon_shape = gpd.GeoDataFrame(geometry=[polygon], crs=gdf.crs)
+
+        # Convertir el GeoDataFrame a GeoJSON
+        geojson_data = json.loads(polygon_shape.to_json())
 
         # Ruta y nombre del archivo GeoJSON
-        geojson_file_path = f'{output_directory}interpolacion_{tabla}_{id_analisis}_original.geojson'
+        destination_blob_name = f"interpolacion_{tabla.upper()}_{id_analisis}.geojson"
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(f"interpolaciones/{destination_blob_name}")
+
+        # Si el blob existe, extiende las características, de lo contrario, utiliza las nuevas
+        if blob.exists():
+            existing_geojson = json.loads(blob.download_as_string(client=storage_client))
+            existing_geojson['features'].extend(geojson_data['features'])
+            geojson_data = existing_geojson
+
+        # Ruta del archivo GeoJSON
+        geojson_file_path = f'{output_directory}{destination_blob_name}'
+
+        # Guardar GeoJSON en el sistema de archivos
         with open(geojson_file_path, 'w') as f:
             json.dump(geojson_data, f)
 
-        # Subir el archivo GeoJSON al bucket
-        upload_image_to_bucket(bucket_name, geojson_file_path, f"interpolacion_{tabla.upper()}_{id_analisis}.geojson")
+        # Subir el archivo al bucket
+        upload_image_to_bucket(bucket_name, geojson_file_path, destination_blob_name)
 
-        logging.info(f"GeoJSON simplificado de la tabla {tabla} y análisis {id_analisis} generado y subido exitosamente.")
+        logging.info(f"GeoJSON original de la tabla {tabla} y análisis {id_analisis} generado y subido exitosamente.")
     except Exception as e:
-        logging.error(f"Error al generar o subir el GeoJSON simplificado: {e}")
+        logging.error(f"Error al generar o subir el GeoJSON original: {e}")
+
+
 
 
 def perform_idw_and_generate_geojson(gdf, polygon, bucket_name, variables, id_analisis):
@@ -109,14 +136,17 @@ def perform_idw_and_generate_geojson(gdf, polygon, bucket_name, variables, id_an
     points = np.array(gdf_accumulated[['LONGITUD', 'LATITUD']])
 
     for variable in variables:
-        geojson_features = []
         try:
             if variable in gdf_accumulated.columns:
                 logging.info(f"Procesando interpolación para la variable: {variable}")
-                values = np.array(gdf_accumulated[variable], dtype=float)
+                gdf_cropped = gpd.clip(gdf, polygon)
+                points = np.array(gdf_cropped[['LONGITUD', 'LATITUD']])
+                values = np.array(gdf_cropped[variable], dtype=float)
 
                 grid_x, grid_y = np.mgrid[min(points[:,0]):max(points[:,0]):100j, min(points[:,1]):max(points[:,1]):100j]
                 grid_z = griddata(points, values, (grid_x, grid_y), method='linear')
+
+                geojson_features = []
 
                 for level in np.linspace(np.nanmin(values), np.nanmax(values), num=10):
                     cs = plt.contour(grid_x, grid_y, grid_z, levels=[level])
@@ -132,16 +162,25 @@ def perform_idw_and_generate_geojson(gdf, polygon, bucket_name, variables, id_an
 
                 geojson = {
                     "type": "FeatureCollection",
-                    "features": geojson_features,
+                    "features": [],
                 }
 
-                # Cambio en la ruta y nombre del archivo
-                geojson_file_path = f'{output_directory}interpolacion_{variable}_{id_analisis}.geojson'
+                # Revisar si ya existe un archivo GeoJSON y extenderlo
+                destination_blob_name = f"interpolacion_{variable}_{id_analisis}.geojson"
+                blob = storage_client.bucket(bucket_name).blob(f"interpolaciones/{destination_blob_name}")
+                if blob.exists():
+                    existing_geojson = json.loads(blob.download_as_string(client=storage_client))
+                    existing_geojson['features'].extend(geojson_features)
+                    geojson = existing_geojson
+                else:
+                    geojson['features'].extend(geojson_features)
+
+                geojson_file_path = f'{output_directory}{destination_blob_name}'
                 with open(geojson_file_path, 'w') as f:
                     json.dump(geojson, f)
 
-                # Actualización en el nombre del blob
-                upload_image_to_bucket(bucket_name, geojson_file_path, f"interpolacion_{variable}_{id_analisis}.geojson")
+                # Subir archivo
+                upload_image_to_bucket(bucket_name, geojson_file_path, destination_blob_name)
 
         except Exception as e:
             logging.error(f"No se pudo procesar la variable {variable} debido a un error: {e}")
@@ -282,11 +321,14 @@ if __name__ == "__main__":
 
 
     df['TIEMPO_TOTAL'] = df['TIEMPO_TOTAL'].apply(str)
+    df['PILOTO_AUTOMATICO_NUM'] = df['PILOTO_AUTOMATICO'].apply(lambda x: 1 if x == "Automatic" else 0)
+    df['MODO_CORTE_BASE_NUM'] = df['MODO_CORTE_BASE'].apply(lambda x: 1 if x == "Automatic" else 0)
+    df['AUTO_TRACKET_NUM'] = df['AUTO_TRACKET'].apply(lambda x: 1 if x == "Disengaged" else 0)
 
     variables_interes = [
-        "PILOTO_AUTOMATICO", "VELOCIDAD_Km_H", "CALIDAD_DE_SENAL",
-        "CONSUMOS_DE_COMBUSTIBLE", "AUTO_TRACKET", "RPM",
-        "PRESION_DE_CORTADOR_BASE", "MODO_CORTE_BASE"
+        "PILOTO_AUTOMATICO_NUM", "VELOCIDAD_Km_H", "CALIDAD_DE_SENAL",
+        "CONSUMOS_DE_COMBUSTIBLE", "AUTO_TRACKET_NUM", "RPM",
+        "PRESION_DE_CORTADOR_BASE", "MODO_CORTE_BASE_NUM"
     ]
 
     logging.info("Comienza la generación de la imagen")
@@ -298,10 +340,9 @@ if __name__ == "__main__":
     else:
         gdf_accumulated = pd.concat([gdf_accumulated, gdf])
 
-if es_ultimo_lote == 'true':
     perform_idw_and_generate_geojson(gdf_accumulated, polygon, "geomotica_mapeo", variables_interes, id_analisis)
     # Llama a la nueva función aquí, para generar y subir el GeoJSON original
-    generate_and_upload_original_geojson(gdf_accumulated, "geomotica_mapeo", tabla, id_analisis)
+    generate_and_upload_original_geojson(gdf_accumulated, "geomotica_mapeo", tabla, id_analisis, polygon)
 
 
     dynamic_polygon = calculate_dynamic_polygon(df, alpha=1.0)
