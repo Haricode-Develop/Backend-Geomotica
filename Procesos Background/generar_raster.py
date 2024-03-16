@@ -57,9 +57,9 @@ def procesar_datos(datos):
 
         def mapeo_valor(columna, valor):
             mapeo = {
-                'auto_tracket': {'disengaged': 0, 'engaged': 1},
+                'auto_tracket': {'disengaged': 0, 'engaged': 1,'automatic': 1, 'manual': 0},
                 'piloto_automatico': {'disengaged': 0, 'engaged': 1, 'automatic': 1, 'manual': 0},
-                'modo_corte_base': {'disengaged': 0, 'engaged': 1}
+                'modo_corte_base': {'disengaged': 0, 'engaged': 1, 'automatic': 1, 'manual': 0}
             }
             valor_normalizado = valor.lower()
             try:
