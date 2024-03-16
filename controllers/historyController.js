@@ -33,9 +33,7 @@ const obtenerArchivoTIFF = async (req, res) => {
             console.log("El archivo no existe, generando...");
             // Ejecuta el script Python para generar el archivo TIFF
             const comandoPython = `python3 /geomotica/procesos/generar_raster.py ${id} ${nombreAnalisis}`;
-
-            // Aumenta el tamaño de maxBuffer
-            const options = { maxBuffer: 1024 * 1024 * 5 }; // 5 MB
+            const options = { maxBuffer: 1024 * 1024 * 50 }; // 50 MB
 
             exec(comandoPython, options, async (error, stdout, stderr) => {
                 if (error) {
@@ -66,7 +64,7 @@ const obtenerArchivoTIFF = async (req, res) => {
             // Genera y envía la URL del archivo existente
             const [url] = await archivo.getSignedUrl({
                 action: 'read',
-                expires: Date.now() + 3600 * 1000, // URL válida por 1 hora
+                expires: Date.now() + 3600 * 1000,// URL válida por 1 hora
             });
             console.log("Enviando URL del archivo existente...");
             return res.json({ url });
