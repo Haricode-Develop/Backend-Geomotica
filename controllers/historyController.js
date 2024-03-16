@@ -25,7 +25,7 @@ const obtenerArchivoTIFF = async (req, res) => {
     const nombreAnalisis = req.params.nombreAnalisis;
     const id = req.params.id;
     const archivoNombre = `${nombreAnalisis}_${id}.tif`;
-    const archivo = bucket.file(archivoNombre);
+    const archivo = storage.bucket(bucketName).file(archivoNombre);
 
     console.log("ESTOS SON LOS PARAMETROS: ");
     console.log("NOMBRE DEL ARCHIVO: ", archivoNombre);
@@ -35,38 +35,34 @@ const obtenerArchivoTIFF = async (req, res) => {
         if (!existeArchivo) {
             console.log("El archivo no existe, generando...");
 
-            // Ejecuta el script Python para generar el archivo TIFF
-            const comandoPython = `python3 /geomotica/procesos/generar_raster.py ${id} ${nombreAnalisis}`;
-            const options = { maxBuffer: 1024 * 1024 * 50 }; // 50 MB
+            // Lugar para ejecutar el script Python para generar el archivo TIFF
+            // ... Tu código para ejecutar el script Python ...
 
-            try {
-                const { stdout, stderr } = await exec(comandoPython, options);
-                if (stderr) {
-                    console.error(`Stderr: ${stderr}`);
-                    return res.status(500).json({ mensaje: 'Error en el script de Python' });
-                }
-                console.log("Script de Python ejecutado exitosamente: ", stdout);
-
-                // Verifica de nuevo si el archivo existe después de la generación
-                const [existeArchivoGenerado] = await archivo.exists();
-                if (!existeArchivoGenerado) {
-                    return res.status(404).json({ mensaje: 'Archivo no encontrado después de generación' });
-                }
-            } catch (error) {
-                console.error(`Error al ejecutar el script de Python: ${error.message}`);
-                return res.status(500).json({ mensaje: 'Error al ejecutar el script de Python' });
+            // Después de generar el archivo, verifica nuevamente si existe
+            const [archivoGenerado] = await archivo.exists();
+            if (!archivoGenerado) {
+                return res.status(404).json({ mensaje: 'Archivo no encontrado después de generación' });
             }
         }
 
-        // Genera y envía la URL del archivo
+        // Obtiene la URL firmada del archivo
         const [url] = await archivo.getSignedUrl({
             action: 'read',
-            expires: Date.now() + 3600 * 1000, // URL válida por 1 hora
+            expires: Date.now() + 3600 * 1000 // URL válida por 1 hora
         });
 
+        // Obtiene los metadatos del archivo
+        const [metadata] = await archivo.getMetadata();
+
+        // Extrae los metadatos personalizados del objeto y los incluye en la respuesta
+        const customMetadata = metadata.metadata;
+        const { min_x, min_y, max_x, max_y } = customMetadata;
+        const bounds = [[parseFloat(min_y), parseFloat(min_x)], [parseFloat(max_y), parseFloat(max_x)]];
+
         console.log("ESTA ES LA URL GENERADA:", url);
-        console.log("Enviando URL del archivo...");
-        return res.json({ url });
+        console.log("Enviando URL del archivo y metadatos...");
+        // Envía la URL y los metadatos del archivo en la respuesta
+        return res.json({ url, bounds });
     } catch (error) {
         console.error(`Error al procesar la solicitud: ${error}`);
         return res.status(500).json({ mensaje: 'Error interno del servidor' });
