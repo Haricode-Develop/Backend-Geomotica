@@ -63,6 +63,8 @@ const obtenerArchivoTIFF = async (req, res) => {
             action: 'read',
             expires: Date.now() + 3600 * 1000, // URL válida por 1 hora
         });
+
+        console.log("ESTA ES LA URL GENERADA:", url);
         console.log("Enviando URL del archivo...");
         return res.json({ url });
     } catch (error) {
