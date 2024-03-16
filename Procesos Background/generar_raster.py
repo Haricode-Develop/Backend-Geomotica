@@ -14,17 +14,19 @@ import os
 
 # Configuración de logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+ruta_credenciales = '/geomotica/procesos/analog-figure-382403-0c07b0baecfa.json'
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = ruta_credenciales
 
 # Configuración inicial
 GOOGLE_APPLICATION_CREDENTIALS = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
 BUCKET_NAME = 'geomotica_mapeo'
 ID_ANALISIS = sys.argv[1]
 TABLA = sys.argv[2]
+print(f"Credenciales desde: {os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')}")
 
 credentials = service_account.Credentials.from_service_account_file(
     os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
 )
-print(f"Credenciales desde: {os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')}")
 
 # Pasar las credenciales al cliente de Storage
 storage_client = storage.Client(credentials=credentials)
@@ -36,7 +38,7 @@ def cargar_datos(tabla, id_analisis):
         engine = create_engine("mysql+mysqlconnector://instancia:123456@34.172.98.144/geomotica")
         query = f"""
         SELECT LONGITUD, LATITUD, AUTO_TRACKET, PILOTO_AUTOMATICO, MODO_CORTE_BASE, VELOCIDAD_Km_H, CALIDAD_DE_SENAL, CONSUMOS_DE_COMBUSTIBLE, RPM, PRESION_DE_CORTADOR_BASE, TIEMPO_TOTAL
-        FROM {tabla}
+        FROM {tabla.lower()}
         WHERE ID_ANALISIS = {id_analisis}
         """
         datos = pd.read_sql(query, engine)
@@ -52,14 +54,33 @@ def procesar_datos(datos):
     try:
         gdf = gpd.GeoDataFrame(datos, geometry=gpd.points_from_xy(datos.LONGITUD, datos.LATITUD))
         gdf.crs = "EPSG:4326"
-        label_encoder = LabelEncoder()
-        for columna in ['AUTO_TRACKET', 'PILOTO_AUTOMATICO', 'MODO_CORTE_BASE']:
-            gdf[columna] = label_encoder.fit_transform(gdf[columna])
+
+        def mapeo_valor(columna, valor):
+            mapeo = {
+                'auto_tracket': {'disengaged': 0, 'engaged': 1},
+                'piloto_automatico': {'disengaged': 0, 'engaged': 1, 'automatic': 1, 'manual': 0},
+                'modo_corte_base': {'disengaged': 0, 'engaged': 1}
+            }
+            valor_normalizado = valor.lower()
+            try:
+                return mapeo[columna][valor_normalizado]
+            except KeyError:
+                logging.warning(f"Valor '{valor}' no reconocido para {columna}. Usando valor por defecto 0.")
+                return 0
+
+        # Aplica el mapeo a las columnas relevantes
+        gdf['AUTO_TRACKET'] = gdf['AUTO_TRACKET'].apply(lambda x: mapeo_valor('auto_tracket', x))
+        gdf['PILOTO_AUTOMATICO'] = gdf['PILOTO_AUTOMATICO'].apply(lambda x: mapeo_valor('piloto_automatico', x))
+        gdf['MODO_CORTE_BASE'] = gdf['MODO_CORTE_BASE'].apply(lambda x: mapeo_valor('modo_corte_base', x))
+
         logging.info("Datos procesados exitosamente")
         return gdf
     except Exception as e:
-        logging.error(f"Error al procesar los datos: {e}")
+        logging.error(f"Error general al procesar los datos: {e}")
         sys.exit(1)
+
+
+
 
 # Ajuste dinámico del tamaño de píxel
 def ajustar_tamano_pixel(gdf):
@@ -84,20 +105,39 @@ def generar_tiff(gdf, columna, id_analisis, cols, rows, pixel_size):
         min_x, min_y, max_x, max_y = gdf.total_bounds
         transform = from_origin(min_x, max_y, pixel_size, pixel_size)
         raster = np.zeros((rows, cols), dtype=rasterio.float32)
-        for _, row in gdf.iterrows():
-            col, row = ~transform * (row['LONGITUD'], row['LATITUD'])
-            col, row = int(col), int(row)
-            if 0 <= col < cols and 0 <= row < rows:
-                raster[row, col] = row[columna]
+        for _, fila in gdf.iterrows():
+            col, fila_num = ~transform * (fila['LONGITUD'], fila['LATITUD'])
+            col, fila_num = int(col), int(fila_num)
+            if 0 <= col < cols and 0 <= fila_num < rows:
+                raster[fila_num, col] = fila[columna]
+
         nombre_archivo = f"{columna}_{id_analisis}.tif"
         with rasterio.open(nombre_archivo, 'w', driver='GTiff', height=raster.shape[0], width=raster.shape[1], count=1, dtype=raster.dtype, crs='+proj=latlong', transform=transform) as dst:
             dst.write(raster, 1)
+
         bucket = storage_client.bucket(BUCKET_NAME)
         blob = bucket.blob(nombre_archivo)
         blob.upload_from_filename(nombre_archivo)
-        logging.info(f"Archivo TIFF {nombre_archivo} generado y subido a {BUCKET_NAME} con éxito")
+
+        # Define y añade los metadatos al archivo subido
+        metadata = {
+            "min_x": str(min_x),
+            "max_x": str(max_x),
+            "min_y": str(min_y),
+            "max_y": str(max_y)
+        }
+
+        blob.metadata = metadata
+        blob.patch()
+
+        logging.info(f"Archivo TIFF {nombre_archivo} generado, subido a {BUCKET_NAME} y metadatos añadidos con éxito.")
+
+        # Eliminar el archivo TIFF del sistema de archivos local
+        os.remove(nombre_archivo)
+        logging.info(f"Archivo TIFF {nombre_archivo} eliminado del servidor local.")
+
     except Exception as e:
-        logging.error(f"Error al generar o subir el archivo TIFF {columna}_{id_analisis}: {e}")
+        logging.error(f"Error al generar, subir el archivo TIFF {columna}_{id_analisis}, añadir metadatos o eliminar el archivo local: {e}")
         sys.exit(1)
 
 # Main
