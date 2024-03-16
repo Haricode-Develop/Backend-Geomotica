@@ -33,7 +33,7 @@ const obtenerArchivoTIFF = async (req, res) => {
 
         if (!existeArchivo[0]) {
             console.log("El archivo no existe, generando...");
-            const comandoPython = `python3 /geomotica/generar_raster.py ${id} ${nombreAnalisis}`;
+            const comandoPython = `python3 /geomotica/procesos/generar_raster.py ${id} ${nombreAnalisis}`;
 
             exec(comandoPython, async (error, stdout, stderr) => {
                 if (error) {

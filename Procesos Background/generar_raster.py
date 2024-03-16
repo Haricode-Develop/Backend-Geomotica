@@ -21,8 +21,12 @@ BUCKET_NAME = 'geomotica_mapeo'
 ID_ANALISIS = sys.argv[1]
 TABLA = sys.argv[2]
 
-# Cargar credenciales para Google Cloud Storage
-credentials = service_account.Credentials.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS)
+credentials = service_account.Credentials.from_service_account_file(
+    os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+)
+print(f"Credenciales desde: {os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')}")
+
+# Pasar las credenciales al cliente de Storage
 storage_client = storage.Client(credentials=credentials)
 
 # Función para cargar datos desde la base de datos
