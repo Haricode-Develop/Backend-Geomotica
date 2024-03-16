@@ -8,6 +8,6 @@ const socketController = require("../controllers/socketBackground");
 
 router.get('/historialAnalisis', History.analisis);
 
-router.get('/geojson/:nombreAnalisis/:id', History.obtenerArchivoGeoJSON);
+router.get('/geojson/:nombreAnalisis/:id', History.obtenerArchivoTIFF);
 
 module.exports = router;

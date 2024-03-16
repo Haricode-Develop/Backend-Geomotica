@@ -18,6 +18,8 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from scipy.spatial.distance import cdist
 import alphashape
+from pykrige.ok import OrdinaryKriging
+
 # Configuración del logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 output_directory = '/mnt/data/'
@@ -38,31 +40,49 @@ print(f"Credenciales desde: {os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')}")
 storage_client = storage.Client(credentials=credentials)
 gdf_accumulated = None
 
-def idw_interpolation(x, y, z, grid_size=100, power=2):
-    """Interpolación IDW mejorada con mejor resolución y visualización."""
-    xi = np.linspace(min(x), max(x), grid_size)
-    yi = np.linspace(min(y), max(y), grid_size)
-    xi, yi = np.meshgrid(xi, yi)
-    xz = np.array(list(zip(x, y)))
-    iz = np.array(list(zip(xi.flatten(), yi.flatten())))
+def perform_kriging_interpolation(gdf, polygon, bucket_name, variables, id_analisis):
+    global gdf_accumulated
+    if gdf_accumulated is None:
+        gdf_accumulated = gdf.copy()
+    else:
+        gdf_accumulated = pd.concat([gdf_accumulated, gdf])
 
-    # Distancias y pesos
-    dists = cdist(iz, xz, 'euclidean')
-    dists[dists == 0] = 1e-10  # Evitar división por cero
-    weights = 1 / dists ** power
-    wz = weights / weights.sum(axis=1)[:, None]
+    for variable in variables:
+        try:
+            if variable in gdf_accumulated.columns:
+                logging.info(f"Procesando interpolación para la variable: {variable}")
+                # Ajuste debido a cambio de método de interpolación
+                gdf_cropped = gpd.clip(gdf_accumulated, polygon)
+                points = np.array(gdf_cropped[['LONGITUD', 'LATITUD']])
+                values = np.array(gdf_cropped[variable], dtype=float)
 
-    # Interpolación
-    zi = np.dot(wz, z)
-    zi = zi.reshape(xi.shape)
+                # Parámetros de la grilla para Kriging
+                grid_x = np.linspace(points[:,0].min(), points[:,0].max(), num=100)
+                grid_y = np.linspace(points[:,1].min(), points[:,1].max(), num=100)
+                grid_x, grid_y = np.meshgrid(grid_x, grid_y)
 
-    # Visualización mejorada
-    fig, ax = plt.subplots(figsize=(10, 10))
-    cmap = plt.cm.jet  # Puedes elegir una paleta de colores que prefieras
-    cf = ax.contourf(xi, yi, zi, levels=100, cmap=cmap)
-    plt.colorbar(cf, ax=ax)
+                # Ejecutar Kriging
+                OK = OrdinaryKriging(points[:,0], points[:,1], values, variogram_model='linear')
+                z, ss = OK.execute('grid', grid_x[:,0], grid_y[0,:])
 
-    return xi, yi, zi
+                # Crear figuras
+                fig, ax = plt.subplots(figsize=(10, 10))
+                cmap = plt.get_cmap('viridis')
+                cf = ax.contourf(grid_x, grid_y, z, levels=100, cmap=cmap)
+                plt.colorbar(cf, ax=ax)
+                plt.title(f'Kriging Interpolation for {variable}')
+                plt.xlabel('Longitude')
+                plt.ylabel('Latitude')
+
+                # Guardar y subir imagen
+                img_path = f'{output_directory}{variable}_kriging_{id_analisis}.png'
+                plt.savefig(img_path)
+                plt.close()
+                upload_image_to_bucket(bucket_name, img_path, f'{variable}_kriging_{id_analisis}.png')
+
+        except Exception as e:
+            logging.error(f"No se pudo procesar la variable {variable} debido a un error: {e}")
+            continue
 
 
 def upload_image_to_bucket(bucket_name, file_path, destination_blob_name):
@@ -340,7 +360,7 @@ if __name__ == "__main__":
     else:
         gdf_accumulated = pd.concat([gdf_accumulated, gdf])
 
-    perform_idw_and_generate_geojson(gdf_accumulated, polygon, "geomotica_mapeo", variables_interes, id_analisis)
+    perform_kriging_interpolation(gdf_accumulated, polygon, "geomotica_mapeo", variables_interes, id_analisis)
     # Llama a la nueva función aquí, para generar y subir el GeoJSON original
     generate_and_upload_original_geojson(gdf_accumulated, "geomotica_mapeo", tabla, id_analisis, polygon)
 
