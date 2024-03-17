@@ -24,7 +24,7 @@ const analisis = async(req, res) => {
 const obtenerArchivoTIFF = async (req, res) => {
     const nombreAnalisis = req.params.nombreAnalisis;
     const id = req.params.id;
-    const archivoNombre = `${nombreAnalisis}_${id}.tif`;
+    const archivoNombre = `raster/${nombreAnalisis}_${id}.tif`;
     const archivo = storage.bucket(bucketName).file(archivoNombre);
 
     console.log("ESTOS SON LOS PARAMETROS: ");
@@ -35,10 +35,6 @@ const obtenerArchivoTIFF = async (req, res) => {
         if (!existeArchivo) {
             console.log("El archivo no existe, generando...");
 
-            // Lugar para ejecutar el script Python para generar el archivo TIFF
-            // ... Tu código para ejecutar el script Python ...
-
-            // Después de generar el archivo, verifica nuevamente si existe
             const [archivoGenerado] = await archivo.exists();
             if (!archivoGenerado) {
                 return res.status(404).json({ mensaje: 'Archivo no encontrado después de generación' });
