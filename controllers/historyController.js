@@ -24,7 +24,7 @@ const analisis = async(req, res) => {
 const obtenerArchivoTIFF = async (req, res) => {
     const nombreAnalisis = req.params.nombreAnalisis;
     const id = req.params.id;
-    const archivoNombre = `${nombreAnalisis}_${id}.tif`;
+    const archivoNombre = `raster/${nombreAnalisis}_${id}.tif`;
     const nombreTabla = "cosecha_mecanica";
     try {
         console.log("Buscando archivo: ", archivoNombre);

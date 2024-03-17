@@ -116,7 +116,7 @@ def generar_tiff(gdf, columna, id_analisis, cols, rows, pixel_size):
             dst.write(raster, 1)
 
         bucket = storage_client.bucket(BUCKET_NAME)
-        blob = bucket.blob(nombre_archivo)
+        blob = bucket.blob(f"raster/{nombre_archivo}")
         blob.upload_from_filename(nombre_archivo)
 
         # Define y añade los metadatos al archivo subido
