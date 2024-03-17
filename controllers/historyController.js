@@ -24,9 +24,9 @@ const analisis = async(req, res) => {
 const obtenerArchivoTIFF = async (req, res) => {
     const nombreAnalisis = req.params.nombreAnalisis;
     const id = req.params.id;
-    const archivoNombre = `${nombreAnalisis}_${id}.tif`;
+    const archivoNombre = `raster/${nombreAnalisis}_${id}.tif`;
     const archivo = bucket.file(archivoNombre);
-
+    const nombreTabla = "cosecha_mecanica";
     console.log("ESTOS SON LOS PARAMETROS: ");
     console.log("NOMBRE DEL ARCHIVO: ", archivoNombre);
 
@@ -36,7 +36,7 @@ const obtenerArchivoTIFF = async (req, res) => {
             console.log("El archivo no existe, generando...");
 
             // Ejecuta el script Python para generar el archivo TIFF
-            const comandoPython = `python3 /geomotica/procesos/generar_raster.py ${id} ${nombreAnalisis}`;
+            const comandoPython = `python3 /geomotica/procesos/generar_raster.py ${id} ${nombreTabla}`;
             const options = { maxBuffer: 1024 * 1024 * 50 }; // 50 MB
 
             try {
