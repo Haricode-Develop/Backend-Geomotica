@@ -64,9 +64,15 @@ const obtenerArchivoTIFF = async (req, res) => {
             expires: Date.now() + 3600 * 1000, // URL válida por 1 hora
         });
 
+        const [metadata] = await archivo.getMetadata();
+
+        const customMetadata = metadata.metadata;
+        const { min_x, min_y, max_x, max_y } = customMetadata;
+        const bounds = [[parseFloat(min_y), parseFloat(min_x)], [parseFloat(max_y), parseFloat(max_x)]];
+
         console.log("ESTA ES LA URL GENERADA:", url);
-        console.log("Enviando URL del archivo...");
-        return res.json({ url });
+        console.log("Enviando URL del archivo y metadatos...");
+        return res.json({ url, bounds });
     } catch (error) {
         console.error(`Error al procesar la solicitud: ${error}`);
         return res.status(500).json({ mensaje: 'Error interno del servidor' });
