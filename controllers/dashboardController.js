@@ -7,8 +7,13 @@ let esPrimeraEjecucion = true;
 const Papa = require('papaparse');
 const validaciones = require('../utils/validacionesMapeo');
 const {exec} = require('child_process');
+const { Storage } = require('@google-cloud/storage');
 
+const keyFilename = path.join(__dirname, '..', 'analog-figure-382403-c95d79364b3d.json');
+const storage = new Storage({ keyFilename: keyFilename });
 
+const bucketName = 'geomotica_mapeo';
+const bucket = storage.bucket(bucketName);
 
 const procesarCsv = async (req, res) => {
     const idTipoAnalisis = req.body.idTipoAnalisis;
@@ -787,6 +792,30 @@ const PromedioVelocidadHerbicidas = async(req, res) => {
     return res.json(obtenerPromedioVelocidadHerbicidas);
 }
 
+const depositarJsonCosechaMecanica = async (req, res) => {
+    const idAnalisis = req.params.idAnalisis;
+    const datos = req.body.datos;
+
+    // Convertir los datos a una cadena JSON
+    const json = JSON.stringify(datos);
+
+    const fileName = `analisis/${idAnalisis}-${Date.now()}.json`;
+
+    try {
+        const file = bucket.file(fileName);
+
+        await file.save(json, {
+            metadata: {
+                contentType: 'application/json',
+            },
+        });
+
+        res.status(200).json({ message: 'Archivo JSON subido exitosamente', fileName });
+    } catch (error) {
+        console.error('Error al subir el archivo JSON:', error);
+        res.status(500).json({ message: 'Error al subir el archivo JSON', error: error.message });
+    }
+};
 
 module.exports = {
     obtenerUltimoAnalisis,
@@ -867,5 +896,6 @@ module.exports = {
     EficienciaHerbicidas,
     PromedioVelocidadHerbicidas,
     execBash,
-    procesarCsv
+    procesarCsv,
+    depositarJsonCosechaMecanica
 };

@@ -87,4 +87,8 @@ router.get('/tiempoTotalHerbicidas/:ID_ANALISIS', DashbBoard.TiempoTotalHerbicid
 router.get('/eficienciaHerbicidas/:ID_ANALISIS', DashbBoard.EficienciaHerbicidas);
 router.get('/promedioVelocidadHerbicidas/:ID_ANALISIS', DashbBoard.PromedioVelocidadHerbicidas);
 
+// ==== JSON de anaisis ========
+router.post('/cosecha_mecanica_analisis/:ID_ANALISIS', DashbBoard.depositarJsonCosechaMecanica);
+
+
 module.exports = router;
