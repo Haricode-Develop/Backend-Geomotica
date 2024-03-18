@@ -798,7 +798,7 @@ const depositarJsonCosechaMecanica = async (req, res) => {
 
     // Convertir los datos a una cadena JSON
     const json = JSON.stringify(datos);
-
+    console.log("El archivo json se va a depositar=========================================================");
     const fileName = `analisis/${idAnalisis}.json`;
 
     try {
