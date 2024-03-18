@@ -25,31 +25,46 @@ const obtenerArchivoTIFF = async (req, res) => {
     const nombreAnalisis = req.params.nombreAnalisis;
     const id = req.params.id;
     const archivoNombre = `raster/${nombreAnalisis}_${id}.tif`;
+    const analisisNombre = `analisis/${id}.json`;
     const archivo = bucket.file(archivoNombre);
+    const archivoAnalisis = bucket.file(analisisNombre);
     const nombreTabla = "cosecha_mecanica";
+
     console.log("ESTOS SON LOS PARAMETROS: ");
     console.log("NOMBRE DEL ARCHIVO: ", archivoNombre);
 
     try {
         const [existeArchivo] = await archivo.exists();
+        const [existeArchivoAnalisis] = await archivoAnalisis.exists();
         if (!existeArchivo) {
             console.log("El archivo no existe, generando...");
 
-            // Ejecuta el script Python para generar el archivo TIFF
             const comandoPython = `python3 /geomotica/procesos/generar_raster.py ${id} ${nombreTabla}`;
             const options = { maxBuffer: 1024 * 1024 * 50 }; // 50 MB
 
             try {
-                const { stdout, stderr } = await exec(comandoPython, options);
+                const { stdout, stderr } = await execAsync(comandoPython, options);
                 if (stderr) {
                     console.error(`Stderr: ${stderr}`);
                     return res.status(500).json({ mensaje: 'Error en el script de Python' });
                 }
                 console.log("Script de Python ejecutado exitosamente: ", stdout);
 
-                // Verifica de nuevo si el archivo existe después de la generación
-                const [existeArchivoGenerado] = await archivo.exists();
-                if (!existeArchivoGenerado) {
+                let archivoGenerado = false;
+                const maxIntentos = 10;
+                let intentos = 0;
+
+                while (!archivoGenerado && intentos < maxIntentos) {
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    const [existe] = await archivo.exists();
+                    if (existe) {
+                        archivoGenerado = true;
+                        break;
+                    }
+                    intentos++;
+                }
+
+                if (!archivoGenerado) {
                     return res.status(404).json({ mensaje: 'Archivo no encontrado después de generación' });
                 }
             } catch (error) {
@@ -58,26 +73,33 @@ const obtenerArchivoTIFF = async (req, res) => {
             }
         }
 
-        // Genera y envía la URL del archivo
+        if(!existeArchivoAnalisis){
+            console.log("El archivo del análisis no existe===================");
+        }
+
         const [url] = await archivo.getSignedUrl({
             action: 'read',
             expires: Date.now() + 3600 * 1000, // URL válida por 1 hora
         });
 
+        const [urlAnalisis] = await archivoAnalisis.getSignedUrl({
+            action: 'read',
+            expires: Date.now() + 3600 * 1000, // URL válida por 1 hora
+        });
         const [metadata] = await archivo.getMetadata();
-
         const customMetadata = metadata.metadata;
         const { min_x, min_y, max_x, max_y } = customMetadata;
         const bounds = [[parseFloat(min_y), parseFloat(min_x)], [parseFloat(max_y), parseFloat(max_x)]];
 
         console.log("ESTA ES LA URL GENERADA:", url);
         console.log("Enviando URL del archivo y metadatos...");
-        return res.json({ url, bounds });
+        return res.json({ url, bounds, urlAnalisis });
     } catch (error) {
         console.error(`Error al procesar la solicitud: ${error}`);
         return res.status(500).json({ mensaje: 'Error interno del servidor' });
     }
 };
+
 module.exports = {
     analisis, obtenerArchivoTIFF
 }

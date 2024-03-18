@@ -793,13 +793,13 @@ const PromedioVelocidadHerbicidas = async(req, res) => {
 }
 
 const depositarJsonCosechaMecanica = async (req, res) => {
-    const idAnalisis = req.params.idAnalisis;
+    const idAnalisis = req.params.ID_ANALISIS;
     const datos = req.body.datos;
 
     // Convertir los datos a una cadena JSON
     const json = JSON.stringify(datos);
 
-    const fileName = `analisis/${idAnalisis}-${Date.now()}.json`;
+    const fileName = `analisis/${idAnalisis}.json`;
 
     try {
         const file = bucket.file(fileName);

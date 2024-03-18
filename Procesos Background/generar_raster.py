@@ -89,7 +89,7 @@ def ajustar_tamano_pixel(gdf):
         bounds = gdf.total_bounds
         ancho = bounds[2] - bounds[0]
         alto = bounds[3] - bounds[1]
-        resolucion_deseada = 0.00001  # Ajustar según sea necesario
+        resolucion_deseada = 0.0001  # Ajustar según sea necesario
         cols = int(ancho / resolucion_deseada)
         rows = int(alto / resolucion_deseada)
         logging.info(f"Tamaño de píxel ajustado a: {resolucion_deseada}, columnas: {cols}, filas: {rows}")
