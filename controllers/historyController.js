@@ -29,21 +29,22 @@ const obtenerArchivoTIFF = async (req, res) => {
     const archivo = bucket.file(archivoNombre);
     const archivoAnalisis = bucket.file(analisisNombre);
     const nombreTabla = "cosecha_mecanica";
-
     console.log("ESTOS SON LOS PARAMETROS: ");
     console.log("NOMBRE DEL ARCHIVO: ", archivoNombre);
 
     try {
         const [existeArchivo] = await archivo.exists();
         const [existeArchivoAnalisis] = await archivoAnalisis.exists();
+
         if (!existeArchivo) {
             console.log("El archivo no existe, generando...");
 
+            // Ejecuta el script Python para generar el archivo TIFF
             const comandoPython = `python3 /geomotica/procesos/generar_raster.py ${id} ${nombreTabla}`;
             const options = { maxBuffer: 1024 * 1024 * 50 }; // 50 MB
 
             try {
-                const { stdout, stderr } = await execAsync(comandoPython, options);
+                const { stdout, stderr } = await exec(comandoPython, options);
                 if (stderr) {
                     console.error(`Stderr: ${stderr}`);
                     return res.status(500).json({ mensaje: 'Error en el script de Python' });
@@ -67,26 +68,27 @@ const obtenerArchivoTIFF = async (req, res) => {
                 if (!archivoGenerado) {
                     return res.status(404).json({ mensaje: 'Archivo no encontrado después de generación' });
                 }
+
             } catch (error) {
                 console.error(`Error al ejecutar el script de Python: ${error.message}`);
                 return res.status(500).json({ mensaje: 'Error al ejecutar el script de Python' });
             }
         }
-
         if(!existeArchivoAnalisis){
             console.log("El archivo del análisis no existe===================");
         }
-
+        // Genera y envía la URL del archivo
         const [url] = await archivo.getSignedUrl({
             action: 'read',
             expires: Date.now() + 3600 * 1000, // URL válida por 1 hora
         });
-
         const [urlAnalisis] = await archivoAnalisis.getSignedUrl({
             action: 'read',
             expires: Date.now() + 3600 * 1000, // URL válida por 1 hora
         });
+
         const [metadata] = await archivo.getMetadata();
+
         const customMetadata = metadata.metadata;
         const { min_x, min_y, max_x, max_y } = customMetadata;
         const bounds = [[parseFloat(min_y), parseFloat(min_x)], [parseFloat(max_y), parseFloat(max_x)]];
@@ -99,7 +101,6 @@ const obtenerArchivoTIFF = async (req, res) => {
         return res.status(500).json({ mensaje: 'Error interno del servidor' });
     }
 };
-
 module.exports = {
     analisis, obtenerArchivoTIFF
 }
