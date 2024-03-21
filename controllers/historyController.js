@@ -46,7 +46,7 @@ const obtenerArchivoTIFF = async (req, res) => {
             try {
                 const { stdout, stderr } = await exec(comandoPython, options);
                 if (stderr) {
-                    console.error(`Stderr: ${stderr}`);
+                    console.error(`Stderr:`, stderr);
                     return res.status(500).json({ mensaje: 'Error en el script de Python' });
                 }
                 console.log("Script de Python ejecutado exitosamente: ", stdout);
