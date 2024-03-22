@@ -41,8 +41,9 @@ const obtenerArchivoTIFF = async (req, res) => {
 
             // Ejecuta el script Python para generar el archivo TIFF
             const comandoPython = `python3 /geomotica/procesos/generar_raster.py ${id} ${nombreTabla}`;
+            console.log("EJECUCIÓN DEL COMANDO PYTHON: ", comandoPython);
             const options = { maxBuffer: 1024 * 1024 * 50 }; // 50 MB
-
+            
             try {
                 const { stdout, stderr } = await exec(comandoPython, options);
                 if (stderr) {
