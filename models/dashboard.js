@@ -543,13 +543,12 @@ const obtenerEficienciaHerbicidas = async (idAnalisis) => {
 };
 
 const obtenerPromedioVelocidadHerbicidas = async (idAnalisis) => {
-
-};
-
-const query = `SELECT ROUND(AVG(VELOCIDAD_Km_H), 2) AS promedioVelocidad FROM herbicidas WHERE ID_ANALISIS = ?;`;
+    const query = `SELECT ROUND(AVG(VELOCIDAD_Km_H), 2) AS promedioVelocidad FROM herbicidas WHERE ID_ANALISIS = ?;`;
     const [rows] = await pool.query(query, [idAnalisis]);
     return rows[0]?.promedioVelocidad || null;
-// Nota: Esta consulta necesita la columna adecuada para calcular la AVG(). Asegúrate de reemplazar 'COLUMN_NAME' con el nombre correcto de la columna.
+};
+
+
 const obtenerPromedioDosisRealAplicadaHerbicidas = async (idAnalisis) => {
     const query = `SELECT ROUND(AVG(COLUMN_NAME), 2) AS promedioDosisReal FROM herbicidas WHERE ID_ANALISIS = ?;`;
     const [rows] = await pool.query(query, [idAnalisis]);

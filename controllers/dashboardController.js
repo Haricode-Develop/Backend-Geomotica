@@ -547,7 +547,6 @@ const TiempoTotalActividadCm = async(req, res) =>{
 const EficienciaCm = async(req, res) =>{
     const idAnalisis =  req.params.ID_ANALISIS;
     try {
-
         const obtenerEficienciaCm = await DashboardModel.obtenerEficienciaCm(idAnalisis);
     return res.json(obtenerEficienciaCm);
     } catch (error) {

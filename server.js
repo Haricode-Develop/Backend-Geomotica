@@ -12,7 +12,7 @@ const authRoutes = require('./routes/authRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const socketRoutes = require('./routes/webSocket');
 const historialRoutes = require('./routes/historyRoutes');
-//app.use(cors());
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('combined'));
 app.use(bodyParser.json({ limit: '50mb' }));
