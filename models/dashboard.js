@@ -543,17 +543,59 @@ const obtenerEficienciaHerbicidas = async (idAnalisis) => {
 };
 
 const obtenerPromedioVelocidadHerbicidas = async (idAnalisis) => {
-    const query = `SELECT ROUND(AVG(VELOCIDAD_Km_H), 2) AS promedioVelocidad FROM herbicidas WHERE ID_ANALISIS = ?;`;
-    const [rows] = await pool.query(query, [idAnalisis]);
-    return rows[0]?.promedioVelocidad || null;
+
 };
 
+const query = `SELECT ROUND(AVG(VELOCIDAD_Km_H), 2) AS promedioVelocidad FROM herbicidas WHERE ID_ANALISIS = ?;`;
+    const [rows] = await pool.query(query, [idAnalisis]);
+    return rows[0]?.promedioVelocidad || null;
 // Nota: Esta consulta necesita la columna adecuada para calcular la AVG(). Asegúrate de reemplazar 'COLUMN_NAME' con el nombre correcto de la columna.
 const obtenerPromedioDosisRealAplicadaHerbicidas = async (idAnalisis) => {
     const query = `SELECT ROUND(AVG(COLUMN_NAME), 2) AS promedioDosisReal FROM herbicidas WHERE ID_ANALISIS = ?;`;
     const [rows] = await pool.query(query, [idAnalisis]);
     return rows[0]?.promedioDosisReal || null;
 };
+
+const almacenarUltimosValores = async(datos) => {
+    const camposEsperados = [
+        'idAnalisis', 'pilotoAutomatico', 'autoTracket', 'modoCorteBase',
+        'velocidadActivo', 'velocidadBajo', 'velocidadMedio', 'velocidadAlto',
+        'calidadGpsActivado', 'calidadGpsBajo', 'calidadGpsMedio', 'calidadGpsAlto',
+        'combustibleActivado', 'combustibleBajo', 'combustibleMedio', 'combustibleAlto',
+        'rpmActivado', 'rpmBajo', 'rpmMedio', 'rpmAlto',
+        'presionCortadorBaseActivado', 'presionCortadorBaseBajo', 'presionCortadorBaseMedio',
+        'presionCortadorBaseAlto'
+    ];
+
+    const valoresParaInsertar = camposEsperados.map(campo => datos[campo]);
+
+    const query = `INSERT INTO configuraciones_formulario (ID_ANALISIS, PILOTO_AUTOMATICO, AUTO_TRACKET, MODO_CORTE_BASE,
+                                                           VELOCIDAD_ACTIVADO, VELOCIDAD_BAJO, VELOCIDAD_MEDIO, VELOCIDAD_ALTO,
+                                                           CALIDAD_GPS_ACTIVADO, CALIDAD_GPS_BAJO, CALIDAD_GPS_MEDIO, CALIDAD_GPS_ALTO,
+                                                           COMBUSTIBLE_ACTIVADO, COMBUSTIBLE_BAJO, COMBUSTIBLE_MEDIO, COMBUSTIBLE_ALTO,
+                                                           RPM_ACTIVADO, RPM_BAJO, RPM_MEDIO, RPM_ALTO, PRESION_CORTADOR_BASE_ACTIVADO,
+                                                           PRESION_CORTADOR_BASE_BAJO, PRESION_CORTADOR_BASE_MEDIO,
+                                                           PRESION_CORTADOR_BASE_ALTO)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                       ON DUPLICATE KEY UPDATE
+                                            PILOTO_AUTOMATICO = VALUES(PILOTO_AUTOMATICO), AUTO_TRACKET = VALUES(AUTO_TRACKET),
+                                            MODO_CORTE_BASE = VALUES(MODO_CORTE_BASE), VELOCIDAD_ACTIVADO = VALUES(VELOCIDAD_ACTIVADO),
+                                            VELOCIDAD_BAJO = VALUES(VELOCIDAD_BAJO), VELOCIDAD_MEDIO = VALUES(VELOCIDAD_MEDIO),
+                                            VELOCIDAD_ALTO = VALUES(VELOCIDAD_ALTO), CALIDAD_GPS_ACTIVADO = VALUES(CALIDAD_GPS_ACTIVADO),
+                                            CALIDAD_GPS_BAJO = VALUES(CALIDAD_GPS_BAJO), CALIDAD_GPS_MEDIO = VALUES(CALIDAD_GPS_MEDIO),
+                                            CALIDAD_GPS_ALTO = VALUES(CALIDAD_GPS_ALTO), COMBUSTIBLE_ACTIVADO = VALUES(COMBUSTIBLE_ACTIVADO),
+                                            COMBUSTIBLE_BAJO = VALUES(COMBUSTIBLE_BAJO), COMBUSTIBLE_MEDIO = VALUES(COMBUSTIBLE_MEDIO),
+                                            COMBUSTIBLE_ALTO = VALUES(COMBUSTIBLE_ALTO), RPM_ACTIVADO = VALUES(RPM_ACTIVADO),
+                                            RPM_BAJO = VALUES(RPM_BAJO), RPM_MEDIO = VALUES(RPM_MEDIO), RPM_ALTO = VALUES(RPM_ALTO),
+                                            PRESION_CORTADOR_BASE_ACTIVADO = VALUES(PRESION_CORTADOR_BASE_ACTIVADO),
+                                            PRESION_CORTADOR_BASE_BAJO = VALUES(PRESION_CORTADOR_BASE_BAJO),
+                                            PRESION_CORTADOR_BASE_MEDIO = VALUES(PRESION_CORTADOR_BASE_MEDIO),
+                                            PRESION_CORTADOR_BASE_ALTO = VALUES(PRESION_CORTADOR_BASE_ALTO);`;
+
+    const [rows] = await pool.query(query, valoresParaInsertar);
+
+    return rows;
+}
 
 module.exports = {
     insertarAnalisis,
@@ -636,5 +678,5 @@ module.exports = {
     obtenerTiempoTotalHerbicidas,
     obtenerEficienciaHerbicidas,
     obtenerPromedioVelocidadHerbicidas,
-
+    almacenarUltimosValores
 };

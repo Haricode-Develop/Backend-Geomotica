@@ -817,6 +817,16 @@ const depositarJsonCosechaMecanica = async (req, res) => {
     }
 };
 
+
+const almacenarUltimosValoresIngresados = async(req, res)  => {
+    try {
+        const resultado = await DashboardModel.almacenarUltimosValores(req.body);
+        res.json({ success: true, resultado: resultado });
+    } catch (error) {
+        res.status(500).json({ success: false, mensaje: "Error al insertar los datos", error: error.message });
+    }
+}
+
 module.exports = {
     obtenerUltimoAnalisis,
     insertarAnalisis,
@@ -897,5 +907,6 @@ module.exports = {
     PromedioVelocidadHerbicidas,
     execBash,
     procesarCsv,
-    depositarJsonCosechaMecanica
+    depositarJsonCosechaMecanica,
+    almacenarUltimosValoresIngresados
 };

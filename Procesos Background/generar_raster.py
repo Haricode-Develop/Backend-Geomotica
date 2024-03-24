@@ -1,6 +1,7 @@
 import sys
 import pandas as pd
 import geopandas as gpd
+from rasterio.mask import mask
 from sqlalchemy import create_engine
 from shapely.geometry import Point
 import rasterio
@@ -14,7 +15,7 @@ import os
 
 # Configuración de logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-ruta_credenciales = '/geomotica/procesos/analog-figure-382403-0c07b0baecfa.json'
+ruta_credenciales = '/geomotica/procesos/analog-figure-382403-d8d65817b5d3.json'
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = ruta_credenciales
 
 # Configuración inicial
@@ -94,9 +95,9 @@ def procesar_datos(datos):
 
         def mapeo_valor(columna, valor):
             mapeo = {
-                'auto_tracket': {'disengaged': 0, 'engaged': 1,'automatic': 1, 'manual': 0},
-                'piloto_automatico': {'disengaged': 0, 'engaged': 1, 'automatic': 1, 'manual': 0},
-                'modo_corte_base': {'disengaged': 0, 'engaged': 1, 'automatic': 1, 'manual': 0}
+                'auto_tracket': {'disengaged': 1, 'engaged': 2,'automatic': 2, 'manual': 1},
+                'piloto_automatico': {'disengaged': 1, 'engaged': 2, 'automatic': 2, 'manual': 1},
+                'modo_corte_base': {'disengaged': 1, 'engaged': 2, 'automatic': 2 'manual': 1}
             }
             valor_normalizado = valor.lower()
             try:

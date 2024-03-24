@@ -90,5 +90,7 @@ router.get('/promedioVelocidadHerbicidas/:ID_ANALISIS', DashbBoard.PromedioVeloc
 // ==== JSON de anaisis ========
 router.post('/cosecha_mecanica_analisis/:ID_ANALISIS', DashbBoard.depositarJsonCosechaMecanica);
 
+// === Ingreso de ultimos valores ======
+router.post('/ultimosDatosIngresados', DashbBoard.almacenarUltimosValoresIngresados)
 
 module.exports = router;
