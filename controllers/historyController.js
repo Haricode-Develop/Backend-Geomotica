@@ -4,10 +4,11 @@ const { Storage } = require('@google-cloud/storage'); // Importa correctamente S
 
 const keyFilename = path.join(__dirname, '..', 'analog-figure-382403-c95d79364b3d.json');
 const storage = new Storage({ keyFilename: keyFilename });
+const { promisify } = require('util');
 
 const bucketName = 'geomotica_mapeo';
 const bucket = storage.bucket(bucketName);
-const {exec} = require('child_process');
+const exec = promisify(require('child_process').exec);
 
 const analisis = async(req, res) => {
     const idUsuario = req.query.idUsuario;
@@ -42,15 +43,23 @@ const obtenerArchivoTIFF = async (req, res) => {
             // Ejecuta el script Python para generar el archivo TIFF
             const comandoPython = `python3 /geomotica/procesos/generar_raster.py ${id} ${nombreTabla}`;
             console.log("EJECUCIÓN DEL COMANDO PYTHON: ", comandoPython);
-            const options = { maxBuffer: 1024 * 1024 * 50 }; // 50 MB
+            const options = { maxBuffer: 1024 * 1024 * 100 }; // 50 MB
 
             try {
-                const { stdout, stderr } = await exec(comandoPython, options);
-                if (stderr) {
-                    console.error(`Stderr:`, stderr);
-                    return res.status(500).json({ mensaje: 'Error en el script de Python' });
+                try {
+                    const { stdout, stderr } = await exec(comandoPython, options);
+                    console.log("Script de Python ejecutado exitosamente:", stdout);
+                    if (stderr) {
+                        console.error("Stderr:", stderr);
+                    }
+                } catch (error) {
+                    console.error(`Error al ejecutar el script de Python: ${error}`);
+                    console.error(`Salida de error (stderr): ${error.stderr}`);
+                    return res.status(500).json({
+                        mensaje: 'Error en el script de Python',
+                        detalle: error.stderr
+                    });
                 }
-                console.log("Script de Python ejecutado exitosamente: ", stdout);
 
                 let archivoGenerado = false;
                 const maxIntentos = 10;
