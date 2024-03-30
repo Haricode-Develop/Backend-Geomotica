@@ -557,13 +557,13 @@ const obtenerPromedioDosisRealAplicadaHerbicidas = async (idAnalisis) => {
 
 const almacenarUltimosValores = async(datos) => {
     const camposEsperados = [
-        'idAnalisis', 'pilotoAutomatico', 'autoTracket', 'modoCorteBase',
-        'velocidadActivo', 'velocidadBajo', 'velocidadMedio', 'velocidadAlto',
-        'calidadGpsActivado', 'calidadGpsBajo', 'calidadGpsMedio', 'calidadGpsAlto',
-        'combustibleActivado', 'combustibleBajo', 'combustibleMedio', 'combustibleAlto',
-        'rpmActivado', 'rpmBajo', 'rpmMedio', 'rpmAlto',
-        'presionCortadorBaseActivado', 'presionCortadorBaseBajo', 'presionCortadorBaseMedio',
-        'presionCortadorBaseAlto'
+        'idAnalisis', 'filterAutoPilot', 'filterAutoTracket', 'filterModeCutterBase',
+        'filterSpeed', 'lowSpeed', 'medSpeed', 'highSpeed',
+        'filterGpsQuality', 'lowGpsQuality', 'medGpsQuality', 'highGpsQuality',
+        'filterFuel', 'lowFuel', 'medFuel', 'highFuel',
+        'filterRpm', 'lowRpm', 'medRpm', 'highRpm',
+        'filterCutterBase', 'lowCutterBase', 'medCutterBase',
+        'highCutterBase'
     ];
 
     const valoresParaInsertar = camposEsperados.map(campo => datos[campo]);
