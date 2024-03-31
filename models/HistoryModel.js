@@ -59,7 +59,7 @@ const obtenerUltimosValores = async (idAnalisis)  => {
        PRESION_CORTADOR_BASE_ALTO,
        FECHA_CREACION
 FROM configuraciones_formulario
-WHERE ID_ANALISIS = 2;    
+WHERE ID_ANALISIS = ?;    
     `;
 
     const [rows] = await pool.query(query, [idAnalisis]);
