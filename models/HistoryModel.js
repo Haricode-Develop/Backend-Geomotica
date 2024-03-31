@@ -62,6 +62,7 @@ FROM configuraciones_formulario
 WHERE ID_ANALISIS = ?;    
     `;
 
+    console.log("ESTE ES EL ID DEL ANALISIS", idAnalisis);
     const [rows] = await pool.query(query, [idAnalisis]);
     return rows;
 }

@@ -23,10 +23,10 @@ const analisis = async(req, res) => {
 }
 
 const obtenerUltimosValores = async (req, res)  => {
-    const idAnalisis = req.body.idAnalisis;
+    const { idAnalisis } = req.query;
     try{
         const ultimosValores = await HistoryModel.obtenerUltimosValores(idAnalisis);
-        return res.json({ultimosValores:ultimosValores});
+        return res.json({ultimosValores});
     } catch(error){
         return res
             .status(500)
