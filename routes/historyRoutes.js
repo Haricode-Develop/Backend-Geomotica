@@ -10,4 +10,5 @@ router.get('/historialAnalisis', History.analisis);
 
 router.get('/geojson/:nombreAnalisis/:id', History.obtenerArchivoTIFF);
 
+router.get('/ultimosValores', History.obtenerUltimosValores);
 module.exports = router;

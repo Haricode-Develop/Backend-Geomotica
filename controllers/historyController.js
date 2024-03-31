@@ -22,6 +22,18 @@ const analisis = async(req, res) => {
     }
 }
 
+const obtenerUltimosValores = async (req, res)  => {
+    const idAnalisis = req.body.idAnalisis;
+    try{
+        const ultimosValores = await HistoryModel.obtenerUltimosValores(idAnalisis);
+        return res.json({ultimosValores:ultimosValores});
+    } catch(error){
+        return res
+            .status(500)
+            .json({message: "Error al obtener los ultimos valores"})
+    }
+}
+
 const obtenerArchivoTIFF = async (req, res) => {
     const nombreAnalisis = req.params.nombreAnalisis;
     const id = req.params.id;
@@ -112,5 +124,5 @@ const obtenerArchivoTIFF = async (req, res) => {
     }
 };
 module.exports = {
-    analisis, obtenerArchivoTIFF
+    analisis, obtenerArchivoTIFF, obtenerUltimosValores
 }

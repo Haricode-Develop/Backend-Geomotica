@@ -32,9 +32,41 @@ const obtenerAnalisisUsuarios = async (usuario) => {
     return rows;
 }
 
+const obtenerUltimosValores = async (idAnalisis)  => {
+    const query  = `    
+    SELECT PILOTO_AUTOMATICO,
+       AUTO_TRACKET,
+       MODO_CORTE_BASE,
+       VELOCIDAD_ACTIVADO,
+       VELOCIDAD_BAJO,
+       VELOCIDAD_MEDIO,
+       VELOCIDAD_ALTO,
+       CALIDAD_GPS_ACTIVADO,
+       CALIDAD_GPS_BAJO,
+       CALIDAD_GPS_MEDIO,
+       CALIDAD_GPS_ALTO,
+       COMBUSTIBLE_ACTIVADO,
+       COMBUSTIBLE_BAJO,
+       COMBUSTIBLE_MEDIO,
+       COMBUSTIBLE_ALTO,
+       RPM_ACTIVADO,
+       RPM_BAJO,
+       RPM_MEDIO,
+       RPM_ALTO,
+       PRESION_CORTADOR_BASE_ACTIVADO,
+       PRESION_CORTADOR_BASE_BAJO,
+       PRESION_CORTADOR_BASE_MEDIO,
+       PRESION_CORTADOR_BASE_ALTO,
+       FECHA_CREACION
+FROM configuraciones_formulario
+WHERE ID_ANALISIS = 2;    
+    `;
 
+    const [rows] = await pool.query(query, [idAnalisis]);
+    return rows;
+}
 
 
 module.exports = {
-    obtenerAnalisisUsuarios
+    obtenerAnalisisUsuarios, obtenerUltimosValores
 }
