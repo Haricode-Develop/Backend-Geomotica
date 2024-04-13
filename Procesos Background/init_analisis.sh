@@ -30,10 +30,13 @@ if [ "$ES_PRIMERA_ITERACION" = "true" ]; then
   DATA='{"progress": 10, "message": "Iniciando análisis"}'
 
   curl -X POST -H "Content-Type: application/json" -d "$DATA" $API_URL
-      if [ $2 -eq $APS ]; then
-      echo "======== Se ejecuta analisis APS ======="
-      "$SCRIPT_DIR"/procesos/insertDatosAps.sh "$1" "$ARCHIVO_CSV"
-      TABLA_ACTUAL="aps"
+      if [ $2 -eq $APS ] && [ "$VALIDAR" = "ok" ]; then
+          echo "======== Se ejecuta analisis APS ======="
+          DATA='{"progress": 20, "message": "Ejecutando inserción de datos de aplicaciones areas"}'
+          curl -X POST -H "Content-Type: application/json" -d "$DATA" $API_URL
+
+          "$SCRIPT_DIR"/procesos/insertDatosAps.sh "$1" "$ARCHIVO_CSV" "$ID_MAX" "$API_URL"
+          TABLA_ACTUAL="aps"
       fi
 
       if [ $2 -eq $COSECHA_MECANICA ] && [ "$VALIDAR" = "ok" ]; then
@@ -67,22 +70,28 @@ else
 fi
 
 if [[ -f "$SCRIPT_DIR/tempIdAnalisis.txt" ]]; then
-    ID_ANALISIS=$(cat "$SCRIPT_DIR/tempIdAnalisis.txt")
-    echo "Este es el ID del analisis: $ID_ANALISIS"
-    echo "Esta es la tabla que se quiere hacer el análisis: $TABLA_ACTUAL"
+    if [ $2 -ne $APS ] && [ "$VALIDAR" = "ok" ]; then
+        ID_ANALISIS=$(cat "$SCRIPT_DIR/tempIdAnalisis.txt")
+        echo "Este es el ID del analisis: $ID_ANALISIS"
+        echo "Esta es la tabla que se quiere hacer el análisis: $TABLA_ACTUAL"
+        POLIGONO_DIR="$SCRIPT_DIR/poligonoTemp"
+        mkdir -p "$POLIGONO_DIR"
+        unzip -o "$ARCHIVO_POLIGONO" -d "$POLIGONO_DIR"
 
-    POLIGONO_DIR="$SCRIPT_DIR/poligonoTemp"
-    mkdir -p "$POLIGONO_DIR"
-    unzip -o "$ARCHIVO_POLIGONO" -d "$POLIGONO_DIR"
+          echo "Contenido de $POLIGONO_DIR:"
+          ls -l "$POLIGONO_DIR"
+        if [ "$ES_PRIMERA_ITERACION" = "true" ]; then
+            DATA='{"progress": 50, "message": "Iniciando mapeo de datos"}'
+        fi
+        curl -X POST -H "Content-Type: application/json" -d "$DATA" $API_URL
+        export GOOGLE_APPLICATION_CREDENTIALS="/geomotica/procesos/analog-figure-382403-0c07b0baecfa.json"
+        python3 "$SCRIPT_DIR/procesos/mapeo.py" "$ID_ANALISIS" "$TABLA_ACTUAL" "$POLIGONO_DIR" "$OFFSET" "$ES_ULTIMA_ITERACION"
+    elif [ $2 -eq $APS ] && [ "$VALIDAR" = "ok" ]; then
+        ID_ANALISIS=$(cat "$SCRIPT_DIR/tempIdAnalisis.txt")
+        echo "Este es el ID del analisis: $ID_ANALISIS"
+        echo "Esta es la tabla que se quiere hacer el análisis: $TABLA_ACTUAL"
 
-      echo "Contenido de $POLIGONO_DIR:"
-      ls -l "$POLIGONO_DIR"
-    if [ "$ES_PRIMERA_ITERACION" = "true" ]; then
-        DATA='{"progress": 50, "message": "Iniciando mapeo de datos"}'
     fi
-    curl -X POST -H "Content-Type: application/json" -d "$DATA" $API_URL
-    export GOOGLE_APPLICATION_CREDENTIALS="/geomotica/procesos/analog-figure-382403-0c07b0baecfa.json"
-    python3 "$SCRIPT_DIR/procesos/mapeo.py" "$ID_ANALISIS" "$TABLA_ACTUAL" "$POLIGONO_DIR" "$OFFSET" "$ES_ULTIMA_ITERACION"
 else
     echo "Error: No se pudo obtener el ID del Analisis para el mapeo"
 fi
