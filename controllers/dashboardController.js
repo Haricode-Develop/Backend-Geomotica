@@ -30,6 +30,7 @@ const procesarCsv = async (req, res) => {
             return res.status(500).send('Error al procesar el archivo');
         }
         console.log("ESTE ES EL TIPO DE ANALISIS AL PROCESAR CSV: ", tipoAnalisis);
+        console.log("ESTE ES EL ID TIPO: ", idTipoAnalisis);
 
         let filaError = 0;
         let errorEncountered = false;
