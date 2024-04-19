@@ -18,11 +18,18 @@ const obtenerAnalisisUsuarios = async (usuario) => {
             a.ID_USUARIO,
             a.TIPO_ANALISIS,
             a.FECHA_CREACION,
-            GROUP_CONCAT(DISTINCT cm.NOMBRE_FINCA ORDER BY cm.NOMBRE_FINCA ASC SEPARATOR ', ') AS NOMBRES_FINCA
+            CASE
+                WHEN a.TIPO_ANALISIS = 'cosecha_mecanica' THEN GROUP_CONCAT(DISTINCT cm.NOMBRE_FINCA ORDER BY cm.NOMBRE_FINCA ASC)
+                WHEN a.TIPO_ANALISIS = 'aps' THEN GROUP_CONCAT(DISTINCT aps.NOMBRE_FINCA ORDER BY aps.NOMBRE_FINCA ASC)
+                WHEN a.TIPO_ANALISIS = 'fertilizacion' THEN GROUP_CONCAT(DISTINCT f.NOMBRE_FINCA ORDER BY f.NOMBRE_FINCA ASC)
+                WHEN a.TIPO_ANALISIS = 'herbicidas' THEN GROUP_CONCAT(DISTINCT h.NOMBRE_FINCA ORDER BY h.NOMBRE_FINCA ASC)
+                END AS NOMBRES_FINCA
         FROM
             analisis a
-                JOIN
-            cosecha_mecanica cm ON a.ID_ANALISIS = cm.ID_ANALISIS
+                LEFT JOIN cosecha_mecanica cm ON a.ID_ANALISIS = cm.ID_ANALISIS AND a.TIPO_ANALISIS = 'cosecha_mecanica'
+                LEFT JOIN aps ON a.ID_ANALISIS = aps.ID_ANALISIS AND a.TIPO_ANALISIS = 'aps'
+                LEFT JOIN fertilizacion f ON a.ID_ANALISIS = f.ID_ANALISIS AND a.TIPO_ANALISIS = 'fertilizacion'
+                LEFT JOIN herbicidas h ON a.ID_ANALISIS = h.ID_ANALISIS AND a.TIPO_ANALISIS = 'herbicidas'
         WHERE
             a.ID_USUARIO = ?
         GROUP BY
