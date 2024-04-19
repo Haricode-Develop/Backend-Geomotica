@@ -14,19 +14,17 @@ router.post('/procesarCsv/',  upload.fields([{ name: 'csv' }]), DashbBoard.proce
 router.get('/responsableAps/:ID_ANALISIS', DashbBoard.ResponsableAps);
 router.get('/fechaInicioCosechaAps/:ID_ANALISIS', DashbBoard.FechaInicioCosechaAps);
 router.get('/fechaFinCosechaAps/:ID_ANALISIS', DashbBoard.FechaFinCosechaAPS);
+router.get('/nombreOperadorAps/:ID_ANALISIS', DashbBoard.NombreOperadorAps);
 router.get('/nombreFincaAps/:ID_ANALISIS', DashbBoard.NombreFincaAps);
 router.get('/codigoParcelasAps/:ID_ANALISIS', DashbBoard.CodigoParcelasAps);
-router.get('/nombreOperadorAps/:ID_ANALISIS', DashbBoard.NombreOperadorAps);
 router.get('/equipoAps/:ID_ANALISIS', DashbBoard.EquipoAps);
-router.get('/actividadAps/:ID_ANALISIS', DashbBoard.ActividadAps);
-router.get('/areaNetaAps/:ID_ANALISIS', DashbBoard.AreaNetaAps);
-router.get('/areaBrutaAps/:ID_ANALISIS', DashbBoard.AreaBrutaAps);
-router.get('/diferenciaEntreAreasAps/:ID_ANALISIS', DashbBoard.DiferenciaEntreAreasAps);
 router.get('/horaInicioAps/:ID_ANALISIS', DashbBoard.HoraInicioAps);
 router.get('/horaFinalAps/:ID_ANALISIS', DashbBoard.HoraFinalAps);
-router.get('/tiempoTotalActividadesAps/:ID_ANALISIS', DashbBoard.TiempoTotalActividadesAps);
 router.get('/eficienciaAps/:ID_ANALISIS', DashbBoard.EficienciaAps);
-router.get('/promedioVelocidadAps/:ID_ANALISIS', DashbBoard.PromedioVelocidadAps);
+router.get('/codigoLotesAps/:ID_ANALISIS', DashbBoard.codigoLotesAps);
+router.get('/dosisTeoricaAps/:ID_ANALISIS', DashbBoard.dosisTeoricaAps);
+router.get('/humedadDelCultivo/:ID_ANALSIS', DashbBoard.humedadDelCultivo);
+router.get('/tchEstimado/:ID_ANALISIS', DashbBoard.tchEstimado);
 
 // ==== ANALISIS COSECHA_MECANICA =======
 router.get('/nombreResponsableCm/:ID_ANALISIS', DashbBoard.NombreResponsableCm);

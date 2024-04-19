@@ -98,52 +98,36 @@ const obtenerFechaFinalCosechaAps = async (idAnalisis) => {
 };
 
 const obtenerNombreFincaAps = async (idAnalisis) => {
-    const query = `SELECT NOMBRE_FINCA FROM aps WHERE ID_ANALISIS = ?;`;
+    const query = `SELECT DISTINCT NOMBRE_FINCA FROM aps WHERE ID_ANALISIS = ?;`;
     const [rows] = await pool.query(query, [idAnalisis]);
     return rows.map(row => row.NOMBRE_FINCA);
 };
 
-const obtenerCodigoParcelasResponsableAps = async (idAnalisis) => {
-    const query = `SELECT DISTINCT PARCELA FROM aps WHERE ID_ANALISIS = ?;`;
+const obtenerCodigoFincaResponsableAps = async (idAnalisis) => {
+    const query = `SELECT DISTINCT CODIGO_FINCA FROM aps WHERE ID_ANALISIS = ?;`;
     const [rows] = await pool.query(query, [idAnalisis]);
-    return rows.map(row => row.PARCELA);
+    return rows.map(row => row.CODIGO_FINCA);
 };
 
+const obtenerCodigoLoteAps = async(idAnalisis)  => {
+  const query =   `SELECT DISTINCT CODIGO_LOTE FROM aps WHERE ID_ANALISIS = ?;`;
+  const [rows] = await pool.query(query, [idAnalisis]);
+  return rows.map(row=> row.CODIGO_LOTE);
+};
+
+
 const obtenerNombreOperadorAps = async (idAnalisis) => {
-    const query = `SELECT DISTINCT OPERADOR FROM aps WHERE ID_ANALISIS = ?;`;
+    const query = `SELECT DISTINCT NOMBRE_DE_OPERADOR FROM aps WHERE ID_ANALISIS = ?;`;
     const [rows] = await pool.query(query, [idAnalisis]);
     return rows.map(row => row.OPERADOR);
 };
 
-const obtenerEquipoAps = async (idAnalisis) => {
-    const query = `SELECT DISTINCT EQUIPO FROM aps WHERE ID_ANALISIS = ?;`;
+const obtenerCodigoEquipoAps = async (idAnalisis) => {
+    const query = `SELECT DISTINCT CODIGO_DE_MAQUINA FROM aps WHERE ID_ANALISIS = ?;`;
     const [rows] = await pool.query(query, [idAnalisis]);
     return rows.map(row => row.EQUIPO);
 };
 
-const obtenerActividadAps = async (idAnalisis) => {
-    const query = `SELECT DISTINCT ACTIVIDAD FROM aps WHERE ID_ANALISIS = ?;`;
-    const [rows] = await pool.query(query, [idAnalisis]);
-    return rows.map(row => row.ACTIVIDAD);
-};
-
-const obtenerAreaNetaAps = async (idAnalisis) => {
-    const query = `SELECT DISTINCT AREA_NETA FROM aps WHERE ID_ANALISIS = ?;`;
-    const [rows] = await pool.query(query, [idAnalisis]);
-    return rows.map(row => row.AREA_NETA);
-};
-
-const obtenerAreaBrutaAps = async (idAnalisis) => {
-    const query = `SELECT DISTINCT AREA_BRUTA FROM aps WHERE ID_ANALISIS = ?;`;
-    const [rows] = await pool.query(query, [idAnalisis]);
-    return rows.map(row => row.AREA_BRUTA);
-};
-
-const obtenerDiferenciaEntreAreasAps = async (idAnalisis) => {
-    const query = `SELECT DISTINCT DIFERENCIA_DE_AREA FROM aps WHERE ID_ANALISIS = ?;`;
-    const [rows] = await pool.query(query, [idAnalisis]);
-    return rows.map(row => row.DIFERENCIA_DE_AREA);
-};
 
 const obtenerHoraInicioAps = async (idAnalisis) => {
     const query = `SELECT DISTINCT HORA_INICIO FROM aps WHERE ID_ANALISIS = ?;`;
@@ -157,24 +141,32 @@ const obtenerHoraFinalAps = async (idAnalisis) => {
     return rows.map(row => row.HORA_FINAL);
 };
 
-const obtenerTiempoTotalActividadAps = async (idAnalisis) => {
-    const query = `SELECT DISTINCT TIEMPO_TOTAL FROM aps WHERE ID_ANALISIS = ?;`;
-    const [rows] = await pool.query(query, [idAnalisis]);
-    return rows.map(row => row.TIEMPO_TOTAL);
-};
 
 const obtenerEficienciaAps = async (idAnalisis) => {
-    const query = `SELECT DISTINCT EFICIENCIA FROM aps WHERE ID_ANALISIS = ?;`;
+    const query = `SELECT AVG(EFICIENCIA) AS EFICIENCIA FROM aps WHERE ID_ANALISIS = ?;`;
     const [rows] = await pool.query(query, [idAnalisis]);
     return rows.map(row => row.EFICIENCIA);
 };
 
-const obtenerPromedioVelocidadAps = async (idAnalisis) => {
-    const query = `SELECT ROUND(AVG(VELOCIDAD_Km_H), 2) AS promedioVelocidad FROM aps WHERE ID_ANALISIS = ?;`;
+const obtenerDosisTeorica = async (idAnalisis) => {
+    const query = `SELECT  AVG(DOSIS_TEORICA) AS DOSIS_TEORICA FROM aps WHERE ID_ANALISIS = ?;`;
     const [rows] = await pool.query(query, [idAnalisis]);
-    return rows[0].promedioVelocidad;
-};
+    return rows.map(row  => row.DOSIS_TEORICA);
+}
 
+
+const obtenerHumedadDelCultivo = async(idAnalisis)  => {
+    const query = `SELECT  AVG(HUMEDAD_DEL_CULTIVO) AS HUMEDAD_DEL_CULTIVO  FROM aps WHERE ID_ANALISIS = ?;`;
+    const [rows] = await pool.query(query, [idAnalisis]);
+    return rows.map(row => row.HUMEDAD_DEL_CULTIVO);
+
+}
+
+const obtenerTchEstimado = async(idAnalisis)  => {
+    const query = `SELECT  AVG(TCH_ESTIMADO) AS TCH_ESTIMADO AS TCH_ESTIMADO  FROM aps WHERE ID_ANALISIS = ?;`;
+    const [rows] = await pool.query(query, [idAnalisis]);
+    return rows.map(row  => row.TCH_ESTIMADO);
+}
 /*==============================================
 * ENDPOINTS INFORME COSECHA_MECANICA
 * =============================================*/
@@ -610,18 +602,15 @@ module.exports = {
     obtenerFechaInicioCosechaAps,
     obtenerFechaFinalCosechaAps,
     obtenerNombreFincaAps,
-    obtenerCodigoParcelasResponsableAps,
+    obtenerCodigoFincaResponsableAps,
     obtenerNombreOperadorAps,
-    obtenerEquipoAps,
-    obtenerActividadAps,
-    obtenerAreaNetaAps,
-    obtenerAreaBrutaAps,
-    obtenerDiferenciaEntreAreasAps,
+    obtenerCodigoEquipoAps,
     obtenerHoraInicioAps,
     obtenerHoraFinalAps,
-    obtenerTiempoTotalActividadAps,
     obtenerEficienciaAps,
-    obtenerPromedioVelocidadAps,
+    obtenerDosisTeorica,
+    obtenerHumedadDelCultivo,
+    obtenerTchEstimado,
 
     // ===== COSECHA MECÁNICA ======
     obtenerNombreResponsableCm,

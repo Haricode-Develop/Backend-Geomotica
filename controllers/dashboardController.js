@@ -296,7 +296,7 @@ const NombreFincaAps = async(req, res) =>{
 
 const CodigoParcelasAps = async(req, res) =>{
     const idAnalisis = req.params.ID_ANALISIS;
-    const obtenerCodigoParcelas = await DashboardModel.obtenerCodigoParcelasResponsableAps(idAnalisis);
+    const obtenerCodigoParcelas = await DashboardModel.obtenerCodigoFincaResponsableAps(idAnalisis);
     return res.json(obtenerCodigoParcelas);
 }
 
@@ -308,34 +308,10 @@ const NombreOperadorAps = async(req, res) => {
 
 const EquipoAps = async(req, res)=> {
     const idAnalisis = req.params.ID_ANALISIS;
-    const obtenerEquipoAps = await DashboardModel.obtenerEquipoAps(idAnalisis);
-    return res.json(obtenerEquipoAps);
+    const obtenerCodigoEquipoAps = await DashboardModel.obtenerCodigoEquipoAps(idAnalisis);
+    return res.json(obtenerCodigoEquipoAps);
 }
 
-const ActividadAps = async(req, res) => {
-    const idAnalisis = req.params.ID_ANALISIS;
-    const obtenerActividadAps = await DashboardModel.obtenerActividadAps(idAnalisis);
-    return res.json(obtenerActividadAps);
-}
-
-const AreaNetaAps = async(req, res) =>{
-    const idAnalisis = req.params.ID_ANALISIS;
-    const obtenerAreaNetaAps = await DashboardModel.obtenerAreaNetaAps(idAnalisis);
-    return res.json(obtenerAreaNetaAps);
-}
-const AreaBrutaAps = async(req, res) =>{
-    const idAnalisis = req.params.ID_ANALISIS;
-    const obtenerAreaBrutaAps = await DashboardModel.obtenerAreaBrutaAps(idAnalisis);
-    return res.json(obtenerAreaBrutaAps);
-
-}
-
-const DiferenciaEntreAreasAps = async(req, res) =>{
-    const idAnalisis = req.params.ID_ANALISIS;
-    const obtenerDiferenciaEntreAreasAps = await DashboardModel.obtenerDiferenciaEntreAreasAps(idAnalisis);
-    return res.json(obtenerDiferenciaEntreAreasAps);
-
-}
 
 const HoraInicioAps = async(req, res) =>{
     const idAnalisis = req.params.ID_ANALISIS;
@@ -351,24 +327,42 @@ const HoraFinalAps = async(req, res) => {
 }
 
 
-const TiempoTotalActividadesAps = async(req, res) =>{
-    const idAnalisis = req.params.ID_ANALISIS;
-    const obtenerTiempoTotalActividadAps = DashboardModel.obtenerTiempoTotalActividadAps(idAnalisis);
-    return res.json(obtenerTiempoTotalActividadAps);
-
-}
-
 const EficienciaAps = async(req, res)=>{
     const idAnalisis = req.params.ID_ANALISIS;
     const obtenerEficienciaAps = DashboardModel.obtenerEficienciaAps(idAnalisis);
     return res.json(obtenerEficienciaAps);
+
 }
 
-const PromedioVelocidadAps = async(req, res)=>{
+
+const codigoLotesAps = async(req, res)=>{
     const idAnalisis = req.params.ID_ANALISIS;
-    const obtenerPromedioVelocidadAps = DashboardModel.obtenerPromedioVelocidadAps(idAnalisis);
-    return res.json(obtenerPromedioVelocidadAps);
+    const obtenerCodigoLoteAps = DashboardModel.obtenerCodigoEquipoAps(idAnalisis);
+    return res.json(obtenerCodigoLoteAps);
 }
+
+const dosisTeoricaAps = async(req, res) =>{
+    const idAnalisis = req.params.ID_ANALISIS;
+    const obtenerDosisTeoricaAps = DashboardModel.obtenerDosisTeorica(idAnalisis);
+    return res.json(obtenerDosisTeoricaAps);
+
+}
+const humedadDelCultivo = async(req, res)  =>{
+    const idAnalisis = req.params.ID_ANALISIS;
+    const obtenerHumedadDelCultivoAps = DashboardModel.obtenerHumedadDelCultivo(idAnalisis);
+    return res.json(obtenerHumedadDelCultivoAps);
+}
+
+
+
+const tchEstimado = async(req, res) =>{
+    const idAnalisis = req.params.ID_ANALISIS;
+    const obtenerTchEstimadoAps = DashboardModel.obtenerTchEstimado(idAnalisis);
+    return res.json(obtenerTchEstimadoAps);
+
+
+}
+
 
 /*======================================================
 *  ENDPOINT'S INFORME COSECHA_MECANICA
@@ -900,15 +894,13 @@ module.exports = {
     CodigoParcelasAps,
     NombreOperadorAps,
     EquipoAps,
-    ActividadAps,
-    AreaNetaAps,
-    AreaBrutaAps,
-    DiferenciaEntreAreasAps,
     HoraInicioAps,
     HoraFinalAps,
-    TiempoTotalActividadesAps,
     EficienciaAps,
-    PromedioVelocidadAps,
+    codigoLotesAps,
+    dosisTeoricaAps,
+    humedadDelCultivo,
+    tchEstimado,
     //==== ANALISIS COSECHA_MACANICA=======
     NombreResponsableCm,
     FechaInicioCosechaCm,
