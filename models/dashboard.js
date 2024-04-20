@@ -548,6 +548,36 @@ const obtenerPromedioDosisRealAplicadaHerbicidas = async (idAnalisis) => {
     return rows[0]?.promedioDosisReal || null;
 };
 
+const almacenarUltimosValoresAps = async (datos)=> {
+    const camposEsperados = [
+        'idAnalisis', 'velocidadFiltro', 'velocidadBajo', 'velocidadMedio', 'velocidadAlto','alturaFiltro',
+        'alturaBajo', 'alturaMedio', 'alturaAlto', 'dosisRealFiltro', 'dosisRealBajo', 'dosisRealMedio', 'dosisRealAlto'
+    ];
+
+    const todosLosCamposPresentes = camposEsperados.every(campo => campo in datos);
+
+    if (!todosLosCamposPresentes) {
+        throw new Error("Faltan uno o más campos esperados en los datos proporcionados.");
+    }
+
+    const valoresParaInsertar = camposEsperados.map(campo => datos[campo]);
+    const query = `INSERT INTO configuraciones_formulario_aps(ID_ANALISIS, VELOCIDAD_ACTIVADO, VELOCIDAD_BAJO, VELOCIDAD_MEDIO,
+                                           VELOCIDAD_ALTO, ALTURA_ACTIVADO, ALTURA_BAJO, ALTURA_MEDIO, ALTURA_ALTO,
+                                           DOSIS_REAL_ACTIVADO, DOSIS_REAL_BAJO, DOSIS_REAL_MEDIO, DOSIS_REAL_ALTO)
+VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)
+ON DUPLICATE KEY UPDATE
+                     VELOCIDAD_ACTIVADO = VALUES(VELOCIDAD_ACTIVADO), VELOCIDAD_BAJO = VALUES(VELOCIDAD_BAJO),
+                     VELOCIDAD_MEDIO = VALUES(VELOCIDAD_MEDIO), VELOCIDAD_ALTO = VALUES(VELOCIDAD_ALTO), 
+                     ALTURA_ACTIVADO = VALUES(ALTURA_ACTIVADO), ALTURA_BAJO = VALUES(ALTURA_BAJO), ALTURA_MEDIO = VALUES(ALTURA_MEDIO), 
+                     ALTURA_ALTO = VALUES(ALTURA_ALTO), DOSIS_REAL_ACTIVADO = VALUES(DOSIS_REAL_ACTIVADO), DOSIS_REAL_BAJO = VALUES(DOSIS_REAL_BAJO),
+                     DOSIS_REAL_MEDIO = VALUES(DOSIS_REAL_MEDIO), DOSIS_REAL_ALTO = VALUES(DOSIS_REAL_ALTO);`;
+
+    const [rows] = await pool.query(query, valoresParaInsertar);
+
+    return rows;
+
+};
+
 const almacenarUltimosValores = async (datos) => {
     // Lista de campos esperados que deben estar presentes en el objeto datos
     const camposEsperados = [
@@ -674,5 +704,6 @@ module.exports = {
     obtenerTiempoTotalHerbicidas,
     obtenerEficienciaHerbicidas,
     obtenerPromedioVelocidadHerbicidas,
-    almacenarUltimosValores
+    almacenarUltimosValores,
+    almacenarUltimosValoresAps
 };

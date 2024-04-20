@@ -25,6 +25,7 @@ router.get('/codigoLotesAps/:ID_ANALISIS', DashbBoard.codigoLotesAps);
 router.get('/dosisTeoricaAps/:ID_ANALISIS', DashbBoard.dosisTeoricaAps);
 router.get('/humedadDelCultivo/:ID_ANALSIS', DashbBoard.humedadDelCultivo);
 router.get('/tchEstimado/:ID_ANALISIS', DashbBoard.tchEstimado);
+router.post('/ultimosDatosIngresadosAps', DashbBoard.almacenarUltimosValoresIngresadosAps);
 
 // ==== ANALISIS COSECHA_MECANICA =======
 router.get('/nombreResponsableCm/:ID_ANALISIS', DashbBoard.NombreResponsableCm);
@@ -89,6 +90,6 @@ router.get('/promedioVelocidadHerbicidas/:ID_ANALISIS', DashbBoard.PromedioVeloc
 router.post('/cosecha_mecanica_analisis/:ID_ANALISIS', DashbBoard.depositarJsonCosechaMecanica);
 
 // === Ingreso de ultimos valores ======
-router.post('/ultimosDatosIngresados', DashbBoard.almacenarUltimosValoresIngresados)
+router.post('/ultimosDatosIngresados', DashbBoard.almacenarUltimosValoresIngresados);
 
 module.exports = router;

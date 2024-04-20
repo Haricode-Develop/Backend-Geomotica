@@ -37,7 +37,7 @@ const procesarCsv = async (req, res) => {
         let processedData = [];
         if(tipoAnalisis === 'COSECHA_MECANICA'){
             procesarArchivoCosechaMecanica(idTipoAnalisis, data, filaError, errorEncountered, processedData, res);
-        }else if(tipoAnalisis === 'APS'){
+        }else if(tipoAnalisis === 'APLICACIONES_AREAS'){
             procesarArchivoAplicacionesMecanicas(idTipoAnalisis, data, filaError, errorEncountered, processedData, res);
         }
 
@@ -890,6 +890,15 @@ const almacenarUltimosValoresIngresados = async(req, res)  => {
     }
 }
 
+const almacenarUltimosValoresIngresadosAps = async(req, res)  => {
+    try{
+        const resultado = await DashboardModel.almacenarUltimosValoresAps(req.body);
+        res.json({success: true, resultado: resultado});
+    }catch(error){
+        res.status(500).json({ success: false, mensaje: "Error al insertar los datos", error: error.message });
+    }
+}
+
 module.exports = {
     obtenerUltimoAnalisis,
     insertarAnalisis,
@@ -969,5 +978,6 @@ module.exports = {
     execBash,
     procesarCsv,
     depositarJsonCosechaMecanica,
-    almacenarUltimosValoresIngresados
+    almacenarUltimosValoresIngresados,
+    almacenarUltimosValoresIngresadosAps
 };
