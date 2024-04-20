@@ -37,7 +37,7 @@ const procesarCsv = async (req, res) => {
         let processedData = [];
         if(tipoAnalisis === 'COSECHA_MECANICA'){
             procesarArchivoCosechaMecanica(idTipoAnalisis, data, filaError, errorEncountered, processedData, res);
-        }else if(tipoAnalisis === 'APLICACIONES_AREAS'){
+        }else if(tipoAnalisis === 'APLICACIONES_AEREAS'){
             procesarArchivoAplicacionesMecanicas(idTipoAnalisis, data, filaError, errorEncountered, processedData, res);
         }
 

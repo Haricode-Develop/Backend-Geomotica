@@ -16,7 +16,7 @@ const insertarAnalisis = async (usuario, tipoAnalisis) => {
     try {
         connection = await pool.getConnection();
         await connection.beginTransaction();
-
+        
         // Insertar en la tabla análisis
         const insertQuery = `INSERT INTO analisis (id_usuario, tipo_analisis) VALUES (?, ?)`;
         console.log("ESTA ES LA QUERY SE INSERT ======");
