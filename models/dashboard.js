@@ -145,24 +145,31 @@ const obtenerHoraFinalAps = async (idAnalisis) => {
 const obtenerEficienciaAps = async (idAnalisis) => {
     const query = `SELECT AVG(EFICIENCIA) AS EFICIENCIA FROM aps WHERE ID_ANALISIS = ?;`;
     const [rows] = await pool.query(query, [idAnalisis]);
+    console.log("EFICIENCIA: ", rows);
+
     return rows.map(row => row.EFICIENCIA);
 };
 
 const obtenerDosisTeorica = async (idAnalisis) => {
     const query = `SELECT  AVG(DOSIS_TEORICA) AS DOSIS_TEORICA FROM aps WHERE ID_ANALISIS = ?;`;
     const [rows] = await pool.query(query, [idAnalisis]);
+    console.log("DOSIS TEORICA: ", rows);
+
     return rows.map(row => row.DOSIS_TEORICA || 0);
 }
 
 const obtenerHumedadDelCultivo = async (idAnalisis) => {
     const query = `SELECT  AVG(HUMEDAD_DEL_CULTIVO) AS HUMEDAD_DEL_CULTIVO FROM aps WHERE ID_ANALISIS = ?;`;
     const [rows] = await pool.query(query, [idAnalisis]);
+    console.log("HUMEDAD: ", rows);
+
     return rows.map(row => row.HUMEDAD_DEL_CULTIVO || 0);
 }
 
 const obtenerTchEstimado = async (idAnalisis) => {
     const query = `SELECT  AVG(TCH_ESTIMADO) AS TCH_ESTIMADO FROM aps WHERE ID_ANALISIS = ?;`;
     const [rows] = await pool.query(query, [idAnalisis]);
+    console.log("COLUMNAS TCH: ", rows);
     return rows.map(row => row.TCH_ESTIMADO || 0);
 }
 
