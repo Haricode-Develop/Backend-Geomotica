@@ -80,7 +80,7 @@ const obtenerNombreResponsableAps = async (idAnalisis) =>{
         WHERE ID_ANALISIS = ${idAnalisis};
     `;
     const [rows] = await pool.query(query);
-    return rows[0];
+    return rows.map(row => row.RESPONSABLE);
 
 };
 const obtenerFechaInicioCosechaAps = async (idAnalisis) =>{
@@ -117,13 +117,13 @@ const obtenerCodigoLoteAps = async(idAnalisis)  => {
 
 
 const obtenerNombreOperadorAps = async (idAnalisis) => {
-    const query = `SELECT DISTINCT NOMBRE_DE_OPERADOR FROM aps WHERE ID_ANALISIS = ?;`;
+    const query = `SELECT DISTINCT NOMBRE_DE_OPERADOR AS OPERADOR FROM aps WHERE ID_ANALISIS = ?;`;
     const [rows] = await pool.query(query, [idAnalisis]);
     return rows.map(row => row.OPERADOR);
 };
 
 const obtenerCodigoEquipoAps = async (idAnalisis) => {
-    const query = `SELECT DISTINCT CODIGO_DE_MAQUINA FROM aps WHERE ID_ANALISIS = ?;`;
+    const query = `SELECT DISTINCT CODIGO_DE_MAQUINA AS EQUIPO FROM aps WHERE ID_ANALISIS = ?;`;
     const [rows] = await pool.query(query, [idAnalisis]);
     return rows.map(row => row.EQUIPO);
 };
@@ -611,6 +611,7 @@ module.exports = {
     obtenerDosisTeorica,
     obtenerHumedadDelCultivo,
     obtenerTchEstimado,
+    obtenerCodigoLoteAps,
 
     // ===== COSECHA MECÁNICA ======
     obtenerNombreResponsableCm,

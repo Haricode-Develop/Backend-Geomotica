@@ -337,7 +337,7 @@ const EficienciaAps = async(req, res)=>{
 
 const codigoLotesAps = async(req, res)=>{
     const idAnalisis = req.params.ID_ANALISIS;
-    const obtenerCodigoLoteAps = DashboardModel.obtenerCodigoEquipoAps(idAnalisis);
+    const obtenerCodigoLoteAps = DashboardModel.obtenerCodigoLoteAps(idAnalisis);
     return res.json(obtenerCodigoLoteAps);
 }
 
