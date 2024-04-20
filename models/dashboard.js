@@ -109,12 +109,11 @@ const obtenerCodigoFincaResponsableAps = async (idAnalisis) => {
     return rows.map(row => row.CODIGO_FINCA);
 };
 
-const obtenerCodigoLoteAps = async(idAnalisis)  => {
-  const query =   `SELECT DISTINCT CODIGO_LOTE FROM aps WHERE ID_ANALISIS = ?;`;
-  const [rows] = await pool.query(query, [idAnalisis]);
-  return rows.map(row=> row.CODIGO_LOTE);
+const obtenerCodigoLoteAps = async (idAnalisis) => {
+    const query = `SELECT DISTINCT CODIGO_LOTE FROM aps WHERE ID_ANALISIS = ?;`;
+    const [rows] = await pool.query(query, [idAnalisis]);
+    return rows.map(row => row.CODIGO_LOTE);
 };
-
 
 const obtenerNombreOperadorAps = async (idAnalisis) => {
     const query = `SELECT DISTINCT NOMBRE_DE_OPERADOR AS OPERADOR FROM aps WHERE ID_ANALISIS = ?;`;
