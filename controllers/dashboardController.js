@@ -329,7 +329,7 @@ const HoraFinalAps = async(req, res) => {
 
 const EficienciaAps = async(req, res)=>{
     const idAnalisis = req.params.ID_ANALISIS;
-    const obtenerEficienciaAps = DashboardModel.obtenerEficienciaAps(idAnalisis);
+    const obtenerEficienciaAps = await DashboardModel.obtenerEficienciaAps(idAnalisis);
     return res.json(obtenerEficienciaAps);
 
 }
@@ -337,7 +337,7 @@ const EficienciaAps = async(req, res)=>{
 
 const codigoLotesAps = async(req, res)=>{
     const idAnalisis = req.params.ID_ANALISIS;
-    const obtenerCodigoLoteAps = DashboardModel.obtenerCodigoLoteAps(idAnalisis);
+    const obtenerCodigoLoteAps = await DashboardModel.obtenerCodigoLoteAps(idAnalisis);
     console.log("ESTE ES EL DATO DE LOTE APS ****************************");
     console.log(obtenerCodigoLoteAps);
     return res.json(obtenerCodigoLoteAps);
@@ -345,7 +345,7 @@ const codigoLotesAps = async(req, res)=>{
 
 const dosisTeoricaAps = async(req, res) =>{
     const idAnalisis = req.params.ID_ANALISIS;
-    const obtenerDosisTeoricaAps = DashboardModel.obtenerDosisTeorica(idAnalisis);
+    const obtenerDosisTeoricaAps = await DashboardModel.obtenerDosisTeorica(idAnalisis);
     console.log("ESTE ES EL DATO DE TEORICA APS ****************************");
     console.log(obtenerDosisTeoricaAps);
     return res.json(obtenerDosisTeoricaAps);
@@ -353,7 +353,7 @@ const dosisTeoricaAps = async(req, res) =>{
 }
 const humedadDelCultivo = async(req, res)  =>{
     const idAnalisis = req.params.ID_ANALISIS;
-    const obtenerHumedadDelCultivoAps = DashboardModel.obtenerHumedadDelCultivo(idAnalisis);
+    const obtenerHumedadDelCultivoAps = await DashboardModel.obtenerHumedadDelCultivo(idAnalisis);
     console.log("ESTE ES EL DATO DE HUMEDAD DEL CULTIVO ****************************");
     console.log(obtenerHumedadDelCultivoAps);
     return res.json(obtenerHumedadDelCultivoAps);
@@ -363,7 +363,7 @@ const humedadDelCultivo = async(req, res)  =>{
 
 const tchEstimado = async(req, res) =>{
     const idAnalisis = req.params.ID_ANALISIS;
-    const obtenerTchEstimadoAps = DashboardModel.obtenerTchEstimado(idAnalisis);
+    const obtenerTchEstimadoAps = await DashboardModel.obtenerTchEstimado(idAnalisis);
     console.log("ESTE ES EL DATO DE TCH ESTIMADO ****************************");
     console.log(obtenerTchEstimadoAps);
     return res.json(obtenerTchEstimadoAps);
