@@ -49,6 +49,7 @@ function procesarArchivoAplicacionesMecanicas(idTipoAnalisis, data, filaError, e
     Papa.parse(data, {
         header: false,
         skipEmptyLines: true,
+        delimiter: autoDetectDelimiter(data),
         step: function(row, parser) {
             if (errorEncountered) {
                 return;
@@ -102,6 +103,7 @@ function procesarArchivoCosechaMecanica(idTipoAnalisis, data, filaError, errorEn
     Papa.parse(data, {
         header: false,
         skipEmptyLines: true,
+        delimiter: autoDetectDelimiter(data),
         step: function(row, parser) {
             if (errorEncountered) {
                 return;
@@ -261,6 +263,15 @@ const insertarAnalisis = async (req, res) =>{
     }
 
 }
+
+const autoDetectDelimiter = (text) => {
+    const delimiters = [',', ';', '\t'];
+    const counts = delimiters.map(delimiter => ({
+        delimiter: delimiter,
+        count: text.split(delimiter).length
+    }));
+    return counts.sort((a, b) => b.count - a.count)[0].delimiter;
+};
 const obtenerUltimoAnalisis = async (req, res) => {
     const tipoAnalisis = req.params.tipoAnalisis;
     const idUsuario = req.params.idUsuario;
