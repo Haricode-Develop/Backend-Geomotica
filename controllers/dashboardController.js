@@ -289,6 +289,12 @@ const FechaFinCosechaAPS = async(req, res) =>{
     return res.json(obtenerFechaFin);
 
 }
+
+const tiempoTotalAps = async(req, res) =>{
+    const idAnalisis = req.params.ID_ANALISIS;
+    const obtenerTiempoTotal = await DashboardModel.obtenerTiempoTotalAps(idAnalisis);
+    return res.json(obtenerTiempoTotal);
+}
 const NombreFincaAps = async(req, res) =>{
     const idAnalisis = req.params.ID_ANALISIS;
     const obtenerNombreFinca = await DashboardModel.obtenerNombreFincaAps(idAnalisis);
@@ -918,6 +924,7 @@ module.exports = {
     dosisTeoricaAps,
     humedadDelCultivo,
     tchEstimado,
+    tiempoTotalAps,
     //==== ANALISIS COSECHA_MACANICA=======
     NombreResponsableCm,
     FechaInicioCosechaCm,

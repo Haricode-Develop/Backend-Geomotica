@@ -97,6 +97,25 @@ const obtenerFechaFinalCosechaAps = async (idAnalisis) => {
     return rows.map(row => row.FECHA_FINAL);
 };
 
+
+
+const obtenerTiempoTotalAps = async(idAnalisis)  => {
+   const query =  `SELECT DISTINCT
+                       FECHA_INICIO,
+                       FECHA_FINAL,
+                       HORA_INICIO,
+                       HORA_FINAL,
+                       TIMEDIFF(
+                               TIMESTAMP(FECHA_FINAL, HORA_FINAL),
+    TIMESTAMP(FECHA_INICIO, HORA_INICIO)
+  ) AS DIFERENCIA
+                   FROM
+                       aps
+                   WHERE
+                       ID_ANALISIS = ?;`;
+   const [rows] = await pool.query(query, [idAnalisis]);
+   return rows.map(row => row.DIFERENCIA);
+};
 const obtenerNombreFincaAps = async (idAnalisis) => {
     const query = `SELECT DISTINCT NOMBRE_FINCA FROM aps WHERE ID_ANALISIS = ?;`;
     const [rows] = await pool.query(query, [idAnalisis]);
@@ -643,7 +662,7 @@ module.exports = {
     obtenerHumedadDelCultivo,
     obtenerTchEstimado,
     obtenerCodigoLoteAps,
-
+    obtenerTiempoTotalAps,
     // ===== COSECHA MECÁNICA ======
     obtenerNombreResponsableCm,
     obtenerFechaInicioCosechaCm,
