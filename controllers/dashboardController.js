@@ -63,7 +63,8 @@ function procesarArchivoAplicacionesMecanicas(idTipoAnalisis, data, filaError, e
                 if (fila.every(campo => campo === null || campo.match(/^ *$/) !== null)) {
                     return;
                 }
-
+                    fila[1] = formatearValor(fila[1], 11);
+                    fila[2] = formatearValor(fila[2], 12);
                 fila.push(idTipoAnalisis);
 
                 processedData.push(fila);
