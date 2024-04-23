@@ -356,27 +356,21 @@ const EficienciaAps = async(req, res)=>{
 const codigoLotesAps = async(req, res)=>{
     const idAnalisis = req.params.ID_ANALISIS;
     const obtenerCodigoLoteAps = await DashboardModel.obtenerCodigoLoteAps(idAnalisis);
-    console.log("ESTE ES EL DATO DE LOTE APS ****************************");
-    console.log(obtenerCodigoLoteAps);
+
     return res.json(obtenerCodigoLoteAps);
 }
 
 const dosisTeoricaAps = async(req, res) =>{
     const idAnalisis = req.params.ID_ANALISIS;
-    console.log("ESTE ES EL DATO DE TEORICA APS ****************************", idAnalisis);
 
     const obtenerDosisTeoricaAps = await DashboardModel.obtenerDosisTeorica(idAnalisis);
-    console.log(obtenerDosisTeoricaAps);
     return res.json(obtenerDosisTeoricaAps);
 
 }
 const humedadDelCultivo = async(req, res)  =>{
     const idAnalisis = req.params.ID_ANALISIS;
-    console.log("PARAMETROS: ", req.params);
-    console.log("EL ID DEL ANALISISSSS ************************************************ : )", idAnalisis);
     const obtenerHumedadDelCultivoAps = await DashboardModel.obtenerHumedadDelCultivo(idAnalisis);
-    console.log("ESTE ES EL DATO DE HUMEDAD DEL CULTIVO ****************************");
-    console.log(obtenerHumedadDelCultivoAps);
+
     return res.json(obtenerHumedadDelCultivoAps);
 }
 
@@ -385,8 +379,7 @@ const humedadDelCultivo = async(req, res)  =>{
 const tchEstimado = async(req, res) =>{
     const idAnalisis = req.params.ID_ANALISIS;
     const obtenerTchEstimadoAps = await DashboardModel.obtenerTchEstimado(idAnalisis);
-    console.log("ESTE ES EL DATO DE TCH ESTIMADO ****************************");
-    console.log(obtenerTchEstimadoAps);
+
     return res.json(obtenerTchEstimadoAps);
 
 }

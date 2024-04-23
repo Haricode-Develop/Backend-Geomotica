@@ -23,7 +23,7 @@ router.get('/horaFinalAps/:ID_ANALISIS', DashbBoard.HoraFinalAps);
 router.get('/eficienciaAps/:ID_ANALISIS', DashbBoard.EficienciaAps);
 router.get('/codigoLotesAps/:ID_ANALISIS', DashbBoard.codigoLotesAps);
 router.get('/dosisTeoricaAps/:ID_ANALISIS', DashbBoard.dosisTeoricaAps);
-router.get('/humedadDelCultivo/:ID_ANALSIS', DashbBoard.humedadDelCultivo);
+router.get('/humedadDelCultivo/:ID_ANALISIS', DashbBoard.humedadDelCultivo);
 router.get('/tchEstimado/:ID_ANALISIS', DashbBoard.tchEstimado);
 router.get('/tiempoTotalAps/:ID_ANALISIS', DashbBoard.tiempoTotalAps);
 router.post('/ultimosDatosIngresadosAps', DashbBoard.almacenarUltimosValoresIngresadosAps);
