@@ -363,8 +363,9 @@ const codigoLotesAps = async(req, res)=>{
 
 const dosisTeoricaAps = async(req, res) =>{
     const idAnalisis = req.params.ID_ANALISIS;
+    console.log("ESTE ES EL DATO DE TEORICA APS ****************************", idAnalisis);
+
     const obtenerDosisTeoricaAps = await DashboardModel.obtenerDosisTeorica(idAnalisis);
-    console.log("ESTE ES EL DATO DE TEORICA APS ****************************");
     console.log(obtenerDosisTeoricaAps);
     return res.json(obtenerDosisTeoricaAps);
 
