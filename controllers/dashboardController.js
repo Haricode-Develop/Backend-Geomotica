@@ -371,6 +371,7 @@ const dosisTeoricaAps = async(req, res) =>{
 }
 const humedadDelCultivo = async(req, res)  =>{
     const idAnalisis = req.params.ID_ANALISIS;
+    console.log("EL ID DEL ANALISISSSS ************************************************ : )");
     const obtenerHumedadDelCultivoAps = await DashboardModel.obtenerHumedadDelCultivo(idAnalisis);
     console.log("ESTE ES EL DATO DE HUMEDAD DEL CULTIVO ****************************");
     console.log(obtenerHumedadDelCultivoAps);
