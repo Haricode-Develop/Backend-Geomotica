@@ -177,7 +177,7 @@ const obtenerDosisTeorica = async (idAnalisis) => {
 const obtenerHumedadDelCultivo = async (idAnalisis) => {
     const query = `SELECT  AVG(HUMEDAD_DEL_CULTIVO) AS HUMEDAD_DEL_CULTIVO FROM aps WHERE ID_ANALISIS = ?;`;
     const [rows] = await pool.query(query, [idAnalisis]);
-
+    console.log("ESTO ES LO QUE OBTIENE LA QUERY DE HUMEADAD: ", rows);
     return rows.length ? parseFloat(rows[0].HUMEDAD_DEL_CULTIVO) || 0 : 0;
 }
 
