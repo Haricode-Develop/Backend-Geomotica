@@ -34,6 +34,13 @@ const obtenerUltimosValores = async (req, res)  => {
     }
 }
 
+
+const obtenerArchivoGeoJsonAplicacionesAreas = async(req, res) => {
+    const nombeAnalisis = req.params.nombreAnalisis;
+    const id = req.params.id;
+    const archivoNombre = `geojson/${nombreAnalisis}_${id}.geojson`;
+}
+
 const obtenerArchivoTIFF = async (req, res) => {
     const nombreAnalisis = req.params.nombreAnalisis;
     const id = req.params.id;

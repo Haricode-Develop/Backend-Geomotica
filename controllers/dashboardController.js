@@ -179,6 +179,7 @@ function formatearValor(valor, indice) {
 function formatearFecha(fecha) {
     if (fecha === '') return 'NULL';
     const partes = fecha.split('/');
+    console.log("LA FECHA EN PARTES: ", partes);
     return `${partes[2]}-${partes[0].padStart(2, '0')}-${partes[1].padStart(2, '0')}`;
 }
 
