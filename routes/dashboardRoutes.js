@@ -26,6 +26,7 @@ router.get('/dosisTeoricaAps/:ID_ANALISIS', DashbBoard.dosisTeoricaAps);
 router.get('/humedadDelCultivo/:ID_ANALISIS', DashbBoard.humedadDelCultivo);
 router.get('/tchEstimado/:ID_ANALISIS', DashbBoard.tchEstimado);
 router.get('/tiempoTotalAps/:ID_ANALISIS', DashbBoard.tiempoTotalAps);
+router.get('/productoAps/:ID_ANALISIS', DashbBoard.productoAps);
 router.post('/ultimosDatosIngresadosAps', DashbBoard.almacenarUltimosValoresIngresadosAps);
 
 // ==== ANALISIS COSECHA_MECANICA =======

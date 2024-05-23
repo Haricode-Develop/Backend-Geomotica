@@ -187,6 +187,15 @@ const obtenerTchEstimado = async (idAnalisis) => {
 
     return rows.length ? parseFloat(rows[0].TCH_ESTIMADO) || 0 : 0;
 }
+
+
+const obtenerProductosAps = async (idAnalisis) => {
+    const query = `SELECT DISTINCT PRODUCTO FROM aps WHERE ID_ANALISIS = ?;`;
+    const [rows] = await pool.query(query, [idAnalisis]);
+    return rows.map(row => row.PRODUCTO);
+}
+
+
 /*==============================================
 * ENDPOINTS INFORME COSECHA_MECANICA
 * =============================================*/
@@ -644,6 +653,8 @@ const almacenarUltimosValores = async (datos) => {
     return rows;
 };
 
+
+
 module.exports = {
     insertarAnalisis,
     // ===== APS ======
@@ -663,6 +674,7 @@ module.exports = {
     obtenerTchEstimado,
     obtenerCodigoLoteAps,
     obtenerTiempoTotalAps,
+    obtenerProductosAps,
     // ===== COSECHA MECÁNICA ======
     obtenerNombreResponsableCm,
     obtenerFechaInicioCosechaCm,

@@ -38,13 +38,13 @@ const procesarCsv = async (req, res) => {
         if(tipoAnalisis === 'COSECHA_MECANICA'){
             procesarArchivoCosechaMecanica(idTipoAnalisis, data, filaError, errorEncountered, processedData, res);
         }else if(tipoAnalisis === 'APLICACIONES_AEREAS'){
-            procesarArchivoAplicacionesMecanicas(idTipoAnalisis, data, filaError, errorEncountered, processedData, res);
+            procesarArchivoAplicacionesAereas(idTipoAnalisis, data, filaError, errorEncountered, processedData, res);
         }
 
     });
 }
 
-function procesarArchivoAplicacionesMecanicas(idTipoAnalisis, data, filaError, errorEncountered, processedData, res){
+function procesarArchivoAplicacionesAereas(idTipoAnalisis, data, filaError, errorEncountered, processedData, res){
     // Procesa el archivo CSV
     Papa.parse(data, {
         header: false,
@@ -904,6 +904,17 @@ const almacenarUltimosValoresIngresados = async(req, res)  => {
     }
 }
 
+const productoAps = async(req, res) => {
+    try{
+        const resultado = await DashboardModel.obtenerProductosAps();
+        res.json({success: true, resultado: resultado});
+    }catch (error){
+        res.status(500).json({error: 'Error al obtener los productos APS'})
+    }
+}
+
+
+
 const almacenarUltimosValoresIngresadosAps = async(req, res)  => {
     try{
         const resultado = await DashboardModel.almacenarUltimosValoresAps(req.body);
@@ -912,6 +923,9 @@ const almacenarUltimosValoresIngresadosAps = async(req, res)  => {
         res.status(500).json({ success: false, mensaje: "Error al insertar los datos", error: error.message });
     }
 }
+
+
+
 
 module.exports = {
     obtenerUltimoAnalisis,
@@ -932,6 +946,7 @@ module.exports = {
     humedadDelCultivo,
     tchEstimado,
     tiempoTotalAps,
+    productoAps,
     //==== ANALISIS COSECHA_MACANICA=======
     NombreResponsableCm,
     FechaInicioCosechaCm,

@@ -10,10 +10,20 @@ import logging
 from datetime import timedelta
 import sys
 import requests
-from osgeo import ogr
-from shapely.validation import explain_validity
-from shapely.geometry import shape, LineString, mapping
+from shapely.geometry import shape, mapping
 from pyproj import CRS
+import kml_algoritm
+import pandas as pd
+from shapely.geometry import Polygon, LineString, MultiLineString, GeometryCollection, Point, MultiPoint
+from shapely.ops import unary_union
+import matplotlib.pyplot as plt
+import zipfile
+from tempfile import TemporaryDirectory
+from fastkml import kml
+import numpy as np
+from scipy.ndimage import binary_fill_holes
+from skimage.measure import find_contours
+import alphashape
 
 
 # Setup logging
@@ -22,14 +32,13 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 # Set up Google Cloud credentials
 credentials_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
 if not credentials_path:
-    raise EnvironmentError("GOOGLE_APPLICATION CREDENTIALS environment variable not set.")
+    raise EnvironmentError("GOOGLE_APPLICATION_CREDENTIALS environment variable not set.")
 credentials = service_account.Credentials.from_service_account_file(credentials_path)
 storage_client = storage.Client(credentials=credentials)
 
 def normalize_properties(properties):
     """Normalize properties to ensure they are ASCII safe."""
     return {unidecode(key): unidecode(str(value)) for key, value in properties.items()}
-
 
 def upload_to_bucket(bucket_name, geojson_data, destination_blob_name, storage_client):
     """Upload a file to Google Cloud Storage and return a signed URL."""
@@ -47,170 +56,45 @@ def find_case_insensitive_column_name(df, column_name):
         if col.lower() == column_name.lower():
             return col
     raise ValueError(f"Column name '{column_name}' not found in the dataframe.")
-def detect_intersections(lines):
-    """Detect intersections in a set of LineStrings and return points of intersections."""
 
-    intersections = []
-    for i, line1 in enumerate(lines):
-        for line2 in lines[i+1:]:
-            if line1.intersects(line2):
-                intersection = line1.intersection(line2)
-                if isinstance(intersection, Point):
-                    intersections.append(intersection)
-                elif isinstance(intersection, MultiLineString):
-                    intersections.extend([point for point in intersection])
-                elif isinstance(intersection, LineString):
-                    intersections.append(intersection)
-    return intersections
-
-def split_line_at_intersections(line, intersections):
-    """Split a LineString at specified points of intersections."""
-    for point in intersections:
-        if point.intersects(line):
-            line = split(line, point)
-    return list(line)
-
-def split_lines(geojson_data):
-    """Split lines into individual segments and separate them without connections."""
-    features = geojson_data['features']
-    all_lines = []
-
-    # Extract all LineStrings and MultiLineStrings
-    for feature in features:
-        geom = shape(feature['geometry'])
-        if isinstance(geom, LineString):
-            all_lines.append(geom)
-        elif isinstance(geom, MultiLineString):
-            for line in geom:
-                all_lines.append(line)
-
-    # Detect intersections
-    intersections = detect_intersections(all_lines)
-
-    # Split lines at intersections
-    split_segments = []
-    for line in all_lines:
-        split_segments.extend(split_line_at_intersections(line, intersections))
-
-    # Use a graph to separate individual lines
-    G = nx.Graph()
-    for segment in split_segments:
-        coords = segment.coords
-        for i in range(len(coords) - 1):
-            G.add_edge(coords[i], coords[i+1], geometry=LineString([coords[i], coords[i+1]]))
-
-    individual_lines = []
-    for component in nx.connected_components(G):
-        lines = [G[u][v]['geometry'] for u, v in nx.edges(G, component)]
-        merged_line = linemerge(lines)
-        individual_lines.append(merged_line)
-
-    # Create new GeoJSON features from individual lines
-    new_features = []
-    for line in individual_lines:
-        new_features.append({
-            'type': 'Feature',
-            'properties': {},  # Add properties if needed
-            'geometry': mapping(line)
-        })
-
-    new_geojson = {
-        'type': 'FeatureCollection',
-        'features': new_features
-    }
-
-    return new_geojson
-
-def process_kml(kml_files, id_analisis, bucket_name, storage_client):
+def process_kml(kml_paths, id_analisis, bucket_name, storage_client, resolution=1000, alpha=4500, buffer_distance=-0.0001, pendiente_umbral=0.001, distancia_metros=10):
     """Process multiple KML files, ensuring that geometries are handled correctly and combining them into a single GeoJSON."""
-    all_features = []
-    current_linestring = None
-    for kml_path in kml_files:
-        logging.info(f"Processing KML file: {kml_path}")
-        ds = ogr.Open(kml_path)
-        if ds is None:
-            logging.error(f"Failed to open KML file: {kml_path}")
-            continue
-        kml_layer = ds.GetLayer()
-        for feature in kml_layer:
-            geom = feature.GetGeometryRef()
-            if geom is None:
-                logging.warning(f"No geometry found for feature in file: {kml_path}")
-                continue
+    gdf = kml_algoritm.cargar_kml_desde_kml(kml_paths)
+    poligono = kml_algoritm.crear_poligono_dinamico(gdf, resolution, alpha)
+    poligono_reducido = poligono.buffer(buffer_distance)  # Reduce el tamaño del polígono de manera sutil
+    cortadas = kml_algoritm.cortar_intersecciones(gdf, poligono_reducido)
+    lineas_individuales = []
 
-            try:
-                geom_json = json.loads(geom.ExportToJson())
-                shapely_geom = shape(geom_json)
-            except Exception as e:
-                logging.error(f"Failed to convert geometry to shapely object: {e}")
-                continue
-
-            if not shapely_geom.is_valid:
-                logging.error(f"Invalid geometry skipped: {explain_validity(shapely_geom)}")
-                continue
-
-            normalized_properties = normalize_properties(feature.items())
-            normalized_properties['type'] = 'KML'
-
-            if isinstance(shapely_geom, LineString):
-                if current_linestring is None:
-                    current_linestring = shapely_geom
-                else:
-                    if current_linestring.coords[-1] == shapely_geom.coords[0]:
-                        current_linestring = LineString(list(current_linestring.coords) + list(shapely_geom.coords[1:]))
-                    else:
-                        all_features.append({
-                            'properties': normalized_properties,
-                            'type': 'Feature',
-                            'geometry': json.loads(json.dumps(mapping(current_linestring)))
-                        })
-                        current_linestring = shapely_geom
-
-            elif isinstance(shapely_geom, MultiLineString):
-                for line in shapely_geom:
-                    if current_linestring is None:
-                        current_linestring = line
-                    else:
-                        if current_linestring.coords[-1] == line.coords[0]:
-                            current_linestring = LineString(list(current_linestring.coords) + list(line.coords[1:]))
-                        else:
-                            all_features.append({
-                                'properties': normalized_properties,
-                                'type': 'Feature',
-                                'geometry': json.loads(json.dumps(mapping(current_linestring)))
-                            })
-                            current_linestring = line
-
-            elif isinstance(shapely_geom, (Polygon, MultiPolygon)):
-                logging.info(f"Polygon geometry found and will be skipped for file: {kml_path}")
-            else:
-                logging.warning(f"Unsupported geometry type: {geom.GetGeometryName()} in file: {kml_path}")
-
-    if current_linestring is not None:
-        all_features.append({
-            'properties': normalized_properties,
-            'type': 'Feature',
-            'geometry': json.loads(json.dumps(mapping(current_linestring)))
-        })
-
-    if not all_features:
-        raise ValueError("No valid geometries to process.")
-
-    # Determine CRS based on the first non-empty file processed
-    spatial_ref = kml_layer.GetSpatialRef()
-    if spatial_ref:
-        srs = osr.SpatialReference(str(spatial_ref))
-        srs.AutoIdentifyEPSG()
-        crs = CRS.from_epsg(srs.GetAttrValue("AUTHORITY", 1))
+    if isinstance(cortadas, GeometryCollection):
+        cortadas = [geom for geom in cortadas.geoms]
+    elif isinstance(cortadas, (LineString, MultiLineString)):
+        cortadas = [cortadas]
     else:
-        crs = "EPSG:4326"
+        cortadas = []
 
-    # Create a GeoDataFrame from all features
-    gdf = gpd.GeoDataFrame.from_features(all_features, crs=crs)
-    geojson_data = gdf.to_json()
+    for geom in cortadas:
+        lineas_individuales.extend(kml_algoritm.separar_lineas(geom))
+
+    for i, linea in enumerate(lineas_individuales):
+        if isinstance(linea, (LineString, MultiLineString)):
+            coords = list(linea.coords)
+            if len(coords[0]) == 3:
+                lineas_individuales[i] = LineString([(x, y) for x, y, z in coords])
+
+    lineas_utiles = kml_algoritm.eliminar_lineas_no_verticales_por_interseccion(lineas_individuales, pendiente_umbral)
+    lineas_completadas = kml_algoritm.completar_lineas_verticales(lineas_utiles, poligono_reducido, distancia_metros)
+
+    gdf_lineas = gpd.GeoDataFrame(geometry=lineas_completadas)
+    gdf_poligono = gpd.GeoDataFrame(geometry=[poligono_reducido])
+
+    # Agregar la propiedad 'type' con el valor 'KML' a todas las features
+    gdf_lineas['type'] = 'KML'
+
+    geojson_data = json.loads(gdf_lineas.to_json())
 
     destination_blob_name = f"geojson_files/{id_analisis}.geojson"
-    return upload_to_bucket(bucket_name, json.loads(geojson_data), destination_blob_name, storage_client)
+    logging.info("Uploading combined GeoJSON data to bucket.")
+    return upload_to_bucket(bucket_name, geojson_data, destination_blob_name, storage_client)
 
 
 def load_and_upload_polygon(polygon_folder, id_analisis, bucket_name, storage_client):
@@ -245,13 +129,14 @@ def send_signed_url_to_api(api_url, signed_url):
     logging.info("Signed URL sent to the server successfully.")
     return response.text
 
-id_analisis = sys.argv[1]
-polygon_folder = sys.argv[2]
-bucket_name = 'geomotica_mapeo'
-api_url = "http://localhost:3001/socket/updateGeoJSONLayer"
+if __name__ == "__main__":
+    id_analisis = sys.argv[1]
+    polygon_folder = sys.argv[2]
+    bucket_name = 'geomotica_mapeo'
+    api_url = "http://localhost:3001/socket/updateGeoJSONLayer"
 
-signed_url = load_and_upload_polygon(polygon_folder, id_analisis, bucket_name, storage_client)
-print(f"GeoJSON file uploaded. Access it here: {signed_url}")
+    signed_url = load_and_upload_polygon(polygon_folder, id_analisis, bucket_name, storage_client)
+    print(f"GeoJSON file uploaded. Access it here: {signed_url}")
 
-response_text = send_signed_url_to_api(api_url, signed_url)
-print(f"API response: {response_text}")
+    response_text = send_signed_url_to_api(api_url, signed_url)
+    print(f"API response: {response_text}")
