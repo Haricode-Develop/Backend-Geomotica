@@ -906,7 +906,8 @@ const almacenarUltimosValoresIngresados = async(req, res)  => {
 
 const productoAps = async(req, res) => {
     try{
-        const resultado = await DashboardModel.obtenerProductosAps();
+        const idAnalisis = req.params.ID_ANALISIS;
+        const resultado = await DashboardModel.obtenerProductosAps(idAnalisis);
         res.json({success: true, resultado: resultado});
     }catch (error){
         res.status(500).json({error: 'Error al obtener los productos APS'})
