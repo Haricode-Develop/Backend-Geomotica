@@ -10,7 +10,7 @@ const validaciones = require('../utils/validacionesMapeo');
 const {exec} = require('child_process');
 const { Storage } = require('@google-cloud/storage');
 
-const keyFilename = path.join(__dirname, '..', 'analog-figure-382403-c95d79364b3d.json');
+const keyFilename = path.join(__dirname, '..', 'analog-figure-382403-d8d65817b5d3.json');
 const storage = new Storage({ keyFilename: keyFilename });
 
 const bucketName = 'geomotica_mapeo';

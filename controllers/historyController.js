@@ -2,7 +2,7 @@ const HistoryModel = require('../models/HistoryModel');
 const path = require("path");
 const { Storage } = require('@google-cloud/storage'); // Importa correctamente Storage
 
-const keyFilename = path.join(__dirname, '..', 'analog-figure-382403-c95d79364b3d.json');
+const keyFilename = path.join(__dirname, '..', 'analog-figure-382403-d8d65817b5d3.json');
 const storage = new Storage({ keyFilename: keyFilename });
 const { promisify } = require('util');
 
