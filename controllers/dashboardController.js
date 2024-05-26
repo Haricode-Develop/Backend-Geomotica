@@ -29,17 +29,12 @@ const procesarCsv = async (req, res) => {
 
     let file = req.files['csv'][0].path;
 
-    console.log("ESTE ES EL PATH QUE ME ESTA TIRANDO ERROR AHORITA: =====****");
-    console.log(file);
-    console.log("EL ES EXCEL DEL BODY: ",req.body.isExcel);
-    console.log("EL ESE EXCEL DEL NODE.JS: ", isExcel);
     if (isExcel) {
         const outputCsvPath = path.join(path.dirname(file), 'output.csv');
         try {
             console.log("**************** El excel se convierte a csv ****************");
             await convertirExcelACsv(file, outputCsvPath);
             file = outputCsvPath;
-            console.log("ESTE ES EL ARCHIVO DESPUES DE CONVERTIR EL EXCEL A CSV: ", file);
         } catch (err) {
             console.error('Error al convertir el archivo Excel a CSV:', err);
             return res.status(500).send('Error al procesar el archivo');
@@ -50,14 +45,6 @@ const procesarCsv = async (req, res) => {
             console.error('Error al leer el archivo:', err);
             return res.status(500).send('Error al procesar el archivo');
         }
-
-        // Imprimir las primeras 10 líneas del archivo CSV
-        const lines = data.split(';').slice(0, 10);
-        console.log("Primeras 10 líneas del archivo CSV:");
-        lines.forEach(line => console.log(line));
-
-        console.log("ESTE ES EL TIPO DE ANALISIS AL PROCESAR CSV: ", tipoAnalisis);
-        console.log("ESTE ES EL ID TIPO: ", idTipoAnalisis);
 
         let filaError = 0;
         let errorEncountered = false;
