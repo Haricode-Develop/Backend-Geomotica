@@ -214,11 +214,14 @@ const execBash = async (req, res) => {
     const esPrimeraIteracion = req.body.esPrimeraIteracion === 'true';
     console.log("ES LA PRIMERA ITERACIÓN: ", esPrimeraIteracion);
     if (!req.files['csv']) {
-        return res.status(400).send('Archivos CSV no proporcionados');
+        return res.status(400).send('Archivos CSV o polígono no proporcionados');
     }
 
     const csvPath = req.files['csv'][0].path;
-    const polygonPath = req.files['polygon'][0].path;
+    let polygonPath = null;
+    if(req.files['polygon']){
+        polygonPath = req.files['polygon'][0].path;
+    }
     console.log("==============================================");
     console.log("PARAMETROS QUE SE LE PASAN AL INIT_ANALISIS: ");
     console.log("ID USUARIO = " + idUsuario);
