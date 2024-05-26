@@ -25,6 +25,7 @@ const procesarCsv = async (req, res) => {
     console.log("ESTE ES EL PATH QUE ME ESTA TIRANDO ERROR AHORITA: =====****");
     console.log(file);
     const extension = path.extname(file).toLowerCase();
+    console.log("ESTA ES LA EXTENSIÓN: ", extension);
     if (extension === '.xlsx' || extension === '.xls') {
         const outputCsvPath = path.join(path.dirname(file), 'output.csv');
         try {
