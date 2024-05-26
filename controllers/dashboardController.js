@@ -19,14 +19,21 @@ const bucket = storage.bucket(bucketName);
 const procesarCsv = async (req, res) => {
     const idTipoAnalisis = req.body.idTipoAnalisis;
     const tipoAnalisis = req.body.tipoAnalisis;
-    // Acceder al primer elemento del array y obtener la propiedad 'path'
+    const isExcel = req.body.isExcel === 'true';
+
+    if (!req.files || !req.files['csv'] || !req.files['csv'][0]) {
+        console.error('No se encontraron archivos en la solicitud');
+        return res.status(400).send('No se encontró ningún archivo para procesar');
+    }
+
+
     let file = req.files['csv'][0].path;
 
     console.log("ESTE ES EL PATH QUE ME ESTA TIRANDO ERROR AHORITA: =====****");
     console.log(file);
-    const extension = path.extname(file).toLowerCase();
-    console.log("ESTA ES LA EXTENSIÓN: ", extension);
-    if (extension === '.xlsx' || extension === '.xls') {
+    console.log("EL ES EXCEL DEL BODY: ",req.body.isExcel);
+    console.log("EL ESE EXCEL DEL NODE.JS: ", isExcel);
+    if (isExcel) {
         const outputCsvPath = path.join(path.dirname(file), 'output.csv');
         try {
             console.log("**************** El excel se convierte a csv ****************");
