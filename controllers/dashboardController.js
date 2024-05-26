@@ -2,6 +2,7 @@ const DashboardModel = require('../models/dashboard');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const XLSX = require('xlsx');
 const io = require('../socket');
 let esPrimeraEjecucion = true;
 const Papa = require('papaparse');
@@ -19,11 +20,21 @@ const procesarCsv = async (req, res) => {
     const idTipoAnalisis = req.body.idTipoAnalisis;
     const tipoAnalisis = req.body.tipoAnalisis;
     // Acceder al primer elemento del array y obtener la propiedad 'path'
-    const file = req.files['csv'][0].path;
+    let file = req.files['csv'][0].path;
 
     console.log("ESTE ES EL PATH QUE ME ESTA TIRANDO ERROR AHORITA: =====****");
     console.log(file);
-
+    const extension = path.extname(file).toLowerCase();
+    if (extension === '.xlsx' || extension === '.xls') {
+        const outputCsvPath = path.join(path.dirname(file), 'output.csv');
+        try {
+            await convertirExcelACsv(file, outputCsvPath);
+            file = outputCsvPath;
+        } catch (err) {
+            console.error('Error al convertir el archivo Excel a CSV:', err);
+            return res.status(500).send('Error al procesar el archivo');
+        }
+    }
     fs.readFile(file, 'utf8', (err, data) => {
         if (err) {
             console.error('Error al leer el archivo:', err);
@@ -126,8 +137,6 @@ function procesarArchivoCosechaMecanica(idTipoAnalisis, data, filaError, errorEn
                 fila[14] = formatearValor(fila[14], 14); // HORA FINAL VALIDACIÓN
                 const tiempoTotal = validaciones.calcularTiempoTotal(fila[13], fila[14]);
                 fila.splice(15, 0, tiempoTotal);
-                fila[18] = validaciones.validarPilotoAutomatico(fila[18]); // PILOTO VALIDACIÓN
-                fila[19] = validaciones.validarAutoTracket(fila[19]); // AUTO TRACKET VALIDACIÓN
 
                 fila.push(idTipoAnalisis);
 
@@ -177,13 +186,16 @@ function formatearValor(valor, indice) {
 }
 
 function formatearFecha(fecha) {
-    if (fecha === '') return 'NULL';
+    if (fecha === '') return '';
     const partes = fecha.split('/');
+    if (partes.length !== 3 || isNaN(partes[0]) || isNaN(partes[1]) || isNaN(partes[2])) {
+        return '';
+    }
     return `${partes[2]}-${partes[0].padStart(2, '0')}-${partes[1].padStart(2, '0')}`;
 }
 
 function formatearHora(hora) {
-    if (hora === '') return 'NULL';
+    if (hora === '') return '';
     // Aquí puedes agregar lógica de formateo de hora si es necesario
     return hora;
 }
@@ -925,7 +937,20 @@ const almacenarUltimosValoresIngresadosAps = async(req, res)  => {
     }
 }
 
-
+const convertirExcelACsv = (filePath, outputFilePath) => {
+    return new Promise((resolve, reject) => {
+        try {
+            const workbook = XLSX.readFile(filePath);
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            const csvData = XLSX.utils.sheet_to_csv(worksheet);
+            fs.writeFileSync(outputFilePath, csvData, 'utf8');
+            resolve(outputFilePath);
+        } catch (err) {
+            reject(err);
+        }
+    });
+};
 
 
 module.exports = {
