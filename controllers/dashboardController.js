@@ -32,7 +32,6 @@ const procesarCsv = async (req, res) => {
     if (isExcel) {
         const outputCsvPath = path.join(path.dirname(file), 'output.csv');
         try {
-            console.log("**************** El excel se convierte a csv ****************");
             await convertirExcelACsv(file, outputCsvPath);
             file = outputCsvPath;
         } catch (err) {
@@ -78,11 +77,7 @@ function procesarArchivoAplicacionesAereas(idTipoAnalisis, data, filaError, erro
                 if (fila.every(campo => campo === null || campo.match(/^ *$/) !== null)) {
                     return;
                 }
-                console.log("ESTA ES LA FILA ****************************************");
-                console.log(fila);
-                console.log("LA FECHA: ", fila[1]);
-                console.log("LA HORA: ", fila[2]);
-                console.log("********************************************************");
+
                     fila[1] = formatearValor(fila[1], 11);
                     fila[2] = formatearValor(fila[2], 12);
                 fila.push(idTipoAnalisis);
@@ -187,7 +182,6 @@ function formatearValor(valor, indice) {
         case 14:
         case 15:
             return formatearHora(valor);
-
         default:
             return valor;
     }
@@ -198,12 +192,14 @@ function formatearFecha(fecha) {
     const partes = fecha.split('/');
     if (partes.length !== 3 || isNaN(partes[0]) || isNaN(partes[1]) || isNaN(partes[2])) {
         return '';
-
     }
-    console.log("FECHA FORMATEADAO ========================================");
-    console.log("COMO VENIA: ", fecha);
-    console.log(`FORMATEADA: ${partes[2]}-${partes[0].padStart(2, '0')}-${partes[1].padStart(2, '0')}`);
-    return `${partes[2]}-${partes[0].padStart(2, '0')}-${partes[1].padStart(2, '0')}`;
+
+    let anio = partes[2];
+    if (anio.length === 2) {
+        anio = `20${anio}`; // Asumiendo que el año es del siglo 21
+    }
+
+    return `${anio}-${partes[0].padStart(2, '0')}-${partes[1].padStart(2, '0')}`;
 }
 
 function formatearHora(hora) {
@@ -214,9 +210,7 @@ function formatearHora(hora) {
 
 const execBash = async (req, res) => {
 
-    console.log("======= EJECUTANDO EL BASH DEL LADO DE NODE.JS ==========");
-    console.log("LOG DE PARAMETROS ====");
-    console.log(req.params);
+
     const idUsuario = req.params.idUsuario;
     const idAnalisis = req.params.idAnalisis;
     const idMax = req.params.idMax;
@@ -224,7 +218,6 @@ const execBash = async (req, res) => {
     const offset = req.params.offset;
     const validar = req.params.validar;
     const esPrimeraIteracion = req.body.esPrimeraIteracion === 'true';
-    console.log("ES LA PRIMERA ITERACIÓN: ", esPrimeraIteracion);
     if (!req.files['csv']) {
         return res.status(400).send('Archivos CSV o polígono no proporcionados');
     }
@@ -263,7 +256,6 @@ const execBash = async (req, res) => {
                     console.error(`stderr: ${stderr}`);
                 }
                     console.log(`stdout: ${stdout}`);
-                    console.log("SE HA EJECUTADO EL EVENTO PARA MOSTRAR EL ANÁLISIS ======");
                     io.getIo().emit('datosInsertados');
                     io.getIo().emit('progressUpdate', { progress: 100, message: 'Carga finalizada' });
                     esPrimeraEjecucion = false;
@@ -282,8 +274,7 @@ const insertarAnalisis = async (req, res) =>{
         const tipoAnalisis = req.params.tipoAnalisis;
         const idUsuario = req.params.idUsuario;
         const idAnalisisInsertado  = await DashboardModel.insertarAnalisis(tipoAnalisis, idUsuario);
-        console.log("ESTE ES EL ANALISIS QUE SE INSERTO =====");
-        console.log(idAnalisisInsertado);
+
         return res.json({ idAnalisis: idAnalisisInsertado });
     }catch (error){
         res.status(500).json({error: 'Error al insertar'})
@@ -303,8 +294,7 @@ const obtenerUltimoAnalisis = async (req, res) => {
     const tipoAnalisis = req.params.tipoAnalisis;
     const idUsuario = req.params.idUsuario;
     const obtenerUltimoAnalisisResult = await DashboardModel.obtenerUltimoAnalisisQuery(tipoAnalisis, idUsuario);
-    console.log("SE OBTIENE EL ULTIMO ANÁLISIS ======");
-    console.log(obtenerUltimoAnalisisResult);
+
     return res.json(obtenerUltimoAnalisisResult);
 }
 
@@ -902,7 +892,6 @@ const depositarJsonCosechaMecanica = async (req, res) => {
 
     // Convertir los datos a una cadena JSON
     const json = JSON.stringify(datos);
-    console.log("El archivo json se va a depositar=========================================================");
     const fileName = `analisis/${idAnalisis}.json`;
 
     try {
