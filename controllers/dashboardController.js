@@ -78,6 +78,11 @@ function procesarArchivoAplicacionesAereas(idTipoAnalisis, data, filaError, erro
                 if (fila.every(campo => campo === null || campo.match(/^ *$/) !== null)) {
                     return;
                 }
+                console.log("ESTA ES LA FILA ****************************************");
+                console.log(fila);
+                console.log("LA FECHA: ", fila[1]);
+                console.log("LA HORA: ", fila[2]);
+                console.log("********************************************************");
                     fila[1] = formatearValor(fila[1], 11);
                     fila[2] = formatearValor(fila[2], 12);
                 fila.push(idTipoAnalisis);
