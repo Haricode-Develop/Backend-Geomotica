@@ -193,7 +193,11 @@ function formatearFecha(fecha) {
     const partes = fecha.split('/');
     if (partes.length !== 3 || isNaN(partes[0]) || isNaN(partes[1]) || isNaN(partes[2])) {
         return '';
+
     }
+    console.log("FECHA FORMATEADAO ========================================");
+    console.log("COMO VENIA: ", fecha);
+    console.log(`FORMATEADA: ${partes[2]}-${partes[0].padStart(2, '0')}-${partes[1].padStart(2, '0')}`);
     return `${partes[2]}-${partes[0].padStart(2, '0')}-${partes[1].padStart(2, '0')}`;
 }
 
