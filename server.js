@@ -16,6 +16,8 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const socketRoutes = require('./routes/webSocket');
 const historialRoutes = require('./routes/historyRoutes');
 const dashboardIndicadores = require('./routes/dashboardIndicadoresRoute');
+
+
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('combined'));

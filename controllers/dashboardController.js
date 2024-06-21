@@ -218,6 +218,7 @@ const execBash = async (req, res) => {
     const offset = req.params.offset;
     const validar = req.params.validar;
     const esPrimeraIteracion = req.body.esPrimeraIteracion === 'true';
+    const esKmlInteractivo = req.body.esKmlInteractivo === 'true';
     if (!req.files['csv']) {
         return res.status(400).send('Archivos CSV o polígono no proporcionados');
     }
@@ -236,6 +237,7 @@ const execBash = async (req, res) => {
     console.log("ID MAX = "+ idMax);
     console.log("OFFSET = "+offset);
     console.log("VALIDAR = "+validar);
+    console.log("ES KML INTERACTIVO = "+esKmlInteractivo);
 
     console.log("==============================================");
     const totalLines = parseInt(lineas, 10);
@@ -244,7 +246,7 @@ const execBash = async (req, res) => {
     const isLastIteration = (currentOffset + batchSize) >= totalLines;
     try {
         await new Promise((resolve, reject) => {
-            let comandoBash = `bash /geomotica/init_analisis.sh ${idUsuario} ${idAnalisis} ${csvPath} ${polygonPath} ${idMax} ${offset} ${validar} ${esPrimeraIteracion}  ${isLastIteration ? 'true' : 'false'}`;
+            let comandoBash = `bash /geomotica/init_analisis.sh ${idUsuario} ${idAnalisis} ${csvPath} ${polygonPath} ${idMax} ${offset} ${validar} ${esPrimeraIteracion}  ${isLastIteration ? 'true' : 'false' } ${esKmlInteractivo ? 'true' : 'false'}`;
 
             exec(comandoBash, (error, stdout, stderr) => {
                 if (error) {
