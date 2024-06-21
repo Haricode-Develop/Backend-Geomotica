@@ -246,7 +246,7 @@ const execBash = async (req, res) => {
     const isLastIteration = (currentOffset + batchSize) >= totalLines;
     try {
         await new Promise((resolve, reject) => {
-            let comandoBash = `bash /geomotica/init_analisis.sh ${idUsuario} ${idAnalisis} ${csvPath} ${polygonPath} ${idMax} ${offset} ${validar} ${esPrimeraIteracion}  ${isLastIteration ? 'true' : 'false' } ${esKmlInteractivo ? 'true' : 'false'}`;
+            let comandoBash = `bash /geomotica/init_analisis.sh ${idUsuario} ${idAnalisis} ${csvPath} ${polygonPath} ${idMax} ${offset} ${validar} ${esPrimeraIteracion}  ${isLastIteration ? 'true' : 'false' } ${esKmlInteractivo}`;
 
             exec(comandoBash, (error, stdout, stderr) => {
                 if (error) {
