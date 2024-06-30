@@ -217,8 +217,10 @@ const execBash = async (req, res) => {
     const lineas = req.params.lineas;
     const offset = req.params.offset;
     const validar = req.params.validar;
-    const esPrimeraIteracion = req.body.esPrimeraIteracion === 'true';
-    const esKmlInteractivo = req.body.esKmlInteractivo === 'true';
+
+    const esPrimeraIteracion = req.body.esPrimeraIteracion === 'true' ? 'true' : 'false';
+    const esKmlInteractivo = req.body.esKmlInteractivo === 'true' ? 'true' : 'false';
+  
     if (!req.files['csv']) {
         return res.status(400).send('Archivos CSV o polígono no proporcionados');
     }
@@ -246,7 +248,8 @@ const execBash = async (req, res) => {
     const isLastIteration = (currentOffset + batchSize) >= totalLines;
     try {
         await new Promise((resolve, reject) => {
-            let comandoBash = `bash /geomotica/init_analisis.sh ${idUsuario} ${idAnalisis} ${csvPath} ${polygonPath} ${idMax} ${offset} ${validar} ${esPrimeraIteracion}  ${isLastIteration ? 'true' : 'false' } ${esKmlInteractivo ? 'true' : 'false'}`;
+
+            let comandoBash = `bash /geomotica/init_analisis.sh ${idUsuario} ${idAnalisis} ${csvPath} ${polygonPath} ${idMax} ${offset} ${validar} ${esPrimeraIteracion}  ${isLastIteration ? 'true' : 'false' } ${esKmlInteractivo}`;
 
             exec(comandoBash, (error, stdout, stderr) => {
                 if (error) {
@@ -257,10 +260,10 @@ const execBash = async (req, res) => {
                 if (stderr) {
                     console.error(`stderr: ${stderr}`);
                 }
-                    console.log(`stdout: ${stdout}`);
-                    io.getIo().emit('datosInsertados');
-                    io.getIo().emit('progressUpdate', { progress: 100, message: 'Carga finalizada' });
-                    esPrimeraEjecucion = false;
+                console.log(`stdout: ${stdout}`);
+                io.getIo().emit('datosInsertados');
+                io.getIo().emit('progressUpdate', { progress: 100, message: 'Carga finalizada' });
+                esPrimeraEjecucion = false;
 
                 resolve();
             });
@@ -270,6 +273,7 @@ const execBash = async (req, res) => {
         res.status(500).send(error);
     }
 };
+
 
 const insertarAnalisis = async (req, res) =>{
     try {
