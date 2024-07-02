@@ -16,7 +16,13 @@ const socketRoutes = require('./routes/webSocket');
 const historialRoutes = require('./routes/historyRoutes');
 const dashboardIndicadores = require('./routes/dashboardIndicadoresRoute');
 
-app.use(cors());
+// Configuración de CORS para permitir solicitudes desde cualquier origen
+app.use(cors({
+    origin: '*',  // Permite solicitudes desde cualquier origen
+    methods: 'GET, POST, PUT, DELETE, OPTIONS',  // Métodos permitidos
+    allowedHeaders: 'Content-Type, Authorization'  // Headers permitidos
+}));
+
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('combined'));
 app.use(bodyParser.json({ limit: '50mb' }));
