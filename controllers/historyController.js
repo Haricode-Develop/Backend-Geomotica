@@ -34,9 +34,8 @@ const obtenerUltimosValores = async (req, res)  => {
     }
 }
 
-
 const obtenerArchivoGeoJsonAplicacionesAreas = async(req, res) => {
-    const nombeAnalisis = req.params.nombreAnalisis;
+    const nombreAnalisis = req.params.nombreAnalisis;
     const id = req.params.id;
     const archivoNombre = `geojson/${nombreAnalisis}_${id}.geojson`;
 }
@@ -65,42 +64,36 @@ const obtenerArchivoTIFF = async (req, res) => {
             const options = { maxBuffer: 1024 * 1024 * 100 }; // 50 MB
 
             try {
-                try {
-                    const { stdout, stderr } = await exec(comandoPython, options);
-                    console.log("Script de Python ejecutado exitosamente:", stdout);
-                    if (stderr) {
-                        console.error("Stderr:", stderr);
-                    }
-                } catch (error) {
-                    console.error(`Error al ejecutar el script de Python: ${error}`);
-                    console.error(`Salida de error (stderr): ${error.stderr}`);
-                    return res.status(500).json({
-                        mensaje: 'Error en el script de Python',
-                        detalle: error.stderr
-                    });
+                const { stdout, stderr } = await exec(comandoPython, options);
+                console.log("Script de Python ejecutado exitosamente:", stdout);
+                if (stderr) {
+                    console.error("Stderr:", stderr);
                 }
-
-                let archivoGenerado = false;
-                const maxIntentos = 10;
-                let intentos = 0;
-
-                while (!archivoGenerado && intentos < maxIntentos) {
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-                    const [existe] = await archivo.exists();
-                    if (existe) {
-                        archivoGenerado = true;
-                        break;
-                    }
-                    intentos++;
-                }
-
-                if (!archivoGenerado) {
-                    return res.status(404).json({ mensaje: 'Archivo no encontrado después de generación' });
-                }
-
             } catch (error) {
-                console.error(`Error al ejecutar el script de Python: ${error.message}`);
-                return res.status(500).json({ mensaje: 'Error al ejecutar el script de Python' });
+                console.error(`Error al ejecutar el script de Python: ${error}`);
+                console.error(`Salida de error (stderr): ${error.stderr}`);
+                return res.status(500).json({
+                    mensaje: 'Error en el script de Python',
+                    detalle: error.stderr
+                });
+            }
+
+            let archivoGenerado = false;
+            const maxIntentos = 10;
+            let intentos = 0;
+
+            while (!archivoGenerado && intentos < maxIntentos) {
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                const [existe] = await archivo.exists();
+                if (existe) {
+                    archivoGenerado = true;
+                    break;
+                }
+                intentos++;
+            }
+
+            if (!archivoGenerado) {
+                return res.status(404).json({ mensaje: 'Archivo no encontrado después de generación' });
             }
         }
         if(!existeArchivoAnalisis){
@@ -130,6 +123,7 @@ const obtenerArchivoTIFF = async (req, res) => {
         return res.status(500).json({ mensaje: 'Error interno del servidor' });
     }
 };
+
 module.exports = {
     analisis, obtenerArchivoTIFF, obtenerUltimosValores
-}
+};

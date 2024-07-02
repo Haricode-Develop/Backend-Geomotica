@@ -1,124 +1,50 @@
-const express = require("express");
-const app = express();
-const mysql = require("mysql2/promise");
-const bcrypt = require("bcryptjs");
-const { generateAccessToken } = require("../utils/auth/generateToken");
+const { MongoClient, ObjectId } = require('mongodb');
+const bcrypt = require('bcryptjs');
+const connectDB = require('../config/database');
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASS,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-});
+const getCollection = async () => {
+  const client = await connectDB();
+  return client.db('geomoticaapp').collection('usuarios');
+};
 
 const findByEmail = async (email) => {
-  try {
-    const query = `
-      SELECT usuarios.*, rol.Rol as RolNombre
-      FROM usuarios
-      INNER JOIN rol ON usuarios.ID_Rol = rol.ID_Rol
-      WHERE usuarios.EMAIL = ?
-    `;
-    const [rows] = await pool.query(query, [email]);
-
-    if (rows.length === 0) {
-      return null;
-    }
-    return rows[0];
-  } catch (error) {
-    throw error;
-  }
+  const collection = await getCollection();
+  return collection.findOne({ EMAIL: email });
 };
 
-
-// Middleware para manejo de errores
-function errorHandler(err, req, res, next) {
-  console.error(err.stack);
-  res.status(500).send("Algo salió mal");
-}
-
-const insertTemporalPassword = async (email, temporalPassword) => {
-  try {
-    const hashedPassword = await bcrypt.hash(temporalPassword, 10);
-    await pool.query("CALL sp_insertar_clave_temporal(?, ?)", [
-      email,
-      hashedPassword,
-    ]);
-  } catch (error) {
-    throw error;
-  }
-};
-
-const confirmAccount = async (email) => {
-  try {
-    await pool.query("CALL sp_update_confirmar_cuenta(?)", [email]);
-  } catch (error) {
-    throw error;
-  }
-};
 const createUser = async (nombre, apellido, email, password) => {
-  const hashedPassword = await bcrypt.hash(password, 10); // Hashing the password
-  console.log("llega hasta la insercion en la bd antes del metodo ")
-  try{
-    return (await pool.query("CALL sp_insertar_registro(?,?,?,?)", [
-      nombre,
-      apellido,
-      email,
-      hashedPassword,
-    ]));
-  }
-  catch(error){
-    console.log("Error en el intento del SP "+error);
-  }
-
-};
-
-const getUserInfo = async (user) => {
-  return {
-    email: user.EMAIL,
-    name: user.NOMBRE,
-    id: user.ID_USUARIO,
-  };
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const collection = await getCollection();
+  const result = await collection.insertOne({
+    NOMBRE: nombre,
+    APELLIDO: apellido,
+    EMAIL: email,
+    PASSWORD: hashedPassword,
+    ID_Rol: ObjectId(),
+    ESTATUS: 0, // Initial status as unverified
+    FECHA_CREACION: new Date()
+  });
+  return result.ops[0];
 };
 
 const isValidPassword = async (password, email) => {
-  try {
-    const user = await findByEmail(email);
-    if (email === null || email === undefined) {
-      return false;
-    }
-    const validation = await bcrypt.compare(password, user.PASSWORD);
-    return validation;
-
-  } catch (error) {
-    return false;
-  }
-};
-const verifyPassword = async (inputPassword, hash) => {
-  return await bcrypt.compare(inputPassword, hash);
+  const user = await findByEmail(email);
+  if (!user) return false;
+  return bcrypt.compare(password, user.PASSWORD);
 };
 
-const createAccessToken = async (user) => {
-  const payload = await getUserInfo(user);
-  return generateAccessToken(payload);
+const confirmAccount = async (email) => {
+  const collection = await getCollection();
+  const result = await collection.updateOne(
+      { EMAIL: email },
+      { $set: { ESTATUS: 1 } }
+  );
+  return result.matchedCount > 0;
 };
-const createRefreshToken = async (user) => {
-  const payload = await getUserInfo(user);
-  return generateRefreshToken(payload);
-};
-
-app.use(errorHandler);
 
 module.exports = {
   findByEmail,
-  verifyPassword,
   createUser,
-  insertTemporalPassword,
-  confirmAccount,
-  createAccessToken,
-  createRefreshToken,
   isValidPassword,
+  confirmAccount,
 };

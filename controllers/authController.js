@@ -8,38 +8,25 @@ const login = async (req, res) => {
     const { email, password } = req.body;
 
     const user = await UserModel.findByEmail(email);
-    console.log(user);
-    console.log(user.EMAIL);
-    console.log(user.PASSWORD);
-    const isValidPassword = await UserModel.isValidPassword(
-      password,
-      user.EMAIL
-    );
-    console.log("VALOR DEL VALID PASSWORD: ", isValidPassword);
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
+
+    const isValidPassword = await UserModel.isValidPassword(password, email);
     if (!isValidPassword) {
       return res.status(403).json({ message: "Contraseña incorrecta" });
     }
-    // Reemplaza con tu lógica real
-    // Verificar el estatus del usuario (por ejemplo, si está verificado)
+
     if (user.ESTATUS !== 1) {
-      return res
-        .status(403)
-        .json({
-          message: "Usuario no verificado aún, por favor verificar correo",
-        });
+      return res.status(403).json({ message: "Usuario no verificado aún, por favor verificar correo" });
     }
 
-    // Generar un token JWT
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
-      "tu_clave_secreta",
-      { expiresIn: "1h" }
+        { userId: user._id, email: user.EMAIL },
+        process.env.JWT_SECRET || "tu_clave_secreta",
+        { expiresIn: "1h" }
     );
 
-    // Enviar el token al cliente
     return res.json({ user, token });
   } catch (error) {
     console.error("Error en el proceso de inicio de sesión:", error);
@@ -49,114 +36,86 @@ const login = async (req, res) => {
 
 const register = async (req, res) => {
   const { nombre, apellido, email, password } = req.body;
-  console.log("ENTRO AL REGISTRAR");
-  console.log("PARAMETROS: ");
-  console.log(
-    "NOMBRE: " +
-      nombre +
-      "APELLIDO: " +
-      apellido +  
-      "EMAIL: " +
-      email +
-      "PASSWORD: " +
-      password
-  );
+
   try {
     const existingUser = await UserModel.findByEmail(email);
-    console.log("USUARIO EXISTE: ", existingUser);
-    if (existingUser != null) {
+    if (existingUser) {
       return res.status(409).json({ message: "El correo ya está en uso" });
     }
-  console.log("Llego despues del if");
+
     const userCreated = await UserModel.createUser(nombre, apellido, email, password);
-    console.log("user created");
-    if(userCreated){
-      console.log("user created entra al clg de user created");
+    if (userCreated) {
       eSender.sendEmail("registry", email);
-      res.json({success: true});
+      res.json({ success: true });
     }
   } catch (err) {
+    console.error("Error al registrar el usuario:", err);
     res.status(500).json({ message: "Error al registrar el usuario" });
   }
 };
 
 const passwordRecuperation = async (req, res) => {
   const { email } = req.body;
-  console.log("Estos son los parametros========");
-  console.log(email);
-  const user = await UserModel.findByEmail(email);
-  if (!user) {
-    console.log(user + "no encontrado");
-    return res.status(404).json({ message: "Usuario no encontrado" });
-  } else {
-    console.log(user.EMAIL);
+  try {
+    const user = await UserModel.findByEmail(email);
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
     eSender.sendEmail("recovery", user.EMAIL);
     return res.status(200).json({ message: "Usuario encontrado" });
+  } catch (error) {
+    console.error("Error en la recuperación de contraseña:", error);
+    return res.status(500).json({ message: "Error en el servidor" });
   }
 };
 
 const registerConfirmation = async (req, res) => {
   const { email } = req.body;
-  console.log("Estos son los parametros========");
-  console.log(email);
-  const user = await UserModel.findByEmail(email);
-  if (!user) {
-    console.log(user + "no encontrado");
-    return res.status(404).json({ message: "Usuario no encontrado" });
-  } else {
-    console.log(user.EMAIL);
+  try {
+    const user = await UserModel.findByEmail(email);
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
     eSender.sendEmail("registry", user.EMAIL);
     return res.status(200).json({ message: "Usuario encontrado" });
+  } catch (error) {
+    console.error("Error en la confirmación del registro:", error);
+    return res.status(500).json({ message: "Error en el servidor" });
   }
 };
 
 const temporalPasswordGeneration = async (req, res) => {
   const { email } = req.body;
-  console.log("Estos son los parametros========");
-  console.log(email);
   try {
-    console.log(await eSender.sendEmail("temporal", email));
+    eSender.sendEmail("temporal", email);
     return res.status(202).json({ message: `Contraseña temporal generada` });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Error al generar la contraseña temporal" });
+    console.error("Error al generar la contraseña temporal:", error);
+    return res.status(500).json({ message: "Error en el servidor" });
   }
 };
 
 const accountConfirmation = async (req, res) => {
   const { email } = req.body;
-  console.log("Estos son los parametros========");
-  console.log(email);
   try {
-    console.log("Llega adentro de account confirmation");
     const result = await UserModel.confirmAccount(email);
-console.log(result);
-    return res.status(202).json({ message: `Contraseña temporal generada` });
+    return res.status(202).json({ message: `Cuenta confirmada` });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Error al generar la contraseña temporal" });
+    console.error("Error al confirmar la cuenta:", error);
+    return res.status(500).json({ message: "Error en el servidor" });
   }
 };
+
 const confirmGeneration = async (req, res) => {
   const { email } = req.body;
-  console.log("Estos son los parametros========");
-  console.log(email);
-
   try {
-    console.log("Llega adentro de confirm generation");
-    console.log (await eSender.sendEmail("confirm", email));
-    return res.status(202).json({ message: `Confirmacion generada` });
+    eSender.sendEmail("confirm", email);
+    return res.status(202).json({ message: `Confirmación generada` });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Error al generar la confirmacion " });
+    console.error("Error al generar la confirmación:", error);
+    return res.status(500).json({ message: "Error en el servidor" });
   }
 };
-
-
-
 
 module.exports = {
   login,

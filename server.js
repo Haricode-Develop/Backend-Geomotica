@@ -2,13 +2,12 @@ const express = require('express');
 const cors = require('cors');
 const http = require('http');
 const morgan = require('morgan');
-const app = express();
 const bodyParser = require('body-parser');
-const PORT = 3001;
 const connectDB = require('./config/database');
 require('dotenv').config();
 
-connectDB();
+const app = express();
+const PORT = process.env.PORT || 3001;
 
 const socket = require('./socket');
 const authRoutes = require('./routes/authRoutes');
@@ -16,7 +15,6 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const socketRoutes = require('./routes/webSocket');
 const historialRoutes = require('./routes/historyRoutes');
 const dashboardIndicadores = require('./routes/dashboardIndicadoresRoute');
-
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
@@ -31,17 +29,20 @@ app.use('/socket', socketRoutes);
 app.use('/historial', historialRoutes);
 app.use('/dashboardIndicadores', dashboardIndicadores);
 
-
 app.get('/', (req, res) => {
     res.send('Hello from the backend!');
 });
 
-const server = http.createServer(app);
+// Conectar a la base de datos y luego iniciar el servidor
+connectDB().then((client) => {
+    const server = http.createServer(app);
+    server.timeout = 300000;
 
-server.timeout = 300000;
+    socket.init(server);
 
-socket.init(server);
-
-server.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    server.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
+}).catch((err) => {
+    console.error('Failed to start server due to database connection error:', err);
 });

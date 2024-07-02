@@ -8,7 +8,7 @@ const DashbBoard = require('../controllers/dashboardController');
 router.post('/insert_analisis/:tipoAnalisis/:idUsuario', DashbBoard.insertarAnalisis);
 router.get('/ultimo_analisis/:tipoAnalisis/:idUsuario', DashbBoard.obtenerUltimoAnalisis);
 router.post('/execBash/:idUsuario/:idAnalisis/:idMax/:offset/:validar/:lineas', upload.fields([{ name: 'csv' }, { name: 'polygon' }]), DashbBoard.execBash);
-router.post('/procesarCsv/',  upload.fields([{ name: 'csv' }]), DashbBoard.procesarCsv);
+router.post('/procesarCsv/', upload.fields([{ name: 'csv' }]), DashbBoard.procesarCsv);
 
 // ==== ANALISIS APS =======
 router.get('/responsableAps/:ID_ANALISIS', DashbBoard.ResponsableAps);
@@ -51,7 +51,6 @@ router.get('/rpmCm/:ID_ANALISIS', DashbBoard.rpmCm);
 router.get('/tchCm/:ID_ANALISIS', DashbBoard.tchCm);
 router.get('/tahCm/:ID_ANALISIS', DashbBoard.tahCm);
 router.get('/presionCortadorBaseCm/:ID_ANALISIS', DashbBoard.presionCortadorBaseCm);
-
 
 // ==== ANALISIS FERTILIZACIÓN =======
 router.get('/responsableFertilizacion/:ID_ANALISIS', DashbBoard.ResponsableFetilizacion);
