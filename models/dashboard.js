@@ -8,7 +8,7 @@ const obtenerUltimoAnalisisQuery = async (tipoAnalisis, idUsuario) => {
         const db = client.db('geomoticaapp');
         const collection = db.collection('analisis');
         const resultado = await collection.findOne(
-            { TIPO_ANALISIS: tipoAnalisis, ID_USUARIO: new ObjectId(idUsuario) },
+            { TIPO_ANALISIS: tipoAnalisis, ID_USUARIO: parseInt(idUsuario, 10) },
             { sort: { _id: -1 } }
         );
         return resultado;
