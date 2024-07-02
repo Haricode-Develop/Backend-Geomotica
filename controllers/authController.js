@@ -22,7 +22,7 @@ const login = async (req, res) => {
     }
 
     const token = jwt.sign(
-        { userId: user._id, email: user.EMAIL },
+        { userId: user.ID_USUARIO, email: user.EMAIL },
         process.env.JWT_SECRET || "tu_clave_secreta",
         { expiresIn: "1h" }
     );
@@ -46,7 +46,7 @@ const register = async (req, res) => {
     const userCreated = await UserModel.createUser(nombre, apellido, email, password);
     if (userCreated) {
       eSender.sendEmail("registry", email);
-      res.json({ success: true });
+      res.json({ success: true, user: userCreated });
     }
   } catch (err) {
     console.error("Error al registrar el usuario:", err);
@@ -62,7 +62,7 @@ const passwordRecuperation = async (req, res) => {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
     eSender.sendEmail("recovery", user.EMAIL);
-    return res.status(200).json({ message: "Usuario encontrado" });
+    return res.status(200).json({ message: "Usuario encontrado", userId: user.ID_USUARIO });
   } catch (error) {
     console.error("Error en la recuperación de contraseña:", error);
     return res.status(500).json({ message: "Error en el servidor" });
@@ -77,7 +77,7 @@ const registerConfirmation = async (req, res) => {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
     eSender.sendEmail("registry", user.EMAIL);
-    return res.status(200).json({ message: "Usuario encontrado" });
+    return res.status(200).json({ message: "Usuario encontrado", userId: user.ID_USUARIO });
   } catch (error) {
     console.error("Error en la confirmación del registro:", error);
     return res.status(500).json({ message: "Error en el servidor" });

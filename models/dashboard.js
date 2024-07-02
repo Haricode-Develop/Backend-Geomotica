@@ -10,13 +10,31 @@ const obtenerUltimoAnalisisQuery = async (tipoAnalisis, idUsuario) => {
     return resultado;
 };
 
+
+
 const insertarAnalisis = async (tipoAnalisis, idUsuario) => {
-    const client = await connectDB();
-    const db = client.db('geomoticaapp');
-    const collection = db.collection('analisis');
-    const resultado = await collection.insertOne({ TIPO_ANALISIS: tipoAnalisis, ID_USUARIO: ObjectId(idUsuario), FECHA_CREACION: new Date() });
-    return resultado.insertedId;
+    try {
+        const client = await connectDB();
+        const db = client.db('geomoticaapp');
+        const collection = db.collection('analisis');
+
+        console.log("ESTE ES EL TIPO DE ANÁLISIS: ", tipoAnalisis);
+        console.log("ESTE ES EL ID DE USUARIO: ", idUsuario);
+
+        const resultado = await collection.insertOne({
+            TIPO_ANALISIS: tipoAnalisis,
+            ID_USUARIO: parseInt(idUsuario, 10),
+            FECHA_CREACION: new Date()
+        });
+
+        console.log("ESTE ES EL RESULTADO: ", resultado);
+        return resultado.insertedId;
+    } catch (error) {
+        console.error("Error al insertar análisis: ", error);
+        throw new Error(`Error al insertar análisis: ${error.message}`);
+    }
 };
+
 
 const obtenerNombreResponsableAps = async (idAnalisis) => {
     const client = await connectDB();
