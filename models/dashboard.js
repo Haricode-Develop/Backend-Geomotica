@@ -3,13 +3,20 @@ const connectDB = require('../config/database');
 
 // Funciones para obtener datos de APS
 const obtenerUltimoAnalisisQuery = async (tipoAnalisis, idUsuario) => {
-    const client = await connectDB();
-    const db = client.db('geomoticaapp');
-    const collection = db.collection('analisis');
-    const resultado = await collection.findOne({ TIPO_ANALISIS: tipoAnalisis, ID_USUARIO: ObjectId(idUsuario) }, { sort: { _id: -1 } });
-    return resultado;
+    try {
+        const client = await connectDB();
+        const db = client.db('geomoticaapp');
+        const collection = db.collection('analisis');
+        const resultado = await collection.findOne(
+            { TIPO_ANALISIS: tipoAnalisis, ID_USUARIO: new ObjectId(idUsuario) },
+            { sort: { _id: -1 } }
+        );
+        return resultado;
+    } catch (error) {
+        console.error("Error al obtener el último análisis: ", error);
+        throw new Error(`Error al obtener el último análisis: ${error.message}`);
+    }
 };
-
 
 
 const insertarAnalisis = async (tipoAnalisis, idUsuario) => {
