@@ -251,30 +251,20 @@ const obtenerTchEstimado = async (idAnalisis) => {
 
 const obtenerTiempoTotalAps = async (idAnalisis) => {
     try {
-        console.log("*************************TIEMPO TOTAL******************************");
         const client = await connectDB();
         const db = client.db('GeomoticaProduccion');
         const collection = db.collection('aplicaciones_aereas');
-        const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
+        const resultados = await collection.distinct('ID_ANALISIS', { ID_ANALISIS: idAnalisis });
         console.log("RESULTADOS DE TIEMPO TOTAL: ", resultados);
 
-        const tiempoTotal = resultados.reduce((acc, resultado) => {
-            const horaInicio = parseTime(resultado.HORA_INICIO);
-            const horaFinal = parseTime(resultado.HORA_FINAL);
-            const diferencia = (horaFinal - horaInicio) / (1000 * 60); // diferencia en minutos
-            return acc + diferencia;
-        }, 0);
-        console.log("ESTO ES EL TIEMPO TOTAL : ", tiempoTotal);
-
-        const horas = Math.floor(tiempoTotal / 60);
-        const minutos = tiempoTotal % 60;
-        console.log("*******************************************************");
-        return `${horas}:${minutos}`;
+        const tiempoTotal = resultados.reduce((acc, resultado) => acc + resultado.TIEMPO_TOTAL, 0);
+        return tiempoTotal;
     } catch (error) {
         console.error("Error en obtenerTiempoTotalAps: ", error);
         throw new Error(`Error en obtenerTiempoTotalAps: ${error.message}`);
     }
 };
+
 
 
 
@@ -571,11 +561,10 @@ const obtenerHoraFinalCm = async (idAnalisis) => {
 
 const obtenerTiempoTotalActividadCm = async (idAnalisis) => {
     try {
-
         const client = await connectDB();
         const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
-        const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
+        const resultados = await collection.distinct('ID_ANALISIS', { ID_ANALISIS: idAnalisis });
 
         const tiempoTotal = resultados.reduce((acc, resultado) => acc + resultado.TIEMPO_TOTAL, 0);
         return tiempoTotal;
@@ -584,6 +573,7 @@ const obtenerTiempoTotalActividadCm = async (idAnalisis) => {
         throw new Error(`Error en obtenerTiempoTotalActividadCm: ${error.message}`);
     }
 };
+
 
 const obtenerEficienciaCm = async (idAnalisis) => {
     try {
