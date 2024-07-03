@@ -17,7 +17,9 @@ const renameIdField = (doc, newFieldName) => {
 
 const findByEmail = async (email) => {
   const collection = await getCollection();
+  console.log("ESTO ES LO QUE TRAE EL EMAIL: ", email);
   const user = await collection.findOne({ EMAIL: email }, { projection: { _id: 1, NOMBRE: 1, APELLIDO: 1, EMAIL: 1, PASSWORD: 1, ID_Rol: 1, ESTATUS: 1, FECHA_CREACION: 1, FOTO_PERFIL: 1 } });
+  console.log("ESTO ES LO QUE TRAE EL USUARIO: ", user);
   return renameIdField(user, 'ID_USUARIO');
 };
 
@@ -39,6 +41,7 @@ const createUser = async (nombre, apellido, email, password) => {
 
 const isValidPassword = async (password, email) => {
   const user = await findByEmail(email);
+
   if (!user) return false;
   return bcrypt.compare(password, user.PASSWORD);
 };
