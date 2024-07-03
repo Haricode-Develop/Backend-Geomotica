@@ -4,7 +4,7 @@ const connectDB = require('../config/database');
 const obtenerUltimoAnalisisQuery = async (tipoAnalisis, idUsuario) => {
     try {
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('analisis');
         const resultado = await collection.findOne(
             { TIPO_ANALISIS: tipoAnalisis, ID_USUARIO: parseInt(idUsuario, 10) },
@@ -20,7 +20,7 @@ const obtenerUltimoAnalisisQuery = async (tipoAnalisis, idUsuario) => {
 const insertarAnalisis = async (tipoAnalisis, idUsuario) => {
     try {
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('analisis');
 
 
@@ -42,7 +42,7 @@ const obtenerNombreResponsableAps = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -57,7 +57,7 @@ const obtenerFechaInicioCosechaAps = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -72,7 +72,7 @@ const obtenerFechaFinalCosechaAps = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -87,7 +87,7 @@ const obtenerNombreFincaAps = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -102,7 +102,7 @@ const obtenerCodigoFincaResponsableAps = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -117,7 +117,7 @@ const obtenerNombreOperadorAps = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -132,7 +132,7 @@ const obtenerCodigoEquipoAps = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -147,7 +147,7 @@ const obtenerHoraInicioAps = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -162,7 +162,7 @@ const obtenerHoraFinalAps = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -177,7 +177,7 @@ const obtenerEficienciaAps = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('aplicaciones_aereas');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
 
@@ -193,7 +193,7 @@ const obtenerCodigoLoteAps = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -208,7 +208,7 @@ const obtenerDosisTeorica = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -223,7 +223,7 @@ const obtenerHumedadDelCultivo = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -238,7 +238,7 @@ const obtenerTchEstimado = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -252,7 +252,7 @@ const obtenerTchEstimado = async (idAnalisis) => {
 const obtenerTiempoTotalAps = async (idAnalisis) => {
     try {
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('aplicaciones_aereas');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
 
@@ -282,7 +282,7 @@ const obtenerNombreResponsableCm = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -297,7 +297,7 @@ const obtenerFechaInicioCosechaCm = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -312,7 +312,7 @@ const obtenerFechaFinCosechaCm = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -327,7 +327,7 @@ const obtenerNombreFincaCm = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -342,7 +342,7 @@ const obtenerCodigoParcelasResponsableCm = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -357,7 +357,7 @@ const obtenerNombreOperadorCm = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -372,7 +372,7 @@ const obtenerNombreMaquinaCm = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -387,7 +387,7 @@ const obtenerConsumoCombustibleCm = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
 
@@ -403,7 +403,7 @@ const obtenerPresionCortadorBase = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -418,7 +418,7 @@ const obtenerRpmCm = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
 
@@ -434,7 +434,7 @@ const obtenerTch = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
 
@@ -450,7 +450,7 @@ const obtenerTah = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
 
@@ -466,7 +466,7 @@ const obtenerCalidadGpsCm = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
 
@@ -482,7 +482,7 @@ const obtenerActividadCm = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -497,7 +497,7 @@ const obtenerAreaNetaCm = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -512,7 +512,7 @@ const obtenerAreaBrutaCm = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -527,7 +527,7 @@ const obtenerDiferenciaDeAreaCm = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -542,7 +542,7 @@ const obtenerHoraInicioCm = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -557,7 +557,7 @@ const obtenerHoraFinalCm = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -572,7 +572,7 @@ const obtenerTiempoTotalActividadCm = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
 
@@ -588,7 +588,7 @@ const obtenerEficienciaCm = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
 
@@ -604,7 +604,7 @@ const obtenerPromedioVelocidadCm = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
 
@@ -620,7 +620,7 @@ const obtenerPorcentajeAreaPilotoCm = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -635,7 +635,7 @@ const obtenerPorcentajeAreaAutotrackerCm = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -651,7 +651,7 @@ const obtenerResponsableFertilizacion = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -666,7 +666,7 @@ const obtenerFechaInicioFertilizacion = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -681,7 +681,7 @@ const obtenerFechaFinalFertilizacion = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -696,7 +696,7 @@ const obtenerNombreFincaFertilizacion = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -711,7 +711,7 @@ const obtenerOperadorFertilizacion = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -726,7 +726,7 @@ const obtenerEquipoFertilizacion = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -741,7 +741,7 @@ const obtenerActividadFertilizacion = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -756,7 +756,7 @@ const obtenerAreaNetaFertilizacion = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -771,7 +771,7 @@ const obtenerAreaBrutaFertilizacion = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -786,7 +786,7 @@ const obtenerDiferenciaAreaFertilizacion = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -801,7 +801,7 @@ const obtenerHoraInicioFertilizacion = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -816,7 +816,7 @@ const obtenerHoraFinalFertilizacion = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -831,7 +831,7 @@ const obtenerTiempoTotalFertilizacion = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('fertilización');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
 
@@ -847,7 +847,7 @@ const obtenerEficienciaFertilizacion = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('fertilización');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
 
@@ -863,7 +863,7 @@ const obtenerPromedioDosisRealFertilizacion = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('fertilización');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
 
@@ -879,7 +879,7 @@ const obtenerDosisTeoricaFertilizacion = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -895,7 +895,7 @@ const obtenerResponsableHerbicidas = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('herbicidas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -910,7 +910,7 @@ const obtenerFechaHerbicidas = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('herbicidas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -925,7 +925,7 @@ const obtenerNombreFincaHerbicidas = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('herbicidas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -940,7 +940,7 @@ const obtenerParcelaHerbicidas = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('herbicidas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -955,7 +955,7 @@ const obtenerOperadorHerbicidas = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('herbicidas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -970,7 +970,7 @@ const obtenerEquipoHerbicidas = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('herbicidas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -985,7 +985,7 @@ const obtenerActividadHerbicidas = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('herbicidas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -1000,7 +1000,7 @@ const obtenerAreaNetaHerbicidas = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('herbicidas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -1015,7 +1015,7 @@ const obtenerAreaBrutaHerbicidas = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('herbicidas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -1030,7 +1030,7 @@ const obtenerDiferenciaDeAreaHerbicidas = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('herbicidas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -1045,7 +1045,7 @@ const obtenerHoraInicioHerbicidas = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('herbicidas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -1060,7 +1060,7 @@ const obtenerHoraFinalHerbicidas = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('herbicidas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -1075,7 +1075,7 @@ const obtenerTiempoTotalHerbicidas = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('herbicidas');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
 
@@ -1091,7 +1091,7 @@ const obtenerEficienciaHerbicidas = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('herbicidas');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
 
@@ -1107,7 +1107,7 @@ const obtenerPromedioVelocidadHerbicidas = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('herbicidas');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
 
@@ -1123,7 +1123,7 @@ const obtenerProductosAps = async (idAnalisis) => {
     try {
 
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
 
@@ -1138,7 +1138,7 @@ const obtenerProductosAps = async (idAnalisis) => {
 const almacenarUltimosValores = async (datos) => {
     try {
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('ultimos_valores');
         const resultado = await collection.insertOne(datos);
 
@@ -1152,7 +1152,7 @@ const almacenarUltimosValores = async (datos) => {
 const almacenarUltimosValoresAps = async (datos) => {
     try {
         const client = await connectDB();
-        const db = client.db('geomoticaapp');
+        const db = client.db('GeomoticaProduccion');
         const collection = db.collection('ultimos_valores_aps');
         const resultado = await collection.insertOne(datos);
 

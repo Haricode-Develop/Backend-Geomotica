@@ -4,7 +4,7 @@ const connectDB = require('../config/database');
 
 const getCollection = async () => {
   const client = await connectDB();
-  return client.db('geomoticaapp').collection('usuarios');
+  return client.db('GeomoticaProduccion').collection('usuarios');
 };
 
 const renameIdField = (doc, newFieldName) => {

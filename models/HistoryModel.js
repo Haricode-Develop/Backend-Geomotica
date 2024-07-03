@@ -3,7 +3,7 @@ const connectDB = require('../config/database');
 
 const obtenerAnalisisUsuarios = async (usuario) => {
     const client = await connectDB();
-    const db = client.db('geomoticaapp');
+    const db = client.db('GeomoticaProduccion');
     const collection = db.collection('analisis');
 
     const resultados = await collection.aggregate([
@@ -66,7 +66,7 @@ const obtenerAnalisisUsuarios = async (usuario) => {
 
 const obtenerUltimosValores = async (idAnalisis) => {
     const client = await connectDB();
-    const db = client.db('geomoticaapp');
+    const db = client.db('GeomoticaProduccion');
     const collection = db.collection('configuraciones_formulario');
 
     const resultado = await collection.findOne({ ID_ANALISIS: ObjectId(idAnalisis) });
