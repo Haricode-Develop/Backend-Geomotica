@@ -251,12 +251,12 @@ const obtenerTchEstimado = async (idAnalisis) => {
 
 const obtenerTiempoTotalAps = async (idAnalisis) => {
     try {
+        console.log("*************************TIEMPO TOTAL******************************");
         const client = await connectDB();
         const db = client.db('GeomoticaProduccion');
         const collection = db.collection('aplicaciones_aereas');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
-
-        console.log("ESTOS SON LOS RESULTADOS DE APS: ", resultados);
+        console.log("RESULTADOS DE TIEMPO TOTAL: ", resultados);
 
         const tiempoTotal = resultados.reduce((acc, resultado) => {
             const horaInicio = parseTime(resultado.HORA_INICIO);
@@ -264,10 +264,11 @@ const obtenerTiempoTotalAps = async (idAnalisis) => {
             const diferencia = (horaFinal - horaInicio) / (1000 * 60); // diferencia en minutos
             return acc + diferencia;
         }, 0);
+        console.log("ESTO ES EL TIEMPO TOTAL : ", tiempoTotal);
 
         const horas = Math.floor(tiempoTotal / 60);
         const minutos = tiempoTotal % 60;
-
+        console.log("*******************************************************");
         return `${horas}:${minutos}`;
     } catch (error) {
         console.error("Error en obtenerTiempoTotalAps: ", error);
