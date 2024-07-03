@@ -39,7 +39,6 @@ const logger = winston.createLogger({
         winston.format.json()
     ),
     transports: [
-        new winston.transports.Console(),
         new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
         new winston.transports.File({ filename: 'logs/combined.log' }),
     ],
@@ -47,7 +46,6 @@ const logger = winston.createLogger({
 
 app.use(expressWinston.logger({
     transports: [
-        new winston.transports.Console(),
         new winston.transports.File({ filename: 'logs/requests.log' }),
     ],
     format: winston.format.combine(
@@ -61,7 +59,6 @@ app.use(expressWinston.logger({
 
 app.use(expressWinston.errorLogger({
     transports: [
-        new winston.transports.Console(),
         new winston.transports.File({ filename: 'logs/error.log' }),
     ],
     format: winston.format.combine(
@@ -81,8 +78,6 @@ app.get('/', (req, res) => {
 });
 
 app.use((err, req, res, next) => {
-    console.error('Error detectado:', err.message);
-    console.error('Stack:', err.stack);
     res.status(500).json({ error: 'Internal Server Error' });
 });
 
