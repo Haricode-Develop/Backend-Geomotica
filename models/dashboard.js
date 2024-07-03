@@ -1,4 +1,3 @@
-const { ObjectId } = require('mongodb');
 const connectDB = require('../config/database');
 
 // Funciones para obtener datos de APS
