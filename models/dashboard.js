@@ -23,8 +23,6 @@ const insertarAnalisis = async (tipoAnalisis, idUsuario) => {
         const db = client.db('geomoticaapp');
         const collection = db.collection('analisis');
 
-        console.log("ESTE ES EL TIPO DE ANÁLISIS: ", tipoAnalisis);
-        console.log("ESTE ES EL ID DE USUARIO: ", idUsuario);
 
         const resultado = await collection.insertOne({
             TIPO_ANALISIS: tipoAnalisis,
@@ -32,7 +30,6 @@ const insertarAnalisis = async (tipoAnalisis, idUsuario) => {
             FECHA_CREACION: new Date()
         });
 
-        console.log("ESTE ES EL RESULTADO: ", resultado);
         return resultado.insertedId;
     } catch (error) {
         console.error("Error al insertar análisis: ", error);
@@ -43,12 +40,12 @@ const insertarAnalisis = async (tipoAnalisis, idUsuario) => {
 // Cambiar la obtención del ID_ANALISIS como string en lugar de ObjectId
 const obtenerNombreResponsableAps = async (idAnalisis) => {
     try {
-        console.log("obtenerNombreResponsableAps - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerNombreResponsableAps - Resultado:", resultado);
+
         return resultado ? resultado.RESPONSABLE : null;
     } catch (error) {
         console.error("Error en obtenerNombreResponsableAps: ", error);
@@ -58,12 +55,12 @@ const obtenerNombreResponsableAps = async (idAnalisis) => {
 
 const obtenerFechaInicioCosechaAps = async (idAnalisis) => {
     try {
-        console.log("obtenerFechaInicioCosechaAps - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerFechaInicioCosechaAps - Resultado:", resultado);
+
         return resultado ? resultado.FECHA_INICIO : null;
     } catch (error) {
         console.error("Error en obtenerFechaInicioCosechaAps: ", error);
@@ -73,12 +70,12 @@ const obtenerFechaInicioCosechaAps = async (idAnalisis) => {
 
 const obtenerFechaFinalCosechaAps = async (idAnalisis) => {
     try {
-        console.log("obtenerFechaFinalCosechaAps - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerFechaFinalCosechaAps - Resultado:", resultado);
+
         return resultado ? resultado.FECHA_FINAL : null;
     } catch (error) {
         console.error("Error en obtenerFechaFinalCosechaAps: ", error);
@@ -88,12 +85,12 @@ const obtenerFechaFinalCosechaAps = async (idAnalisis) => {
 
 const obtenerNombreFincaAps = async (idAnalisis) => {
     try {
-        console.log("obtenerNombreFincaAps - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerNombreFincaAps - Resultado:", resultado);
+
         return resultado ? resultado.NOMBRE_FINCA : null;
     } catch (error) {
         console.error("Error en obtenerNombreFincaAps: ", error);
@@ -103,12 +100,12 @@ const obtenerNombreFincaAps = async (idAnalisis) => {
 
 const obtenerCodigoFincaResponsableAps = async (idAnalisis) => {
     try {
-        console.log("obtenerCodigoFincaResponsableAps - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerCodigoFincaResponsableAps - Resultado:", resultado);
+
         return resultado ? resultado.CODIGO_FINCA : null;
     } catch (error) {
         console.error("Error en obtenerCodigoFincaResponsableAps: ", error);
@@ -118,12 +115,12 @@ const obtenerCodigoFincaResponsableAps = async (idAnalisis) => {
 
 const obtenerNombreOperadorAps = async (idAnalisis) => {
     try {
-        console.log("obtenerNombreOperadorAps - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerNombreOperadorAps - Resultado:", resultado);
+
         return resultado ? resultado.NOMBRE_DE_OPERADOR : null;
     } catch (error) {
         console.error("Error en obtenerNombreOperadorAps: ", error);
@@ -133,12 +130,12 @@ const obtenerNombreOperadorAps = async (idAnalisis) => {
 
 const obtenerCodigoEquipoAps = async (idAnalisis) => {
     try {
-        console.log("obtenerCodigoEquipoAps - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerCodigoEquipoAps - Resultado:", resultado);
+
         return resultado ? resultado.CODIGO_DE_MAQUINA : null;
     } catch (error) {
         console.error("Error en obtenerCodigoEquipoAps: ", error);
@@ -148,12 +145,12 @@ const obtenerCodigoEquipoAps = async (idAnalisis) => {
 
 const obtenerHoraInicioAps = async (idAnalisis) => {
     try {
-        console.log("obtenerHoraInicioAps - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerHoraInicioAps - Resultado:", resultado);
+
         return resultado ? resultado.HORA_INICIO : null;
     } catch (error) {
         console.error("Error en obtenerHoraInicioAps: ", error);
@@ -163,12 +160,12 @@ const obtenerHoraInicioAps = async (idAnalisis) => {
 
 const obtenerHoraFinalAps = async (idAnalisis) => {
     try {
-        console.log("obtenerHoraFinalAps - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerHoraFinalAps - Resultado:", resultado);
+
         return resultado ? resultado.HORA_FINAL : null;
     } catch (error) {
         console.error("Error en obtenerHoraFinalAps: ", error);
@@ -178,12 +175,11 @@ const obtenerHoraFinalAps = async (idAnalisis) => {
 
 const obtenerEficienciaAps = async (idAnalisis) => {
     try {
-        console.log("obtenerEficienciaAps - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('aplicaciones_aereas');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
-        console.log("obtenerEficienciaAps - Resultados:", resultados);
 
         const eficienciaTotal = resultados.reduce((acc, resultado) => acc + resultado.EFICIENCIA, 0);
         return eficienciaTotal / resultados.length;
@@ -195,12 +191,12 @@ const obtenerEficienciaAps = async (idAnalisis) => {
 
 const obtenerCodigoLoteAps = async (idAnalisis) => {
     try {
-        console.log("obtenerCodigoLoteAps - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerCodigoLoteAps - Resultado:", resultado);
+
         return resultado ? resultado.CODIGO_LOTE : null;
     } catch (error) {
         console.error("Error en obtenerCodigoLoteAps: ", error);
@@ -210,12 +206,12 @@ const obtenerCodigoLoteAps = async (idAnalisis) => {
 
 const obtenerDosisTeorica = async (idAnalisis) => {
     try {
-        console.log("obtenerDosisTeorica - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerDosisTeorica - Resultado:", resultado);
+
         return resultado ? resultado.DOSIS_TEORICA : null;
     } catch (error) {
         console.error("Error en obtenerDosisTeorica: ", error);
@@ -225,12 +221,12 @@ const obtenerDosisTeorica = async (idAnalisis) => {
 
 const obtenerHumedadDelCultivo = async (idAnalisis) => {
     try {
-        console.log("obtenerHumedadDelCultivo - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerHumedadDelCultivo - Resultado:", resultado);
+
         return resultado ? resultado.HUMEDAD_DEL_CULTIVO : null;
     } catch (error) {
         console.error("Error en obtenerHumedadDelCultivo: ", error);
@@ -240,12 +236,12 @@ const obtenerHumedadDelCultivo = async (idAnalisis) => {
 
 const obtenerTchEstimado = async (idAnalisis) => {
     try {
-        console.log("obtenerTchEstimado - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerTchEstimado - Resultado:", resultado);
+
         return resultado ? resultado.TCH_ESTIMADO : null;
     } catch (error) {
         console.error("Error en obtenerTchEstimado: ", error);
@@ -255,30 +251,41 @@ const obtenerTchEstimado = async (idAnalisis) => {
 
 const obtenerTiempoTotalAps = async (idAnalisis) => {
     try {
-        console.log("obtenerTiempoTotalAps - ID_ANALISIS:", idAnalisis);
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('aplicaciones_aereas');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
-        console.log("obtenerTiempoTotalAps - Resultados:", resultados);
 
-        const tiempoTotal = resultados.reduce((acc, resultado) => acc + resultado.TIEMPO_TOTAL_H, 0);
-        return tiempoTotal;
+        console.log("ESTOS SON LOS RESULTADOS DE APS: ", resultados);
+
+        const tiempoTotal = resultados.reduce((acc, resultado) => {
+            const horaInicio = parseTime(resultado.HORA_INICIO);
+            const horaFinal = parseTime(resultado.HORA_FINAL);
+            const diferencia = (horaFinal - horaInicio) / (1000 * 60); // diferencia en minutos
+            return acc + diferencia;
+        }, 0);
+
+        const horas = Math.floor(tiempoTotal / 60);
+        const minutos = tiempoTotal % 60;
+
+        return `${horas}:${minutos}`;
     } catch (error) {
         console.error("Error en obtenerTiempoTotalAps: ", error);
         throw new Error(`Error en obtenerTiempoTotalAps: ${error.message}`);
     }
 };
 
+
+
 // Funciones para obtener datos de Cosecha Mecánica
 const obtenerNombreResponsableCm = async (idAnalisis) => {
     try {
-        console.log("obtenerNombreResponsableCm - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerNombreResponsableCm - Resultado:", resultado);
+
         return resultado ? resultado.RESPONSABLE : null;
     } catch (error) {
         console.error("Error en obtenerNombreResponsableCm: ", error);
@@ -288,12 +295,12 @@ const obtenerNombreResponsableCm = async (idAnalisis) => {
 
 const obtenerFechaInicioCosechaCm = async (idAnalisis) => {
     try {
-        console.log("obtenerFechaInicioCosechaCm - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerFechaInicioCosechaCm - Resultado:", resultado);
+
         return resultado ? resultado.FECHA_INICIO : null;
     } catch (error) {
         console.error("Error en obtenerFechaInicioCosechaCm: ", error);
@@ -303,12 +310,12 @@ const obtenerFechaInicioCosechaCm = async (idAnalisis) => {
 
 const obtenerFechaFinCosechaCm = async (idAnalisis) => {
     try {
-        console.log("obtenerFechaFinCosechaCm - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerFechaFinCosechaCm - Resultado:", resultado);
+
         return resultado ? resultado.FECHA_FINAL : null;
     } catch (error) {
         console.error("Error en obtenerFechaFinCosechaCm: ", error);
@@ -318,12 +325,12 @@ const obtenerFechaFinCosechaCm = async (idAnalisis) => {
 
 const obtenerNombreFincaCm = async (idAnalisis) => {
     try {
-        console.log("obtenerNombreFincaCm - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerNombreFincaCm - Resultado:", resultado);
+
         return resultado ? resultado.NOMBRE_FINCA : null;
     } catch (error) {
         console.error("Error en obtenerNombreFincaCm: ", error);
@@ -333,12 +340,12 @@ const obtenerNombreFincaCm = async (idAnalisis) => {
 
 const obtenerCodigoParcelasResponsableCm = async (idAnalisis) => {
     try {
-        console.log("obtenerCodigoParcelasResponsableCm - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerCodigoParcelasResponsableCm - Resultado:", resultado);
+
         return resultado ? resultado.CODIGO_FINCA : null;
     } catch (error) {
         console.error("Error en obtenerCodigoParcelasResponsableCm: ", error);
@@ -348,12 +355,12 @@ const obtenerCodigoParcelasResponsableCm = async (idAnalisis) => {
 
 const obtenerNombreOperadorCm = async (idAnalisis) => {
     try {
-        console.log("obtenerNombreOperadorCm - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerNombreOperadorCm - Resultado:", resultado);
+
         return resultado ? resultado.OPERADOR : null;
     } catch (error) {
         console.error("Error en obtenerNombreOperadorCm: ", error);
@@ -363,12 +370,12 @@ const obtenerNombreOperadorCm = async (idAnalisis) => {
 
 const obtenerNombreMaquinaCm = async (idAnalisis) => {
     try {
-        console.log("obtenerNombreMaquinaCm - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerNombreMaquinaCm - Resultado:", resultado);
+
         return resultado ? resultado.CODIGO_DE_MAQUINA : null;
     } catch (error) {
         console.error("Error en obtenerNombreMaquinaCm: ", error);
@@ -378,12 +385,11 @@ const obtenerNombreMaquinaCm = async (idAnalisis) => {
 
 const obtenerConsumoCombustibleCm = async (idAnalisis) => {
     try {
-        console.log("obtenerConsumoCombustibleCm - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('cosecha_mecanica');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
-        console.log("obtenerConsumoCombustibleCm - Resultados:", resultados);
 
         const consumoTotal = resultados.reduce((acc, resultado) => acc + resultado.CONSUMOS_DE_COMBUSTIBLE, 0);
         return consumoTotal / resultados.length;
@@ -395,12 +401,12 @@ const obtenerConsumoCombustibleCm = async (idAnalisis) => {
 
 const obtenerPresionCortadorBase = async (idAnalisis) => {
     try {
-        console.log("obtenerPresionCortadorBase - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerPresionCortadorBase - Resultado:", resultado);
+
         return resultado ? resultado.PRESION_DE_CORTADOR_BASE : null;
     } catch (error) {
         console.error("Error en obtenerPresionCortadorBase: ", error);
@@ -410,12 +416,11 @@ const obtenerPresionCortadorBase = async (idAnalisis) => {
 
 const obtenerRpmCm = async (idAnalisis) => {
     try {
-        console.log("obtenerRpmCm - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('cosecha_mecanica');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
-        console.log("obtenerRpmCm - Resultados:", resultados);
 
         const rpmTotal = resultados.reduce((acc, resultado) => acc + resultado.RPM, 0);
         return rpmTotal / resultados.length;
@@ -427,12 +432,11 @@ const obtenerRpmCm = async (idAnalisis) => {
 
 const obtenerTch = async (idAnalisis) => {
     try {
-        console.log("obtenerTch - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('cosecha_mecanica');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
-        console.log("obtenerTch - Resultados:", resultados);
 
         const tchTotal = resultados.reduce((acc, resultado) => acc + resultado.TCH, 0);
         return tchTotal / resultados.length;
@@ -444,12 +448,11 @@ const obtenerTch = async (idAnalisis) => {
 
 const obtenerTah = async (idAnalisis) => {
     try {
-        console.log("obtenerTah - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('cosecha_mecanica');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
-        console.log("obtenerTah - Resultados:", resultados);
 
         const tahTotal = resultados.reduce((acc, resultado) => acc + resultado.TAH, 0);
         return tahTotal / resultados.length;
@@ -461,12 +464,11 @@ const obtenerTah = async (idAnalisis) => {
 
 const obtenerCalidadGpsCm = async (idAnalisis) => {
     try {
-        console.log("obtenerCalidadGpsCm - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('cosecha_mecanica');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
-        console.log("obtenerCalidadGpsCm - Resultados:", resultados);
 
         const calidadTotal = resultados.reduce((acc, resultado) => acc + resultado.CALIDAD_DE_SENAL, 0);
         return calidadTotal / resultados.length;
@@ -478,12 +480,12 @@ const obtenerCalidadGpsCm = async (idAnalisis) => {
 
 const obtenerActividadCm = async (idAnalisis) => {
     try {
-        console.log("obtenerActividadCm - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerActividadCm - Resultado:", resultado);
+
         return resultado ? resultado.ACTIVIDAD : null;
     } catch (error) {
         console.error("Error en obtenerActividadCm: ", error);
@@ -493,12 +495,12 @@ const obtenerActividadCm = async (idAnalisis) => {
 
 const obtenerAreaNetaCm = async (idAnalisis) => {
     try {
-        console.log("obtenerAreaNetaCm - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerAreaNetaCm - Resultado:", resultado);
+
         return resultado ? resultado.AREA_NETA_Ha : null;
     } catch (error) {
         console.error("Error en obtenerAreaNetaCm: ", error);
@@ -508,12 +510,12 @@ const obtenerAreaNetaCm = async (idAnalisis) => {
 
 const obtenerAreaBrutaCm = async (idAnalisis) => {
     try {
-        console.log("obtenerAreaBrutaCm - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerAreaBrutaCm - Resultado:", resultado);
+
         return resultado ? resultado.AREA_BRUTA_Ha : null;
     } catch (error) {
         console.error("Error en obtenerAreaBrutaCm: ", error);
@@ -523,12 +525,12 @@ const obtenerAreaBrutaCm = async (idAnalisis) => {
 
 const obtenerDiferenciaDeAreaCm = async (idAnalisis) => {
     try {
-        console.log("obtenerDiferenciaDeAreaCm - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerDiferenciaDeAreaCm - Resultado:", resultado);
+
         return resultado ? resultado.DIFERENCIA_DE_AREA_Ha : null;
     } catch (error) {
         console.error("Error en obtenerDiferenciaDeAreaCm: ", error);
@@ -538,12 +540,12 @@ const obtenerDiferenciaDeAreaCm = async (idAnalisis) => {
 
 const obtenerHoraInicioCm = async (idAnalisis) => {
     try {
-        console.log("obtenerHoraInicioCm - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerHoraInicioCm - Resultado:", resultado);
+
         return resultado ? resultado.HORA_INICIO : null;
     } catch (error) {
         console.error("Error en obtenerHoraInicioCm: ", error);
@@ -553,12 +555,12 @@ const obtenerHoraInicioCm = async (idAnalisis) => {
 
 const obtenerHoraFinalCm = async (idAnalisis) => {
     try {
-        console.log("obtenerHoraFinalCm - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerHoraFinalCm - Resultado:", resultado);
+
         return resultado ? resultado.HORA_FINAL : null;
     } catch (error) {
         console.error("Error en obtenerHoraFinalCm: ", error);
@@ -568,12 +570,11 @@ const obtenerHoraFinalCm = async (idAnalisis) => {
 
 const obtenerTiempoTotalActividadCm = async (idAnalisis) => {
     try {
-        console.log("obtenerTiempoTotalActividadCm - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('cosecha_mecanica');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
-        console.log("obtenerTiempoTotalActividadCm - Resultados:", resultados);
 
         const tiempoTotal = resultados.reduce((acc, resultado) => acc + resultado.TIEMPO_TOTAL, 0);
         return tiempoTotal;
@@ -585,12 +586,11 @@ const obtenerTiempoTotalActividadCm = async (idAnalisis) => {
 
 const obtenerEficienciaCm = async (idAnalisis) => {
     try {
-        console.log("obtenerEficienciaCm - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('cosecha_mecanica');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
-        console.log("obtenerEficienciaCm - Resultados:", resultados);
 
         const eficienciaTotal = resultados.reduce((acc, resultado) => acc + resultado.EFICIENCIA_Hora_Ha, 0);
         return eficienciaTotal / resultados.length;
@@ -602,12 +602,11 @@ const obtenerEficienciaCm = async (idAnalisis) => {
 
 const obtenerPromedioVelocidadCm = async (idAnalisis) => {
     try {
-        console.log("obtenerPromedioVelocidadCm - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('cosecha_mecanica');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
-        console.log("obtenerPromedioVelocidadCm - Resultados:", resultados);
 
         const velocidadTotal = resultados.reduce((acc, resultado) => acc + resultado.VELOCIDAD_Km_H, 0);
         return velocidadTotal / resultados.length;
@@ -619,12 +618,12 @@ const obtenerPromedioVelocidadCm = async (idAnalisis) => {
 
 const obtenerPorcentajeAreaPilotoCm = async (idAnalisis) => {
     try {
-        console.log("obtenerPorcentajeAreaPilotoCm - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerPorcentajeAreaPilotoCm - Resultado:", resultado);
+
         return resultado ? resultado.PILOTO_AUTOMATICO : null;
     } catch (error) {
         console.error("Error en obtenerPorcentajeAreaPilotoCm: ", error);
@@ -634,12 +633,12 @@ const obtenerPorcentajeAreaPilotoCm = async (idAnalisis) => {
 
 const obtenerPorcentajeAreaAutotrackerCm = async (idAnalisis) => {
     try {
-        console.log("obtenerPorcentajeAreaAutotrackerCm - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('cosecha_mecanica');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerPorcentajeAreaAutotrackerCm - Resultado:", resultado);
+
         return resultado ? resultado.AUTO_TRACKET : null;
     } catch (error) {
         console.error("Error en obtenerPorcentajeAreaAutotrackerCm: ", error);
@@ -650,12 +649,12 @@ const obtenerPorcentajeAreaAutotrackerCm = async (idAnalisis) => {
 // Funciones para obtener datos de Fertilización
 const obtenerResponsableFertilizacion = async (idAnalisis) => {
     try {
-        console.log("obtenerResponsableFertilizacion - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerResponsableFertilizacion - Resultado:", resultado);
+
         return resultado ? resultado.RESPONSABLE : null;
     } catch (error) {
         console.error("Error en obtenerResponsableFertilizacion: ", error);
@@ -665,12 +664,12 @@ const obtenerResponsableFertilizacion = async (idAnalisis) => {
 
 const obtenerFechaInicioFertilizacion = async (idAnalisis) => {
     try {
-        console.log("obtenerFechaInicioFertilizacion - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerFechaInicioFertilizacion - Resultado:", resultado);
+
         return resultado ? resultado.FECHA_INICIO : null;
     } catch (error) {
         console.error("Error en obtenerFechaInicioFertilizacion: ", error);
@@ -680,12 +679,12 @@ const obtenerFechaInicioFertilizacion = async (idAnalisis) => {
 
 const obtenerFechaFinalFertilizacion = async (idAnalisis) => {
     try {
-        console.log("obtenerFechaFinalFertilizacion - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerFechaFinalFertilizacion - Resultado:", resultado);
+
         return resultado ? resultado.FECHA_FINAL : null;
     } catch (error) {
         console.error("Error en obtenerFechaFinalFertilizacion: ", error);
@@ -695,12 +694,12 @@ const obtenerFechaFinalFertilizacion = async (idAnalisis) => {
 
 const obtenerNombreFincaFertilizacion = async (idAnalisis) => {
     try {
-        console.log("obtenerNombreFincaFertilizacion - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerNombreFincaFertilizacion - Resultado:", resultado);
+
         return resultado ? resultado.NOMBRE_FINCA : null;
     } catch (error) {
         console.error("Error en obtenerNombreFincaFertilizacion: ", error);
@@ -710,12 +709,12 @@ const obtenerNombreFincaFertilizacion = async (idAnalisis) => {
 
 const obtenerOperadorFertilizacion = async (idAnalisis) => {
     try {
-        console.log("obtenerOperadorFertilizacion - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerOperadorFertilizacion - Resultado:", resultado);
+
         return resultado ? resultado.OPERADOR : null;
     } catch (error) {
         console.error("Error en obtenerOperadorFertilizacion: ", error);
@@ -725,12 +724,12 @@ const obtenerOperadorFertilizacion = async (idAnalisis) => {
 
 const obtenerEquipoFertilizacion = async (idAnalisis) => {
     try {
-        console.log("obtenerEquipoFertilizacion - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerEquipoFertilizacion - Resultado:", resultado);
+
         return resultado ? resultado.EQUIPO : null;
     } catch (error) {
         console.error("Error en obtenerEquipoFertilizacion: ", error);
@@ -740,12 +739,12 @@ const obtenerEquipoFertilizacion = async (idAnalisis) => {
 
 const obtenerActividadFertilizacion = async (idAnalisis) => {
     try {
-        console.log("obtenerActividadFertilizacion - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerActividadFertilizacion - Resultado:", resultado);
+
         return resultado ? resultado.ACTIVIDAD : null;
     } catch (error) {
         console.error("Error en obtenerActividadFertilizacion: ", error);
@@ -755,12 +754,12 @@ const obtenerActividadFertilizacion = async (idAnalisis) => {
 
 const obtenerAreaNetaFertilizacion = async (idAnalisis) => {
     try {
-        console.log("obtenerAreaNetaFertilizacion - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerAreaNetaFertilizacion - Resultado:", resultado);
+
         return resultado ? resultado.AREA_NETA : null;
     } catch (error) {
         console.error("Error en obtenerAreaNetaFertilizacion: ", error);
@@ -770,12 +769,12 @@ const obtenerAreaNetaFertilizacion = async (idAnalisis) => {
 
 const obtenerAreaBrutaFertilizacion = async (idAnalisis) => {
     try {
-        console.log("obtenerAreaBrutaFertilizacion - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerAreaBrutaFertilizacion - Resultado:", resultado);
+
         return resultado ? resultado.AREA_BRUTA : null;
     } catch (error) {
         console.error("Error en obtenerAreaBrutaFertilizacion: ", error);
@@ -785,12 +784,12 @@ const obtenerAreaBrutaFertilizacion = async (idAnalisis) => {
 
 const obtenerDiferenciaAreaFertilizacion = async (idAnalisis) => {
     try {
-        console.log("obtenerDiferenciaAreaFertilizacion - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerDiferenciaAreaFertilizacion - Resultado:", resultado);
+
         return resultado ? resultado.DIFERENCIA_DE_AREA_Ha : null;
     } catch (error) {
         console.error("Error en obtenerDiferenciaAreaFertilizacion: ", error);
@@ -800,12 +799,12 @@ const obtenerDiferenciaAreaFertilizacion = async (idAnalisis) => {
 
 const obtenerHoraInicioFertilizacion = async (idAnalisis) => {
     try {
-        console.log("obtenerHoraInicioFertilizacion - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerHoraInicioFertilizacion - Resultado:", resultado);
+
         return resultado ? resultado.HORA_INICIO : null;
     } catch (error) {
         console.error("Error en obtenerHoraInicioFertilizacion: ", error);
@@ -815,12 +814,12 @@ const obtenerHoraInicioFertilizacion = async (idAnalisis) => {
 
 const obtenerHoraFinalFertilizacion = async (idAnalisis) => {
     try {
-        console.log("obtenerHoraFinalFertilizacion - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerHoraFinalFertilizacion - Resultado:", resultado);
+
         return resultado ? resultado.HORA_FINAL : null;
     } catch (error) {
         console.error("Error en obtenerHoraFinalFertilizacion: ", error);
@@ -830,12 +829,11 @@ const obtenerHoraFinalFertilizacion = async (idAnalisis) => {
 
 const obtenerTiempoTotalFertilizacion = async (idAnalisis) => {
     try {
-        console.log("obtenerTiempoTotalFertilizacion - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('fertilización');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
-        console.log("obtenerTiempoTotalFertilizacion - Resultados:", resultados);
 
         const tiempoTotal = resultados.reduce((acc, resultado) => acc + resultado.TIEMPO_TOTAL_H, 0);
         return tiempoTotal;
@@ -847,12 +845,11 @@ const obtenerTiempoTotalFertilizacion = async (idAnalisis) => {
 
 const obtenerEficienciaFertilizacion = async (idAnalisis) => {
     try {
-        console.log("obtenerEficienciaFertilizacion - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('fertilización');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
-        console.log("obtenerEficienciaFertilizacion - Resultados:", resultados);
 
         const eficienciaTotal = resultados.reduce((acc, resultado) => acc + resultado.EFICIENCIA_Hora_Ha, 0);
         return eficienciaTotal / resultados.length;
@@ -864,12 +861,11 @@ const obtenerEficienciaFertilizacion = async (idAnalisis) => {
 
 const obtenerPromedioDosisRealFertilizacion = async (idAnalisis) => {
     try {
-        console.log("obtenerPromedioDosisRealFertilizacion - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('fertilización');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
-        console.log("obtenerPromedioDosisRealFertilizacion - Resultados:", resultados);
 
         const dosisTotal = resultados.reduce((acc, resultado) => acc + resultado.DOSIS_REAL_Kg_ha, 0);
         return dosisTotal / resultados.length;
@@ -881,12 +877,12 @@ const obtenerPromedioDosisRealFertilizacion = async (idAnalisis) => {
 
 const obtenerDosisTeoricaFertilizacion = async (idAnalisis) => {
     try {
-        console.log("obtenerDosisTeoricaFertilizacion - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('fertilización');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerDosisTeoricaFertilizacion - Resultado:", resultado);
+
         return resultado ? resultado.DOSIS_TEORICA_Kg_ha : null;
     } catch (error) {
         console.error("Error en obtenerDosisTeoricaFertilizacion: ", error);
@@ -897,12 +893,12 @@ const obtenerDosisTeoricaFertilizacion = async (idAnalisis) => {
 // Funciones para obtener datos de Herbicidas
 const obtenerResponsableHerbicidas = async (idAnalisis) => {
     try {
-        console.log("obtenerResponsableHerbicidas - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('herbicidas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerResponsableHerbicidas - Resultado:", resultado);
+
         return resultado ? resultado.RESPONSABLE : null;
     } catch (error) {
         console.error("Error en obtenerResponsableHerbicidas: ", error);
@@ -912,12 +908,12 @@ const obtenerResponsableHerbicidas = async (idAnalisis) => {
 
 const obtenerFechaHerbicidas = async (idAnalisis) => {
     try {
-        console.log("obtenerFechaHerbicidas - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('herbicidas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerFechaHerbicidas - Resultado:", resultado);
+
         return resultado ? resultado.FECHA_INICIO : null;
     } catch (error) {
         console.error("Error en obtenerFechaHerbicidas: ", error);
@@ -927,12 +923,12 @@ const obtenerFechaHerbicidas = async (idAnalisis) => {
 
 const obtenerNombreFincaHerbicidas = async (idAnalisis) => {
     try {
-        console.log("obtenerNombreFincaHerbicidas - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('herbicidas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerNombreFincaHerbicidas - Resultado:", resultado);
+
         return resultado ? resultado.NOMBRE_FINCA : null;
     } catch (error) {
         console.error("Error en obtenerNombreFincaHerbicidas: ", error);
@@ -942,12 +938,12 @@ const obtenerNombreFincaHerbicidas = async (idAnalisis) => {
 
 const obtenerParcelaHerbicidas = async (idAnalisis) => {
     try {
-        console.log("obtenerParcelaHerbicidas - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('herbicidas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerParcelaHerbicidas - Resultado:", resultado);
+
         return resultado ? resultado.PARCELA : null;
     } catch (error) {
         console.error("Error en obtenerParcelaHerbicidas: ", error);
@@ -957,12 +953,12 @@ const obtenerParcelaHerbicidas = async (idAnalisis) => {
 
 const obtenerOperadorHerbicidas = async (idAnalisis) => {
     try {
-        console.log("obtenerOperadorHerbicidas - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('herbicidas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerOperadorHerbicidas - Resultado:", resultado);
+
         return resultado ? resultado.OPERADOR : null;
     } catch (error) {
         console.error("Error en obtenerOperadorHerbicidas: ", error);
@@ -972,12 +968,12 @@ const obtenerOperadorHerbicidas = async (idAnalisis) => {
 
 const obtenerEquipoHerbicidas = async (idAnalisis) => {
     try {
-        console.log("obtenerEquipoHerbicidas - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('herbicidas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerEquipoHerbicidas - Resultado:", resultado);
+
         return resultado ? resultado.EQUIPO : null;
     } catch (error) {
         console.error("Error en obtenerEquipoHerbicidas: ", error);
@@ -987,12 +983,12 @@ const obtenerEquipoHerbicidas = async (idAnalisis) => {
 
 const obtenerActividadHerbicidas = async (idAnalisis) => {
     try {
-        console.log("obtenerActividadHerbicidas - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('herbicidas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerActividadHerbicidas - Resultado:", resultado);
+
         return resultado ? resultado.ACTIVIDAD : null;
     } catch (error) {
         console.error("Error en obtenerActividadHerbicidas: ", error);
@@ -1002,12 +998,12 @@ const obtenerActividadHerbicidas = async (idAnalisis) => {
 
 const obtenerAreaNetaHerbicidas = async (idAnalisis) => {
     try {
-        console.log("obtenerAreaNetaHerbicidas - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('herbicidas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerAreaNetaHerbicidas - Resultado:", resultado);
+
         return resultado ? resultado.AREA_NETA : null;
     } catch (error) {
         console.error("Error en obtenerAreaNetaHerbicidas: ", error);
@@ -1017,12 +1013,12 @@ const obtenerAreaNetaHerbicidas = async (idAnalisis) => {
 
 const obtenerAreaBrutaHerbicidas = async (idAnalisis) => {
     try {
-        console.log("obtenerAreaBrutaHerbicidas - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('herbicidas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerAreaBrutaHerbicidas - Resultado:", resultado);
+
         return resultado ? resultado.AREA_BRUTA : null;
     } catch (error) {
         console.error("Error en obtenerAreaBrutaHerbicidas: ", error);
@@ -1032,12 +1028,12 @@ const obtenerAreaBrutaHerbicidas = async (idAnalisis) => {
 
 const obtenerDiferenciaDeAreaHerbicidas = async (idAnalisis) => {
     try {
-        console.log("obtenerDiferenciaDeAreaHerbicidas - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('herbicidas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerDiferenciaDeAreaHerbicidas - Resultado:", resultado);
+
         return resultado ? resultado.DIFERENCIA_DE_AREA_Ha : null;
     } catch (error) {
         console.error("Error en obtenerDiferenciaDeAreaHerbicidas: ", error);
@@ -1047,12 +1043,12 @@ const obtenerDiferenciaDeAreaHerbicidas = async (idAnalisis) => {
 
 const obtenerHoraInicioHerbicidas = async (idAnalisis) => {
     try {
-        console.log("obtenerHoraInicioHerbicidas - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('herbicidas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerHoraInicioHerbicidas - Resultado:", resultado);
+
         return resultado ? resultado.HORA_INICIO : null;
     } catch (error) {
         console.error("Error en obtenerHoraInicioHerbicidas: ", error);
@@ -1062,12 +1058,12 @@ const obtenerHoraInicioHerbicidas = async (idAnalisis) => {
 
 const obtenerHoraFinalHerbicidas = async (idAnalisis) => {
     try {
-        console.log("obtenerHoraFinalHerbicidas - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('herbicidas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerHoraFinalHerbicidas - Resultado:", resultado);
+
         return resultado ? resultado.HORA_FINAL : null;
     } catch (error) {
         console.error("Error en obtenerHoraFinalHerbicidas: ", error);
@@ -1077,12 +1073,11 @@ const obtenerHoraFinalHerbicidas = async (idAnalisis) => {
 
 const obtenerTiempoTotalHerbicidas = async (idAnalisis) => {
     try {
-        console.log("obtenerTiempoTotalHerbicidas - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('herbicidas');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
-        console.log("obtenerTiempoTotalHerbicidas - Resultados:", resultados);
 
         const tiempoTotal = resultados.reduce((acc, resultado) => acc + resultado.TIEMPO_TOTAL_H, 0);
         return tiempoTotal;
@@ -1094,12 +1089,11 @@ const obtenerTiempoTotalHerbicidas = async (idAnalisis) => {
 
 const obtenerEficienciaHerbicidas = async (idAnalisis) => {
     try {
-        console.log("obtenerEficienciaHerbicidas - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('herbicidas');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
-        console.log("obtenerEficienciaHerbicidas - Resultados:", resultados);
 
         const eficienciaTotal = resultados.reduce((acc, resultado) => acc + resultado.EFICIENCIA_Hora_Ha, 0);
         return eficienciaTotal / resultados.length;
@@ -1111,12 +1105,11 @@ const obtenerEficienciaHerbicidas = async (idAnalisis) => {
 
 const obtenerPromedioVelocidadHerbicidas = async (idAnalisis) => {
     try {
-        console.log("obtenerPromedioVelocidadHerbicidas - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('herbicidas');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
-        console.log("obtenerPromedioVelocidadHerbicidas - Resultados:", resultados);
 
         const velocidadTotal = resultados.reduce((acc, resultado) => acc + resultado.VELOCIDAD_Km_H, 0);
         return velocidadTotal / resultados.length;
@@ -1128,12 +1121,12 @@ const obtenerPromedioVelocidadHerbicidas = async (idAnalisis) => {
 
 const obtenerProductosAps = async (idAnalisis) => {
     try {
-        console.log("obtenerProductosAps - ID_ANALISIS:", idAnalisis);
+
         const client = await connectDB();
         const db = client.db('geomoticaapp');
         const collection = db.collection('aplicaciones_aereas');
         const resultado = await collection.findOne({ ID_ANALISIS: idAnalisis });
-        console.log("obtenerProductosAps - Resultado:", resultado);
+
         return resultado ? resultado.PRODUCTO : null;
     } catch (error) {
         console.error("Error en obtenerProductosAps: ", error);
@@ -1148,7 +1141,7 @@ const almacenarUltimosValores = async (datos) => {
         const db = client.db('geomoticaapp');
         const collection = db.collection('ultimos_valores');
         const resultado = await collection.insertOne(datos);
-        console.log("almacenarUltimosValores - Resultado:", resultado);
+
         return resultado.insertedId;
     } catch (error) {
         console.error("Error en almacenarUltimosValores: ", error);
@@ -1162,7 +1155,7 @@ const almacenarUltimosValoresAps = async (datos) => {
         const db = client.db('geomoticaapp');
         const collection = db.collection('ultimos_valores_aps');
         const resultado = await collection.insertOne(datos);
-        console.log("almacenarUltimosValoresAps - Resultado:", resultado);
+
         return resultado.insertedId;
     } catch (error) {
         console.error("Error en almacenarUltimosValoresAps: ", error);
