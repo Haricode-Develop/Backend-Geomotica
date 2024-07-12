@@ -392,15 +392,12 @@ const obtenerConsumoCombustibleCm = async (idAnalisis) => {
 
 const obtenerPresionCortadorBase = async (idAnalisis) => {
     try {
-        console.log("*********************************************************************************");
         const client = await connectDB();
         const db = client.db('GeomoticaProduccion');
         const collection = db.collection('cosecha_mecanica');
         const resultados = await collection.find({ ID_ANALISIS: idAnalisis }).toArray();
-        console.log("ESTE ES EL RESULTADO: ", resultados);
+
         const presionTotal = resultados.reduce((acc, resultado) => acc + resultado.PRESION_DE_CORTADOR_BASE, 0);
-        console.log("ESTA ES LA PRESION TOTAL: ", presionTotal);
-        console.log("*********************************************************************************");
         return presionTotal / resultados.length;
     } catch (error) {
         console.error("Error en obtenerPresionCortadorBase: ", error);
