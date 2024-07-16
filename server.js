@@ -17,6 +17,7 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const socketRoutes = require('./routes/webSocket');
 const historialRoutes = require('./routes/historyRoutes');
 const dashboardIndicadores = require('./routes/dashboardIndicadoresRoute');
+const configurationRoutes = require('./routes/configurationRoutes');
 
 // Configuración de CORS para permitir solicitudes desde cualquier origen
 app.use(cors({
@@ -72,7 +73,7 @@ app.use('/dashboard', dashboardRoutes);
 app.use('/socket', socketRoutes);
 app.use('/historial', historialRoutes);
 app.use('/dashboardIndicadores', dashboardIndicadores);
-
+app.use('/configuration', configurationRoutes);
 app.get('/', (req, res) => {
     res.send('Hello from the backend!');
 });
