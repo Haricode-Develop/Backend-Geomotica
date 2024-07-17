@@ -1,5 +1,6 @@
 const { Storage } = require('@google-cloud/storage');
 const path = require("path");
+const fs = require('fs');
 const keyFilename = path.join(__dirname, '..', 'analog-figure-382403-d8d65817b5d3.json');
 const storage = new Storage({ keyFilename: keyFilename });
 const bucketName = 'geomotica_mapeo';
@@ -46,6 +47,18 @@ const subirLotesIniciales = async (req, res) => {
 
         blobStream.on('finish', () => {
             console.log('Archivo subido exitosamente');
+
+            // Limpiar la carpeta de uploads
+            const uploadsPath = path.join(__dirname, '..', 'uploads');
+            fs.readdir(uploadsPath, (err, files) => {
+                if (err) throw err;
+                for (const file of files) {
+                    fs.unlink(path.join(uploadsPath, file), err => {
+                        if (err) throw err;
+                    });
+                }
+            });
+
             res.status(200).json({ message: `File uploaded to ${destinationBlobName}` });
         });
 
@@ -106,6 +119,5 @@ const obtenerHistorialLotes = async (req, res) => {
         res.status(500).json({ error: `Error retrieving file history: ${error.message}` });
     }
 };
-
 
 module.exports = { subirLotesIniciales, obtenerLoteInicialMasReciente, obtenerHistorialLotes };
