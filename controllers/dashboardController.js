@@ -41,13 +41,12 @@ const procesarCsv = async (req, res) => {
     try {
         const fileStream = fs.createReadStream(file);
         let filaError = 0;
-        let errorEncountered = false;
         let processedData = [];
 
         if (tipoAnalisis === 'COSECHA_MECANICA') {
-            await procesarArchivoCosechaMecanica(idTipoAnalisis, fileStream, filaError, errorEncountered, processedData, res);
+            await procesarArchivoCosechaMecanica(idTipoAnalisis, fileStream, filaError, processedData, res);
         } else if (tipoAnalisis === 'APLICACIONES_AEREAS') {
-            await procesarArchivoAplicacionesAereas(idTipoAnalisis, fileStream, filaError, errorEncountered, processedData, res);
+            await procesarArchivoAplicacionesAereas(idTipoAnalisis, fileStream, filaError, processedData, res);
         }
     } catch (err) {
         console.error('Error al leer el archivo:', err);
@@ -55,19 +54,13 @@ const procesarCsv = async (req, res) => {
     }
 };
 
-async function procesarArchivoAplicacionesAereas(idTipoAnalisis, fileStream, filaError, errorEncountered, processedData, res) {
+async function procesarArchivoAplicacionesAereas(idTipoAnalisis, fileStream, filaError, processedData, res) {
     return new Promise((resolve, reject) => {
         Papa.parse(fileStream, {
             header: false,
             skipEmptyLines: true,
             delimiter: autoDetectDelimiter(fileStream),
             step: function (row, parser) {
-                if (errorEncountered) {
-                    parser.abort();
-                    reject();
-                    return;
-                }
-
                 if (filaError === 0) {
                     filaError++;
                     return;
@@ -78,29 +71,26 @@ async function procesarArchivoAplicacionesAereas(idTipoAnalisis, fileStream, fil
                         return;
                     }
 
+                    // Validar y formatear los valores de la fila
                     fila[1] = formatearValor(fila[1], 11);
                     fila[2] = formatearValor(fila[2], 12);
                     fila.push(idTipoAnalisis);
 
+                    // Verificar si alguno de los valores es undefined o está vacío
+                    if (fila.some(campo => campo === undefined || campo === null || campo.match(/^ *$/) !== null)) {
+                        return;
+                    }
+
                     processedData.push(fila);
                 } catch (error) {
-                    errorEncountered = true;
-                    parser.abort();
-                    res.status(400).json({
-                        mensaje: 'Error de validación',
-                        error: error.message,
-                        fila: filaError,
-                    });
-                    reject(error);
-                    return;
+                    console.error('Error de validación en la fila:', error.message);
                 }
                 filaError++;
             },
             complete: function () {
-                if (!errorEncountered) {
-                    res.status(200).json({ mensaje: 'Archivo procesado correctamente', data: processedData });
-                    resolve();
-                }
+                // Enviar los datos procesados como respuesta JSON
+                res.status(200).json({ mensaje: 'Archivo procesado correctamente', data: processedData });
+                resolve();
             },
             error: function (error) {
                 console.error('Error al parsear CSV:', error.message);
@@ -114,19 +104,13 @@ async function procesarArchivoAplicacionesAereas(idTipoAnalisis, fileStream, fil
     });
 }
 
-async function procesarArchivoCosechaMecanica(idTipoAnalisis, fileStream, filaError, errorEncountered, processedData, res) {
+async function procesarArchivoCosechaMecanica(idTipoAnalisis, fileStream, filaError, processedData, res) {
     return new Promise((resolve, reject) => {
         Papa.parse(fileStream, {
             header: false,
             skipEmptyLines: true,
             delimiter: autoDetectDelimiter(fileStream),
             step: function (row, parser) {
-                if (errorEncountered) {
-                    parser.abort();
-                    reject();
-                    return;
-                }
-
                 if (filaError === 0) {
                     filaError++;
                     return;
@@ -136,6 +120,8 @@ async function procesarArchivoCosechaMecanica(idTipoAnalisis, fileStream, filaEr
                     if (fila.every(campo => campo === null || campo.match(/^ *$/) !== null)) {
                         return;
                     }
+
+                    // Validar y formatear los valores de la fila
                     fila[0] = validaciones.validarLongitud(fila[0]); // LATITUD VALIDACIÓN
                     fila[1] = validaciones.validarLongitud(fila[1]); // LONGITUD VALIDACIÓN
                     fila[11] = formatearValor(fila[11], 11); // FECHA INICIO COSECHA
@@ -147,25 +133,21 @@ async function procesarArchivoCosechaMecanica(idTipoAnalisis, fileStream, filaEr
 
                     fila.push(idTipoAnalisis);
 
+                    // Verificar si alguno de los valores es undefined o está vacío
+                    if (fila.some(campo => campo === undefined || campo === null || campo.match(/^ *$/) !== null)) {
+                        return;
+                    }
+
                     processedData.push(fila);
                 } catch (error) {
-                    errorEncountered = true;
-                    parser.abort();
-                    res.status(400).json({
-                        mensaje: 'Error de validación',
-                        error: error.message,
-                        fila: filaError,
-                    });
-                    reject(error);
-                    return;
+                    console.error('Error de validación en la fila:', error.message);
                 }
                 filaError++;
             },
             complete: function () {
-                if (!errorEncountered) {
-                    res.status(200).json({ mensaje: 'Archivo procesado correctamente', data: processedData });
-                    resolve();
-                }
+                // Enviar los datos procesados como respuesta JSON
+                res.status(200).json({ mensaje: 'Archivo procesado correctamente', data: processedData });
+                resolve();
             },
             error: function (error) {
                 console.error('Error al parsear CSV:', error.message);
@@ -178,6 +160,7 @@ async function procesarArchivoCosechaMecanica(idTipoAnalisis, fileStream, filaEr
         });
     });
 }
+
 
 
 function formatearValor(valor, indice) {
