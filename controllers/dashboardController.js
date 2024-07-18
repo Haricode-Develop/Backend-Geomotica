@@ -82,11 +82,6 @@ async function procesarArchivoAplicacionesAereas(idTipoAnalisis, fileStream, fil
                         fila[2] = formatearValor(fila[2], 12);
                         fila.push(idTipoAnalisis);
 
-                        // Verificar si alguno de los valores es undefined o está vacío
-                        if (fila.some(campo => campo === '')) {
-                            return;
-                        }
-
                         processedData.push(fila);
                     } catch (error) {
                         console.error('Error de validación en la fila:', error.message);
@@ -154,11 +149,6 @@ async function procesarArchivoCosechaMecanica(idTipoAnalisis, fileStream, filaEr
                         fila.splice(15, 0, tiempoTotal);
 
                         fila.push(idTipoAnalisis);
-
-                        // Verificar si alguno de los valores es undefined o está vacío
-                        if (fila.some(campo => campo === '')) {
-                            return;
-                        }
 
                         processedData.push(fila);
                     } catch (error) {
