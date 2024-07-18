@@ -72,8 +72,8 @@ async function procesarArchivoAplicacionesAereas(idTipoAnalisis, fileStream, fil
                         return;
                     }
                     try {
-                        const fila = row.data;
-                        if (fila.every(campo => campo === null || campo.match(/^ *$/) !== null)) {
+                        const fila = row.data.map(campo => (campo === undefined || campo === null ? '' : campo.toString().trim()));
+                        if (fila.every(campo => campo === '')) {
                             return;
                         }
 
@@ -83,7 +83,7 @@ async function procesarArchivoAplicacionesAereas(idTipoAnalisis, fileStream, fil
                         fila.push(idTipoAnalisis);
 
                         // Verificar si alguno de los valores es undefined o está vacío
-                        if (fila.some(campo => campo === undefined || campo === null || campo.match(/^ *$/) !== null)) {
+                        if (fila.some(campo => campo === '')) {
                             return;
                         }
 
@@ -138,8 +138,8 @@ async function procesarArchivoCosechaMecanica(idTipoAnalisis, fileStream, filaEr
                         return;
                     }
                     try {
-                        const fila = row.data;
-                        if (fila.every(campo => campo === null || campo.match(/^ *$/) !== null)) {
+                        const fila = row.data.map(campo => (campo === undefined || campo === null ? '' : campo.toString().trim()));
+                        if (fila.every(campo => campo === '')) {
                             return;
                         }
 
@@ -156,7 +156,7 @@ async function procesarArchivoCosechaMecanica(idTipoAnalisis, fileStream, filaEr
                         fila.push(idTipoAnalisis);
 
                         // Verificar si alguno de los valores es undefined o está vacío
-                        if (fila.some(campo => campo === undefined || campo === null || campo.match(/^ *$/) !== null)) {
+                        if (fila.some(campo => campo === '')) {
                             return;
                         }
 
@@ -192,7 +192,6 @@ async function procesarArchivoCosechaMecanica(idTipoAnalisis, fileStream, filaEr
         });
     });
 }
-
 
 function formatearValor(valor, indice) {
     switch (indice) {
