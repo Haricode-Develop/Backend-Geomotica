@@ -38,137 +38,147 @@ const procesarCsv = async (req, res) => {
         }
     }
 
-    fs.readFile(file, 'utf8', (err, data) => {
-        if (err) {
-            console.error('Error al leer el archivo:', err);
-            return res.status(500).send('Error al procesar el archivo');
-        }
-
+    try {
+        const fileStream = fs.createReadStream(file);
         let filaError = 0;
         let errorEncountered = false;
         let processedData = [];
 
         if (tipoAnalisis === 'COSECHA_MECANICA') {
-            procesarArchivoCosechaMecanica(idTipoAnalisis, data, filaError, errorEncountered, processedData, res);
+            await procesarArchivoCosechaMecanica(idTipoAnalisis, fileStream, filaError, errorEncountered, processedData, res);
         } else if (tipoAnalisis === 'APLICACIONES_AEREAS') {
-            procesarArchivoAplicacionesAereas(idTipoAnalisis, data, filaError, errorEncountered, processedData, res);
+            await procesarArchivoAplicacionesAereas(idTipoAnalisis, fileStream, filaError, errorEncountered, processedData, res);
         }
-    });
+    } catch (err) {
+        console.error('Error al leer el archivo:', err);
+        return res.status(500).send('Error al procesar el archivo');
+    }
 };
 
-function procesarArchivoAplicacionesAereas(idTipoAnalisis, data, filaError, errorEncountered, processedData, res) {
-    // Procesa el archivo CSV
-    Papa.parse(data, {
-        header: false,
-        skipEmptyLines: true,
-        delimiter: autoDetectDelimiter(data),
-        step: function (row, parser) {
-            if (errorEncountered) {
-                return;
-            }
-
-            if (filaError === 0) {
-                filaError++;
-                return;
-            }
-            try {
-                const fila = row.data;
-                if (fila.every(campo => campo === null || campo.match(/^ *$/) !== null)) {
+async function procesarArchivoAplicacionesAereas(idTipoAnalisis, fileStream, filaError, errorEncountered, processedData, res) {
+    return new Promise((resolve, reject) => {
+        Papa.parse(fileStream, {
+            header: false,
+            skipEmptyLines: true,
+            delimiter: autoDetectDelimiter(fileStream),
+            step: function (row, parser) {
+                if (errorEncountered) {
+                    parser.abort();
+                    reject();
                     return;
                 }
 
-                fila[1] = formatearValor(fila[1], 11);
-                fila[2] = formatearValor(fila[2], 12);
-                fila.push(idTipoAnalisis);
-
-                processedData.push(fila);
-            } catch (error) {
-                errorEncountered = true;
-                parser.abort();
-                res.status(400).json({
-                    mensaje: 'Error de validación',
-                    error: error.message,
-                    fila: filaError,
-                });
-                return;
-            }
-            filaError++;
-        },
-        complete: function () {
-            if (!errorEncountered) {
-                // Enviar los datos procesados como respuesta JSON
-                res.status(200).json({ mensaje: 'Archivo procesado correctamente', data: processedData });
-            }
-        },
-        error: function (error) {
-            console.error('Error al parsear CSV:', error.message);
-            res.status(500).json({
-                mensaje: 'Error al parsear CSV',
-                error: error.message
-            });
-        }
-    });
-}
-
-function procesarArchivoCosechaMecanica(idTipoAnalisis, data, filaError, errorEncountered, processedData, res) {
-    // Procesa el archivo CSV
-    Papa.parse(data, {
-        header: false,
-        skipEmptyLines: true,
-        delimiter: autoDetectDelimiter(data),
-        step: function (row, parser) {
-            if (errorEncountered) {
-                return;
-            }
-
-            if (filaError === 0) {
-                filaError++;
-                return;
-            }
-            try {
-                const fila = row.data;
-                if (fila.every(campo => campo === null || campo.match(/^ *$/) !== null)) {
+                if (filaError === 0) {
+                    filaError++;
                     return;
                 }
-                fila[0] = validaciones.validarLongitud(fila[0]); // LATITUD VALIDACIÓN
-                fila[1] = validaciones.validarLongitud(fila[1]); // LONGITUD VALIDACIÓN
-                fila[11] = formatearValor(fila[11], 11); // FECHA INICIO COSECHA
-                fila[12] = formatearValor(fila[12], 12); // FECHA INICIO VALIDACIÓN
-                fila[13] = formatearValor(fila[13], 13); // HORA INICIO VALIDACIÓN
-                fila[14] = formatearValor(fila[14], 14); // HORA FINAL VALIDACIÓN
-                const tiempoTotal = validaciones.calcularTiempoTotal(fila[13], fila[14]);
-                fila.splice(15, 0, tiempoTotal);
+                try {
+                    const fila = row.data;
+                    if (fila.every(campo => campo === null || campo.match(/^ *$/) !== null)) {
+                        return;
+                    }
 
-                fila.push(idTipoAnalisis);
+                    fila[1] = formatearValor(fila[1], 11);
+                    fila[2] = formatearValor(fila[2], 12);
+                    fila.push(idTipoAnalisis);
 
-                processedData.push(fila);
-            } catch (error) {
-                errorEncountered = true;
-                parser.abort();
-                res.status(400).json({
-                    mensaje: 'Error de validación',
-                    error: error.message,
-                    fila: filaError,
+                    processedData.push(fila);
+                } catch (error) {
+                    errorEncountered = true;
+                    parser.abort();
+                    res.status(400).json({
+                        mensaje: 'Error de validación',
+                        error: error.message,
+                        fila: filaError,
+                    });
+                    reject(error);
+                    return;
+                }
+                filaError++;
+            },
+            complete: function () {
+                if (!errorEncountered) {
+                    res.status(200).json({ mensaje: 'Archivo procesado correctamente', data: processedData });
+                    resolve();
+                }
+            },
+            error: function (error) {
+                console.error('Error al parsear CSV:', error.message);
+                res.status(500).json({
+                    mensaje: 'Error al parsear CSV',
+                    error: error.message
                 });
-                return;
+                reject(error);
             }
-            filaError++;
-        },
-        complete: function () {
-            if (!errorEncountered) {
-                // Enviar los datos procesados como respuesta JSON
-                res.status(200).json({ mensaje: 'Archivo procesado correctamente', data: processedData });
-            }
-        },
-        error: function (error) {
-            console.error('Error al parsear CSV:', error.message);
-            res.status(500).json({
-                mensaje: 'Error al parsear CSV',
-                error: error.message
-            });
-        }
+        });
     });
 }
+
+async function procesarArchivoCosechaMecanica(idTipoAnalisis, fileStream, filaError, errorEncountered, processedData, res) {
+    return new Promise((resolve, reject) => {
+        Papa.parse(fileStream, {
+            header: false,
+            skipEmptyLines: true,
+            delimiter: autoDetectDelimiter(fileStream),
+            step: function (row, parser) {
+                if (errorEncountered) {
+                    parser.abort();
+                    reject();
+                    return;
+                }
+
+                if (filaError === 0) {
+                    filaError++;
+                    return;
+                }
+                try {
+                    const fila = row.data;
+                    if (fila.every(campo => campo === null || campo.match(/^ *$/) !== null)) {
+                        return;
+                    }
+                    fila[0] = validaciones.validarLongitud(fila[0]); // LATITUD VALIDACIÓN
+                    fila[1] = validaciones.validarLongitud(fila[1]); // LONGITUD VALIDACIÓN
+                    fila[11] = formatearValor(fila[11], 11); // FECHA INICIO COSECHA
+                    fila[12] = formatearValor(fila[12], 12); // FECHA INICIO VALIDACIÓN
+                    fila[13] = formatearValor(fila[13], 13); // HORA INICIO VALIDACIÓN
+                    fila[14] = formatearValor(fila[14], 14); // HORA FINAL VALIDACIÓN
+                    const tiempoTotal = validaciones.calcularTiempoTotal(fila[13], fila[14]);
+                    fila.splice(15, 0, tiempoTotal);
+
+                    fila.push(idTipoAnalisis);
+
+                    processedData.push(fila);
+                } catch (error) {
+                    errorEncountered = true;
+                    parser.abort();
+                    res.status(400).json({
+                        mensaje: 'Error de validación',
+                        error: error.message,
+                        fila: filaError,
+                    });
+                    reject(error);
+                    return;
+                }
+                filaError++;
+            },
+            complete: function () {
+                if (!errorEncountered) {
+                    res.status(200).json({ mensaje: 'Archivo procesado correctamente', data: processedData });
+                    resolve();
+                }
+            },
+            error: function (error) {
+                console.error('Error al parsear CSV:', error.message);
+                res.status(500).json({
+                    mensaje: 'Error al parsear CSV',
+                    error: error.message
+                });
+                reject(error);
+            }
+        });
+    });
+}
+
 
 function formatearValor(valor, indice) {
     switch (indice) {
