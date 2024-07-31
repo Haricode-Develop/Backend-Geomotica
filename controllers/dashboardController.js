@@ -229,11 +229,16 @@ const execBash = async (req, res) => {
     const esPrimeraIteracion = req.body.esPrimeraIteracion === 'true' ? 'true' : 'false';
     const esKmlInteractivo = req.body.esKmlInteractivo === 'true' ? 'true' : 'false';
 
-    if (!req.files['csv']) {
-        return res.status(400).send('Archivos CSV o polígono no proporcionados');
+    if (!req.files['csv'] && idAnalisis === '2') {
+        return res.status(400).send('Archivo Csv no propocionado');
+    }else if(!req.files['polygon'] && idAnalisis === '1'){
+        return res.status(400).send('Archivo Polygon no propocionado');
     }
 
-    const csvPath = req.files['csv'][0].path;
+    let csvPath = null;
+    if(req.files['csv']){
+        csvPath = req.files['csv'][0].path;
+    }
     let polygonPath = null;
     if (req.files['polygon']) {
         polygonPath = req.files['polygon'][0].path;
