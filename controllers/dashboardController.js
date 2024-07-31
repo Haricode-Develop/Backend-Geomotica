@@ -231,8 +231,6 @@ const execBash = async (req, res) => {
 
     if (!req.files['csv'] && idAnalisis === '2') {
         return res.status(400).send('Archivo Csv no propocionado');
-    }else if(!req.files['polygon'] && idAnalisis === '1'){
-        return res.status(400).send('Archivo Polygon no propocionado');
     }
 
     let csvPath = null;
