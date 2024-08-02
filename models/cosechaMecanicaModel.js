@@ -50,7 +50,7 @@ const obtenerPorcentajeAreaPilotoCm = async (idAnalisis) =>
     obtenerCampoUnico(COLECCION_CM, idAnalisis, 'PILOTO_AUTOMATICO');
 
 const obtenerPorcentajeAreaAutotrackerCm = async (idAnalisis) =>
-    obtenerCampoUnico(COLECCION_CM, idAnalisis, 'AUTO_TRACKET');
+    obtenerCampoUnico(COLECCION_CM, idAnalisis, 'AUTO_TRACKER'); // Corregir nombre del campo
 
 // Funciones específicas para obtener promedios
 const obtenerConsumoCombustibleCm = async (idAnalisis) =>
@@ -77,10 +77,34 @@ const obtenerEficienciaCm = async (idAnalisis) =>
 const obtenerPromedioVelocidadCm = async (idAnalisis) =>
     obtenerPromedio(COLECCION_CM, idAnalisis, 'VELOCIDAD_Km_H');
 
-const obtenerProductosAps = async (idAnalisis) =>
-  obtenerCampoUnico(COLECCION_APS, idAnalisis, 'PRODUCTO');
-
-
 // Función para obtener el tiempo total de actividad
 const obtenerTiempoTotalActividadCm = async (idAnalisis) =>
     obtenerTiempoTotal(COLECCION_CM, idAnalisis);
+
+// Exportar todas las funciones correctamente
+module.exports = {
+    obtenerNombreResponsableCm,
+    obtenerFechaInicioCosechaCm,
+    obtenerFechaFinCosechaCm,
+    obtenerNombreFincaCm,
+    obtenerCodigoParcelasResponsableCm,
+    obtenerNombreOperadorCm,
+    obtenerNombreMaquinaCm,
+    obtenerActividadCm,
+    obtenerAreaNetaCm,
+    obtenerAreaBrutaCm,
+    obtenerDiferenciaDeAreaCm,
+    obtenerHoraInicioCm,
+    obtenerHoraFinalCm,
+    obtenerPorcentajeAreaPilotoCm,
+    obtenerPorcentajeAreaAutotrackerCm,
+    obtenerConsumoCombustibleCm,
+    obtenerPresionCortadorBase,
+    obtenerRpmCm,
+    obtenerTch,
+    obtenerTah,
+    obtenerCalidadGpsCm,
+    obtenerEficienciaCm,
+    obtenerPromedioVelocidadCm,
+    obtenerTiempoTotalActividadCm
+};

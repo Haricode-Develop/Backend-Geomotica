@@ -55,6 +55,7 @@ const HumedadDelCultivo = crearControlador(obtenerHumedadDelCultivo, "la humedad
 const TchEstimado = crearControlador(obtenerTchEstimado, "el TCH estimado");
 const ProductoAps = crearControlador(obtenerProductosAps, "el producto APS");
 
+
 // Exportar todos los controladores
 module.exports = {
     ResponsableAps,

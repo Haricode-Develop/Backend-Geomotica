@@ -53,3 +53,22 @@ const obtenerEficienciaHerbicidas = async (idAnalisis) =>
 
 const obtenerPromedioVelocidadHerbicidas = async (idAnalisis) =>
     obtenerPromedio(COLECCION_HERBICIDAS, idAnalisis, 'VELOCIDAD_Km_H');
+
+// Exportar todas las funciones
+module.exports = {
+    obtenerResponsableHerbicidas,
+    obtenerFechaHerbicidas,
+    obtenerNombreFincaHerbicidas,
+    obtenerParcelaHerbicidas,
+    obtenerOperadorHerbicidas,
+    obtenerEquipoHerbicidas,
+    obtenerActividadHerbicidas,
+    obtenerAreaNetaHerbicidas,
+    obtenerAreaBrutaHerbicidas,
+    obtenerDiferenciaDeAreaHerbicidas,
+    obtenerHoraInicioHerbicidas,
+    obtenerHoraFinalHerbicidas,
+    obtenerTiempoTotalHerbicidas,
+    obtenerEficienciaHerbicidas,
+    obtenerPromedioVelocidadHerbicidas,
+};

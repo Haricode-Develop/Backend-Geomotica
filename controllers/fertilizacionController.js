@@ -24,16 +24,19 @@ const crearControlador = (funcionModelo, nombreControlador) => {
 
         try {
             const resultado = await funcionModelo(idAnalisis);
-            return res.json(resultado);
+            if (!resultado) {
+                return res.status(404).json({ error: `No se encontró ${nombreControlador}` });
+            }
+            return res.json({ success: true, data: resultado });
         } catch (error) {
             console.error(`Error al obtener ${nombreControlador}:`, error);
-            return res.status(500).json({ error: "Error interno del servidor" });
+            return res.status(500).json({ error: `Error interno del servidor: ${error.message}` });
         }
     };
 };
 
 // Controladores para cada función del modelo
-const ResponsableFetilizacion = crearControlador(
+const ResponsableFertilizacion = crearControlador(
     obtenerResponsableFertilizacion,
     "el responsable de fertilización"
 );
@@ -100,7 +103,7 @@ const DosisTeoricaFertilizacion = crearControlador(
 
 // Exportar todos los controladores
 module.exports = {
-    ResponsableFetilizacion,
+    ResponsableFertilizacion,
     FechaInicioFertilizacion,
     FechaFinalFertilizacion,
     NombreFincaFertilizacion,

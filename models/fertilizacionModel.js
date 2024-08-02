@@ -56,3 +56,23 @@ const obtenerTiempoTotalFertilizacion = async (idAnalisis) =>
 
 const obtenerDosisTeoricaFertilizacion = async (idAnalisis) =>
     obtenerCampoUnico(COLECCION_FERTILIZACION, idAnalisis, 'DOSIS_TEORICA_Kg_ha');
+
+// Exportar todas las funciones
+module.exports = {
+    obtenerResponsableFertilizacion,
+    obtenerFechaInicioFertilizacion,
+    obtenerFechaFinalFertilizacion,
+    obtenerNombreFincaFertilizacion,
+    obtenerOperadorFertilizacion,
+    obtenerEquipoFertilizacion,
+    obtenerActividadFertilizacion,
+    obtenerAreaNetaFertilizacion,
+    obtenerAreaBrutaFertilizacion,
+    obtenerDiferenciaAreaFertilizacion,
+    obtenerHoraInicioFertilizacion,
+    obtenerHoraFinalFertilizacion,
+    obtenerEficienciaFertilizacion,
+    obtenerPromedioDosisRealFertilizacion,
+    obtenerTiempoTotalFertilizacion,
+    obtenerDosisTeoricaFertilizacion,
+};

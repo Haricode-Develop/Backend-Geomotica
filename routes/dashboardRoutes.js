@@ -60,7 +60,7 @@ router.get('/tahCm/:ID_ANALISIS', CosechaMecanica.TahCm);
 router.get('/presionCortadorBaseCm/:ID_ANALISIS', CosechaMecanica.PresionCortadorBaseCm);
 
 // ==== ANALISIS FERTILIZACIÓN =======
-router.get('/responsableFertilizacion/:ID_ANALISIS', Fertilizacion.ResponsableFetilizacion);
+router.get('/responsableFertilizacion/:ID_ANALISIS', Fertilizacion.ResponsableFertilizacion);
 router.get('/fechaInicioFertilizacion/:ID_ANALISIS', Fertilizacion.FechaInicioFertilizacion);
 router.get('/fechaFinalFertilizacion/:ID_ANALISIS', Fertilizacion.FechaFinalFertilizacion);
 router.get('/nombreFincaFertilizacion/:ID_ANALISIS', Fertilizacion.NombreFincaFertilizacion);

@@ -50,5 +50,30 @@ const obtenerTchEstimado = async (idAnalisis) =>
 const obtenerEficienciaAps = async (idAnalisis) =>
     obtenerPromedio(COLECCION_APS, idAnalisis, 'EFICIENCIA');
 
+// Función para obtener el tiempo total de actividad
 const obtenerTiempoTotalAps = async (idAnalisis) =>
     obtenerTiempoTotal(COLECCION_APS, idAnalisis);
+
+
+const obtenerProductosAps = async (idAnalisis) =>
+    obtenerCampoUnico(COLECCION_APS, idAnalisis, 'PRODUCTO');
+
+// Exportar todas las funciones
+module.exports = {
+    obtenerNombreResponsableAps,
+    obtenerFechaInicioCosechaAps,
+    obtenerFechaFinalCosechaAps,
+    obtenerNombreFincaAps,
+    obtenerCodigoFincaResponsableAps,
+    obtenerNombreOperadorAps,
+    obtenerCodigoEquipoAps,
+    obtenerHoraInicioAps,
+    obtenerHoraFinalAps,
+    obtenerCodigoLoteAps,
+    obtenerDosisTeorica,
+    obtenerHumedadDelCultivo,
+    obtenerTchEstimado,
+    obtenerEficienciaAps,
+    obtenerTiempoTotalAps,
+    obtenerProductosAps
+};
