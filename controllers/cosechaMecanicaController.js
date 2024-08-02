@@ -35,7 +35,7 @@ const crearControlador = (funcionModelo, nombreControlador) => {
             if (!resultado) {
                 return res.status(404).json({ error: `No se encontró ${nombreControlador}` });
             }
-            return res.json({ success: true, data: resultado });
+            return res.json(resultado);
         } catch (error) {
             console.error(`Error al obtener ${nombreControlador}:`, error);
             return res.status(500).json({ error: `Error interno del servidor: ${error.message}` });
