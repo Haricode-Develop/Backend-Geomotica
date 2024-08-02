@@ -7,22 +7,26 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const uri = process.env.MONGO_URI;
-let client; // Mantén la conexión global aquí
-let db;     // Mantenemos la referencia a la base de datos
+let client;
+let db;
 
 const connectDB = async () => {
-    if (!client || !client.isConnected()) {
+    if (!client || !client.topology || !client.topology.isConnected()) {
+        // Create a new MongoClient instance
         client = new MongoClient(uri, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
 
         try {
+            // Connect to MongoDB
             await client.connect();
             console.log('MongoDB connected successfully.');
-            db = client.db('GeomoticaProduccion'); // Conecta a la base de datos específica
+            // Select the specific database
+            db = client.db('GeomoticaProduccion');
         } catch (err) {
             console.error('Failed to connect to MongoDB', err);
+            // Exit the process on failure
             process.exit(1);
         }
     }
