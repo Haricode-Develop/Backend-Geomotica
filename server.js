@@ -68,22 +68,28 @@ app.use(expressWinston.errorLogger({
     ),
 }));
 
+// Rutas
 app.use('/auth', authRoutes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/socket', socketRoutes);
 app.use('/historial', historialRoutes);
 app.use('/dashboardIndicadores', dashboardIndicadores);
 app.use('/configuration', configurationRoutes);
+
 app.get('/', (req, res) => {
     res.send('Hello from the backend!');
 });
 
+// Manejo de errores
 app.use((err, req, res, next) => {
+    logger.error('Internal Server Error:', err);
     res.status(500).json({ error: 'Internal Server Error' });
 });
 
 // Conectar a la base de datos y luego iniciar el servidor
-connectDB().then((client) => {
+connectDB().then((db) => {
+    console.log('Connected to MongoDB');
+
     const server = http.createServer(app);
     server.timeout = 300000;
 
@@ -94,4 +100,6 @@ connectDB().then((client) => {
     });
 }).catch((err) => {
     console.error('Failed to start server due to database connection error:', err);
+    logger.error('Database connection error:', err);
+    process.exit(1);
 });
