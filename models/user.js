@@ -1,10 +1,12 @@
-const { MongoClient, ObjectId } = require('mongodb');
+// models/user.js
+
 const bcrypt = require('bcryptjs');
 const connectDB = require('../config/database');
 
 const getCollection = async () => {
-  const client = await connectDB();
-  return client.db('GeomoticaProduccion').collection('usuarios');
+  // Aquí asegúrate de que `db` sea retornado correctamente
+  const db = await connectDB();
+  return db.collection('usuarios');
 };
 
 const renameIdField = (doc, newFieldName) => {
@@ -17,7 +19,22 @@ const renameIdField = (doc, newFieldName) => {
 
 const findByEmail = async (email) => {
   const collection = await getCollection();
-  const user = await collection.findOne({ EMAIL: email }, { projection: { _id: 1, NOMBRE: 1, APELLIDO: 1, EMAIL: 1, PASSWORD: 1, ID_Rol: 1, ESTATUS: 1, FECHA_CREACION: 1, FOTO_PERFIL: 1 } });
+  const user = await collection.findOne(
+      { EMAIL: email },
+      {
+        projection: {
+          _id: 1,
+          NOMBRE: 1,
+          APELLIDO: 1,
+          EMAIL: 1,
+          PASSWORD: 1,
+          ID_Rol: 1,
+          ESTATUS: 1,
+          FECHA_CREACION: 1,
+          FOTO_PERFIL: 1,
+        },
+      }
+  );
   return renameIdField(user, 'ID_USUARIO');
 };
 
@@ -32,7 +49,7 @@ const createUser = async (nombre, apellido, email, password) => {
     ID_Rol: 3, // Asignación de rol por defecto
     ESTATUS: 0, // Initial status as unverified
     FECHA_CREACION: new Date(),
-    FOTO_PERFIL: '' // Asignación de campo vacío por defecto
+    FOTO_PERFIL: '', // Asignación de campo vacío por defecto
   });
   return renameIdField(result.ops[0], 'ID_USUARIO');
 };
