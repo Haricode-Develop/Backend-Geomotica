@@ -294,12 +294,12 @@ const obtenerUltimoAnalisis = async (req, res) => {
 
 async function convertirExcelACsv(inputFilePath, outputFilePath) {
     try {
-        const workbook = xlsx.readFile(inputFilePath);
+        const workbook = XLSX.readFile(inputFilePath);
         const sheet_name_list = workbook.SheetNames;
         if (sheet_name_list.length === 0) {
             throw new Error('El archivo Excel no contiene ninguna hoja.');
         }
-        const csv = xlsx.utils.sheet_to_csv(workbook.Sheets[sheet_name_list[0]]);
+        const csv = XLSX.utils.sheet_to_csv(workbook.Sheets[sheet_name_list[0]]);
         if (!csv) {
             throw new Error('La conversión a CSV falló o el archivo CSV resultante está vacío.');
         }
