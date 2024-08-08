@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="2553195b-020a-4303-a822-433f07941214" name="Changes" comment="">
       <change afterPath="$PROJECT_DIR$/../Geomotica/public/FileWorkerChunking.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/controllers/dashboardController.js" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/dashboardController.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Geomotica/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../Geomotica/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Geomotica/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../Geomotica/package.json" afterDir="false" />

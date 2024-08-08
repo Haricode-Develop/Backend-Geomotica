@@ -320,9 +320,9 @@ const obtenerUltimoAnalisis = async (req, res) => {
 
 async function convertirExcelACsv(inputFilePath, outputFilePath) {
     try {
-        const workbook = xlsx.readFile(inputFilePath);
+        const workbook = XLSX.readFile(inputFilePath);
         const sheet_name_list = workbook.SheetNames;
-        const csv = xlsx.utils.sheet_to_csv(workbook.Sheets[sheet_name_list[0]]);
+        const csv = XLSX.utils.sheet_to_csv(workbook.Sheets[sheet_name_list[0]]);
         fs.writeFileSync(outputFilePath, csv);
         console.log('Conversión de Excel a CSV completada.');
     } catch (error) {
