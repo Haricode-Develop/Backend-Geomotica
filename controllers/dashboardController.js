@@ -26,10 +26,11 @@ const procesarCsv = async (req, res) => {
     }
 
     let file = req.files['csv'][0].path;
-
+    console.log("ES EXCEL: ", isExcel);
     if (isExcel) {
         const outputCsvPath = path.join(path.dirname(file), 'output.csv');
         try {
+            console.log("ENTRE PARA CONVERTIR EL EXCEL A CSV");
             await convertirExcelACsv(file, outputCsvPath);
             file = outputCsvPath;
         } catch (err) {
@@ -37,7 +38,8 @@ const procesarCsv = async (req, res) => {
             return res.status(500).send('Error al procesar el archivo');
         }
     }
-
+    console.log("DESPUES DEL IF");
+    return;
     try {
         const fileStream = fs.createReadStream(file, 'utf8');
         let filaError = 0;
