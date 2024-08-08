@@ -45,7 +45,6 @@ const procesarCsv = async (req, res) => {
         let filaError = 0;
         let processedData = [];
         console.log("FILESTREAM: ", fileStream);
-        return;
 
         if (tipoAnalisis === 'COSECHA_MECANICA') {
             await procesarArchivoCosechaMecanica(idTipoAnalisis, fileStream, filaError, processedData, res);
@@ -57,6 +56,7 @@ const procesarCsv = async (req, res) => {
         return res.status(500).send('Error al procesar el archivo');
     }
 };
+
 
 async function procesarArchivoAplicacionesAereas(idTipoAnalisis, fileStream, filaError, processedData, res) {
     return new Promise((resolve, reject) => {
@@ -320,9 +320,15 @@ const obtenerUltimoAnalisis = async (req, res) => {
 
 async function convertirExcelACsv(inputFilePath, outputFilePath) {
     try {
-        const workbook = XLSX.readFile(inputFilePath);
+        const workbook = xlsx.readFile(inputFilePath);
         const sheet_name_list = workbook.SheetNames;
-        const csv = XLSX.utils.sheet_to_csv(workbook.Sheets[sheet_name_list[0]]);
+        if (sheet_name_list.length === 0) {
+            throw new Error('El archivo Excel no contiene ninguna hoja.');
+        }
+        const csv = xlsx.utils.sheet_to_csv(workbook.Sheets[sheet_name_list[0]]);
+        if (!csv) {
+            throw new Error('La conversión a CSV falló o el archivo CSV resultante está vacío.');
+        }
         fs.writeFileSync(outputFilePath, csv);
         console.log('Conversión de Excel a CSV completada.');
     } catch (error) {
