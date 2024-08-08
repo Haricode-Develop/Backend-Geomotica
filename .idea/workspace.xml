@@ -5,10 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2553195b-020a-4303-a822-433f07941214" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../Geomotica/public/FileWorkerChunking.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/dashboardController.js" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/dashboardController.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Geomotica/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../Geomotica/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Geomotica/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../Geomotica/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Geomotica/public/dataWorker.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Geomotica/public/dataWorker.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Geomotica/src/views/Aplicaciones Areas/AplicacionesAreas.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Geomotica/src/views/Aplicaciones Areas/AplicacionesAreas.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Geomotica/src/components/BarIndicator/BarIndicator.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Geomotica/src/components/BarIndicator/BarIndicator.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Geomotica/src/components/BarIndicator/BarIndicatorStyle.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Geomotica/src/components/BarIndicator/BarIndicatorStyle.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Geomotica/src/views/Aplicaciones Areas/AerialApplications.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Geomotica/src/views/Aplicaciones Areas/AerialApplications.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Geomotica/src/views/Dashboard/Dashboard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Geomotica/src/views/Dashboard/Dashboard.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,7 +39,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "Dashboard-Indicadores",
+    "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Node/Geomotica",
     "node.js.detected.package.eslint": "true",

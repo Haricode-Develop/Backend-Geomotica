@@ -39,11 +39,13 @@ const procesarCsv = async (req, res) => {
         }
     }
     console.log("DESPUES DEL IF");
-    return;
     try {
+        console.log("ESTE ES EL FILE: ", file);
         const fileStream = fs.createReadStream(file, 'utf8');
         let filaError = 0;
         let processedData = [];
+        console.log("FILESTREAM: ", fileStream);
+        return;
 
         if (tipoAnalisis === 'COSECHA_MECANICA') {
             await procesarArchivoCosechaMecanica(idTipoAnalisis, fileStream, filaError, processedData, res);
@@ -316,20 +318,18 @@ const obtenerUltimoAnalisis = async (req, res) => {
 };
 
 
-const convertirExcelACsv = (filePath, outputFilePath) => {
-    return new Promise((resolve, reject) => {
-        try {
-            const workbook = XLSX.readFile(filePath);
-            const sheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[sheetName];
-            const csvData = XLSX.utils.sheet_to_csv(worksheet, { FS: ';' });
-            fs.writeFileSync(outputFilePath, csvData, 'utf8');
-            resolve(outputFilePath);
-        } catch (err) {
-            reject(err);
-        }
-    });
-};
+async function convertirExcelACsv(inputFilePath, outputFilePath) {
+    try {
+        const workbook = xlsx.readFile(inputFilePath);
+        const sheet_name_list = workbook.SheetNames;
+        const csv = xlsx.utils.sheet_to_csv(workbook.Sheets[sheet_name_list[0]]);
+        fs.writeFileSync(outputFilePath, csv);
+        console.log('Conversión de Excel a CSV completada.');
+    } catch (error) {
+        console.error('Error al convertir el archivo Excel a CSV:', error);
+        throw error;
+    }
+}
 
 module.exports = {
     obtenerUltimoAnalisis,
