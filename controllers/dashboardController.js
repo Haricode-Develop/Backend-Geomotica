@@ -13,6 +13,7 @@ const keyFilename = path.join(__dirname, '..', 'analog-figure-382403-d8d65817b5d
 const storage = new Storage({ keyFilename: keyFilename });
 
 const bucketName = 'geomotica_mapeo';
+const bucket = storage.bucket(bucketName);
 
 const procesarCsv = async (req, res) => {
     const idTipoAnalisis = req.body.idTipoAnalisis;
