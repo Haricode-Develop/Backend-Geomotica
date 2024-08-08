@@ -41,15 +41,15 @@ const procesarCsv = async (req, res) => {
     console.log("DESPUES DEL IF");
     try {
         console.log("ESTE ES EL FILE: ", file);
-        const fileStream = fs.createReadStream(file, 'utf8');
+        const fileContent = fs.readFileSync(file, 'utf8');
         let filaError = 0;
         let processedData = [];
-        console.log("FILESTREAM: ", fileStream);
+        console.log("FILECONTENT LENGTH: ", fileContent.length);
 
         if (tipoAnalisis === 'COSECHA_MECANICA') {
-            await procesarArchivoCosechaMecanica(idTipoAnalisis, fileStream, filaError, processedData, res);
+            await procesarArchivoCosechaMecanica(idTipoAnalisis, fileContent, filaError, processedData, res);
         } else if (tipoAnalisis === 'APLICACIONES_AEREAS') {
-            await procesarArchivoAplicacionesAereas(idTipoAnalisis, fileStream, filaError, processedData, res);
+            await procesarArchivoAplicacionesAereas(idTipoAnalisis, fileContent, filaError, processedData, res);
         }
     } catch (err) {
         console.error('Error al leer el archivo:', err);
@@ -57,132 +57,99 @@ const procesarCsv = async (req, res) => {
     }
 };
 
-
-async function procesarArchivoAplicacionesAereas(idTipoAnalisis, fileStream, filaError, processedData, res) {
+async function procesarArchivoAplicacionesAereas(idTipoAnalisis, fileContent, filaError, processedData, res) {
     return new Promise((resolve, reject) => {
-        let fileContent = '';
-        fileStream.on('data', chunk => {
-            fileContent += chunk;
-        });
-
-        fileStream.on('end', () => {
-            Papa.parse(fileContent, {
-                header: false,
-                skipEmptyLines: true,
-                delimiter: autoDetectDelimiter(fileContent),
-                step: function (row, parser) {
-                    if (filaError === 0) {
-                        filaError++;
+        Papa.parse(fileContent, {
+            header: false,
+            skipEmptyLines: true,
+            delimiter: autoDetectDelimiter(fileContent),
+            step: function (row, parser) {
+                if (filaError === 0) {
+                    filaError++;
+                    return;
+                }
+                try {
+                    const fila = row.data.map(campo => (campo === undefined || campo === null ? '' : campo.toString().trim()));
+                    if (fila.every(campo => campo === '')) {
                         return;
                     }
-                    try {
-                        const fila = row.data.map(campo => (campo === undefined || campo === null ? '' : campo.toString().trim()));
-                        if (fila.every(campo => campo === '')) {
-                            return;
-                        }
 
-                        // Validar y formatear los valores de la fila
-                        fila[1] = formatearValor(fila[1], 11);
-                        fila[2] = formatearValor(fila[2], 12);
-                        fila.push(idTipoAnalisis);
+                    // Validar y formatear los valores de la fila
+                    fila[1] = formatearValor(fila[1], 11);
+                    fila[2] = formatearValor(fila[2], 12);
+                    fila.push(idTipoAnalisis);
 
-                        processedData.push(fila);
-                    } catch (error) {
-                        console.error('Error de validación en la fila:', error.message);
-                    }
-                    filaError++;
-                },
-                complete: function () {
-                    // Enviar los datos procesados como respuesta JSON
-                    res.status(200).json({ mensaje: 'Archivo procesado correctamente', data: processedData });
-                    resolve();
-                },
-                error: function (error) {
-                    console.error('Error al parsear CSV:', error.message);
-                    res.status(500).json({
-                        mensaje: 'Error al parsear CSV',
-                        error: error.message
-                    });
-                    reject(error);
+                    processedData.push(fila);
+                } catch (error) {
+                    console.error('Error de validación en la fila:', error.message);
                 }
-            });
-        });
-
-        fileStream.on('error', error => {
-            console.error('Error al leer el archivo:', error.message);
-            res.status(500).json({
-                mensaje: 'Error al leer el archivo',
-                error: error.message
-            });
-            reject(error);
+                filaError++;
+            },
+            complete: function () {
+                // Enviar los datos procesados como respuesta JSON
+                res.status(200).json({ mensaje: 'Archivo procesado correctamente', data: processedData });
+                resolve();
+            },
+            error: function (error) {
+                console.error('Error al parsear CSV:', error.message);
+                res.status(500).json({
+                    mensaje: 'Error al parsear CSV',
+                    error: error.message
+                });
+                reject(error);
+            }
         });
     });
 }
 
-async function procesarArchivoCosechaMecanica(idTipoAnalisis, fileStream, filaError, processedData, res) {
+async function procesarArchivoCosechaMecanica(idTipoAnalisis, fileContent, filaError, processedData, res) {
     return new Promise((resolve, reject) => {
-        let fileContent = '';
-        fileStream.on('data', chunk => {
-            fileContent += chunk;
-        });
-
-        fileStream.on('end', () => {
-            Papa.parse(fileContent, {
-                header: false,
-                skipEmptyLines: true,
-                delimiter: autoDetectDelimiter(fileContent),
-                step: function (row, parser) {
-                    if (filaError === 0) {
-                        filaError++;
+        Papa.parse(fileContent, {
+            header: false,
+            skipEmptyLines: true,
+            delimiter: autoDetectDelimiter(fileContent),
+            step: function (row, parser) {
+                if (filaError === 0) {
+                    filaError++;
+                    return;
+                }
+                try {
+                    const fila = row.data.map(campo => (campo === undefined || campo === null ? '' : campo.toString().trim()));
+                    if (fila.every(campo => campo === '')) {
                         return;
                     }
-                    try {
-                        const fila = row.data.map(campo => (campo === undefined || campo === null ? '' : campo.toString().trim()));
-                        if (fila.every(campo => campo === '')) {
-                            return;
-                        }
 
-                        // Validar y formatear los valores de la fila
-                        fila[0] = validaciones.validarLongitud(fila[0]); // LATITUD VALIDACIÓN
-                        fila[1] = validaciones.validarLongitud(fila[1]); // LONGITUD VALIDACIÓN
-                        fila[11] = formatearValor(fila[11], 11); // FECHA INICIO COSECHA
-                        fila[12] = formatearValor(fila[12], 12); // FECHA INICIO VALIDACIÓN
-                        fila[13] = formatearValor(fila[13], 13); // HORA INICIO VALIDACIÓN
-                        fila[14] = formatearValor(fila[14], 14); // HORA FINAL VALIDACIÓN
-                        const tiempoTotal = validaciones.calcularTiempoTotal(fila[13], fila[14]);
-                        fila.splice(15, 0, tiempoTotal);
+                    // Validar y formatear los valores de la fila
+                    fila[0] = validaciones.validarLongitud(fila[0]); // LATITUD VALIDACIÓN
+                    fila[1] = validaciones.validarLongitud(fila[1]); // LONGITUD VALIDACIÓN
+                    fila[11] = formatearValor(fila[11], 11); // FECHA INICIO COSECHA
+                    fila[12] = formatearValor(fila[12], 12); // FECHA INICIO VALIDACIÓN
+                    fila[13] = formatearValor(fila[13], 13); // HORA INICIO VALIDACIÓN
+                    fila[14] = formatearValor(fila[14], 14); // HORA FINAL VALIDACIÓN
+                    const tiempoTotal = validaciones.calcularTiempoTotal(fila[13], fila[14]);
+                    fila.splice(15, 0, tiempoTotal);
 
-                        fila.push(idTipoAnalisis);
+                    fila.push(idTipoAnalisis);
 
-                        processedData.push(fila);
-                    } catch (error) {
-                        console.error('Error de validación en la fila:', error.message);
-                    }
-                    filaError++;
-                },
-                complete: function () {
-                    // Enviar los datos procesados como respuesta JSON
-                    res.status(200).json({ mensaje: 'Archivo procesado correctamente', data: processedData });
-                    resolve();
-                },
-                error: function (error) {
-                    console.error('Error al parsear CSV:', error.message);
-                    res.status(500).json({
-                        mensaje: 'Error al parsear CSV',
-                        error: error.message
-                    });
-                    reject(error);
+                    processedData.push(fila);
+                } catch (error) {
+                    console.error('Error de validación en la fila:', error.message);
                 }
-            });
-        });
-
-        fileStream.on('error', error => {
-            console.error('Error al leer el archivo:', error.message);
-            res.status(500).json({
-                mensaje: 'Error al leer el archivo',
-                error: error.message
-            });
-            reject(error);
+                filaError++;
+            },
+            complete: function () {
+                // Enviar los datos procesados como respuesta JSON
+                res.status(200).json({ mensaje: 'Archivo procesado correctamente', data: processedData });
+                resolve();
+            },
+            error: function (error) {
+                console.error('Error al parsear CSV:', error.message);
+                res.status(500).json({
+                    mensaje: 'Error al parsear CSV',
+                    error: error.message
+                });
+                reject(error);
+            }
         });
     });
 }
@@ -300,13 +267,20 @@ const insertarAnalisis = async (req, res) => {
 };
 
 function autoDetectDelimiter(fileContent) {
+    // Lógica para detectar automáticamente el delimitador
     const delimiters = [',', ';', '\t', '|'];
-    const delimiterCounts = delimiters.map(delimiter => {
+    let detectedDelimiter = ',';
+    let maxCount = 0;
+
+    delimiters.forEach(delimiter => {
         const count = fileContent.split(delimiter).length;
-        return { delimiter, count };
+        if (count > maxCount) {
+            maxCount = count;
+            detectedDelimiter = delimiter;
+        }
     });
-    const mostFrequentDelimiter = delimiterCounts.reduce((a, b) => a.count > b.count ? a : b);
-    return mostFrequentDelimiter.delimiter;
+
+    return detectedDelimiter;
 }
 
 const obtenerUltimoAnalisis = async (req, res) => {
@@ -320,12 +294,12 @@ const obtenerUltimoAnalisis = async (req, res) => {
 
 async function convertirExcelACsv(inputFilePath, outputFilePath) {
     try {
-        const workbook = XLSX.readFile(inputFilePath);
+        const workbook = xlsx.readFile(inputFilePath);
         const sheet_name_list = workbook.SheetNames;
         if (sheet_name_list.length === 0) {
             throw new Error('El archivo Excel no contiene ninguna hoja.');
         }
-        const csv = XLSX.utils.sheet_to_csv(workbook.Sheets[sheet_name_list[0]]);
+        const csv = xlsx.utils.sheet_to_csv(workbook.Sheets[sheet_name_list[0]]);
         if (!csv) {
             throw new Error('La conversión a CSV falló o el archivo CSV resultante está vacío.');
         }
@@ -336,6 +310,7 @@ async function convertirExcelACsv(inputFilePath, outputFilePath) {
         throw error;
     }
 }
+
 
 module.exports = {
     obtenerUltimoAnalisis,
