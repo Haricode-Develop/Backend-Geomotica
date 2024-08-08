@@ -24,6 +24,7 @@ const {
     obtenerPorcentajeAreaPilotoCm,
     obtenerPorcentajeAreaAutotrackerCm,
 } = require("../models/cosechaMecanicaModel");
+const bucket = storage.bucket(bucketName);
 
 // Función genérica para crear controladores
 const crearControlador = (funcionModelo, nombreControlador) => {
