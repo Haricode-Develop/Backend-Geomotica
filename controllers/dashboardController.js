@@ -190,6 +190,10 @@ function formatearHora(hora) {
 }
 
 const execBash = async (req, res) => {
+    const fs = require('fs');
+    const path = require('path');
+    const { exec } = require('child_process');
+
     const idUsuario = req.params.idUsuario;
     const idAnalisis = req.params.idAnalisis;
     const idMax = req.params.idMax;
@@ -205,13 +209,21 @@ const execBash = async (req, res) => {
     }
 
     let csvPath = null;
-    if(req.files['csv']){
+    if (req.files['csv']) {
         csvPath = req.files['csv'][0].path;
+        // Verificar y agregar la extensión .gz si es necesario
+        if (!csvPath.endsWith('.gz')) {
+            const newCsvPath = `${csvPath}.gz`;
+            fs.renameSync(csvPath, newCsvPath);
+            csvPath = newCsvPath;
+        }
     }
+
     let polygonPath = null;
     if (req.files['polygon']) {
         polygonPath = req.files['polygon'][0].path;
     }
+
     console.log("==============================================");
     console.log("PARAMETROS QUE SE LE PASAN AL INIT_ANALISIS: ");
     console.log("ID USUARIO = " + idUsuario);
@@ -253,6 +265,7 @@ const execBash = async (req, res) => {
         res.status(500).send(error);
     }
 };
+
 
 const insertarAnalisis = async (req, res) => {
     try {
