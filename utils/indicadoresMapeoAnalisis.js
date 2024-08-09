@@ -29,7 +29,7 @@ const obtenerPromedio = async (collectionName, idAnalisis, campo) => {
         const [resultado] = await collection
             .aggregate([
                 { $match: { ID_ANALISIS: idAnalisis } },
-                { $group: { _id: null, promedio: { $avg: `$${campo}` } } },
+                { $group: { _id: null, promedio: { $avg: { $toDouble: `$${campo}` } } } },
             ])
             .toArray();
 
